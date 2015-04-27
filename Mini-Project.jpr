@@ -13,6 +13,11 @@
       <string v="oracle.ide.model.ResourcePaths/resourcesContentSet"/>
    </list>
    <value n="defaultPackage" v="miniproject"/>
+   <hash n="oracle.ide.model.TechnologyScopeConfiguration">
+      <list n="technologyScope">
+         <string v="Java"/>
+      </list>
+   </hash>
    <hash n="oracle.jdeveloper.compiler.OjcConfiguration">
       <value n="internalEncoding" v="UTF8"/>
       <value n="webIANAEncoding" v="UTF-8"/>
