@@ -10,7 +10,6 @@ public class tanks extends Object {
     public int fuel;
     public int vitesse;
     public boolean estHumain;
-    public Rectangle Tank;
     public double collision;
     
     
@@ -27,9 +26,24 @@ public class tanks extends Object {
 
     }
     
-    public void deplacement(){
-        x += vitesse;
+    void move(long t) {
+        x = x + (int) (vitesse * dx);
+        y = y + (int) (vitesse * dy);
+
+        if (x < limitesframe.x) {
+            x = limitesframe.x;
+        } else if (x + l > limitesframe.x + limitesframe.width) {
+            x = limitesframe.x + limitesframe.width - l;
         }
+
+        if (y < limitesframe.y) {
+            y = limitesframe.y;
+        } else if (y + h > limitesframe.y + limitesframe.height) {
+            y = limitesframe.y + limitesframe.height - h;
+        }
+
+        limites.setLocation(x, y);
+    }
     
     
     public void collisionDetected(bombe){ //problème d'identification de la bombe//
