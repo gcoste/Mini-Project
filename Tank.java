@@ -21,7 +21,6 @@ public class tanks extends Object {
          this.fuel = 100;
          this.vitesse = 1;
          this.estHumain = estHumain;
-         this.Tank = Tank;
          this.collision = collision;   
 
     }
