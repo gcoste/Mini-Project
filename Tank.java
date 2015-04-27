@@ -8,18 +8,17 @@ public class Tank extends Object {
     
     public int vie;
     public int fuel;
-    public int vitesse;
     public boolean estHumain;
     public double collision;
+    public Static String NomImage = "Tank.png"
     
     
     public Tank (String nom, int joueur, boolean estHumain, double collision) {
-
-         super(nom, 20, 10, 0, 0, 0, 0, joueur);
+        
+         super(nom, 0, 0, 1, 1, joueur, NomImage);
          
          this.vie = 100;
          this.fuel = 100;
-         this.vitesse = 1;
          this.estHumain = estHumain;
          this.collision = collision;   
 
