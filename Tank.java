@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Rectangle;
 
 
-public class tanks extends Object {
+public class Tank extends Object {
     
     public int vie;
     public int fuel;
@@ -13,9 +13,9 @@ public class tanks extends Object {
     public double collision;
     
     
-    public tanks (int id, int l, int h, int x, int y, int angle, int force, int joueur,int vie, int fuel, int vitesse, boolean estHumain, Rectangle Tank, double collision){
+    public Tank (String nom, int joueur, boolean estHumain, double collision) {
 
-         super(id, l, h, x, y, angle, force, joueur);
+         super(nom, 20, 10, 0, 0, 0, 0, joueur);
          
          this.vie = 100;
          this.fuel = 100;
