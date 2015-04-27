@@ -1,7 +1,7 @@
 
 public abstract class Object {
    
-   protected int id; //~/.jdeveloper/mywork/Tank/Mini-Project $ //
+   protected String nom; //~/.jdeveloper/mywork/Tank/Mini-Project $ //
    protected int l,h;
    protected int x,y;
    protected float dx,dy;
