@@ -9,13 +9,12 @@ public abstract class Object {
    Image image;
    Rectangle limites;
    Rectangle limitesframe;
-   String nom_objet;
    protected int angle;
    protected int force;
    protected int joueur;
    
    
-   public Object(int ax, int ay, float adx, float ady, float avitesse, String NomImage, Rectangle aframe, String nom) {
+   public Object(String nom, int ax, int ay, float adx, float ady, float avitesse, String NomImage) {
         try {
             image = ImageIO.read(new File(NomImage));
         }
