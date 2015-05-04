@@ -3,9 +3,9 @@ public class Bombe extends Object {
     public double puissance; //pour les point de vie du tank
     public static String NomImage = "Bombe.png";
 
-    public Bombe(String nom, int l, int h, float x, float y, float angle, int force, int joueur, double puissance){
+    public Bombe(String nom, int l, int h, float x, float y, int angle, int force, int joueur, double puissance){
         
-        super(nom, l, h, x, y, angle, force, joueur, NomImage);
+        super(nom, l, h, x, y, vitesse, force, angle, joueur, NomImage);
         
         this.puissance = puissance;
         
