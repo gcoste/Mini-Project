@@ -21,7 +21,7 @@ public abstract class Object {
     protected int joueur;
 
 
-    public Object(String nom, int ax, int ay, float adx, float ady, float avitesse, int force, int joueur,
+    public Object(String nom, int ax, int ay, float adx, float ady, float avitesse, int force, int angle, int joueur,
                   String NomImage) {
         try {
             image = ImageIO.read(new File(NomImage));
