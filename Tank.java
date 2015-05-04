@@ -1,29 +1,28 @@
-
-
 import java.awt.Color;
 import java.awt.Rectangle;
 
 
 public class Tank extends Object {
-    
+
     public int vie;
     public int fuel;
     public boolean estHumain;
     public double collision;
-    public Static String NomImage = "Tank.png"
-    
-    
-    public Tank (String nom, int joueur, boolean estHumain, double collision) {
-        
-         super(nom, 0, 0, 1, 1, joueur, NomImage);
-         
-         this.vie = 100;
-         this.fuel = 100;
-         this.estHumain = estHumain;
-         this.collision = collision;   
+    public float vitesse;
+    public static String NomImage = "Tank.png";
+
+
+    public Tank(String nom, int joueur, boolean estHumain, double collision) {
+
+        super(nom, 0, 0, 1, 1, vitesse, 100, 90, joueur, NomImage);
+
+        this.vie = 100;
+        this.fuel = 100;
+        this.estHumain = estHumain;
+        this.collision = collision;
 
     }
-    
+
     void move(long t) {
         x = x + (int) (vitesse * dx);
         y = y + (int) (vitesse * dy);
@@ -42,14 +41,9 @@ public class Tank extends Object {
 
         limites.setLocation(x, y);
     }
-    
-    
-    public void collisionDetected(bombe){ //problème d'identification de la bombe//
-        vie -= bombe.puissance;
-        }
-    
-    
-   
-         
-        
+
+
+    public void collisionDetected(Bombe obus) {
+        vie -= obus.puissance;
+    }
 }
