@@ -11,7 +11,7 @@ public class Bombe extends Object {
         
     }
 
-    public vvoid move(long t) {  //paramètre temps à utiliser
+    public void move(long t) {  //paramètre temps à utiliser
         
         x += Math.cos(angle)*force;
         y += Math.sin(angle)*force - 3; //gravité à tester
