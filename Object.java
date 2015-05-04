@@ -17,11 +17,11 @@ public abstract class Object {
     Rectangle limites;
     Rectangle limitesframe;
     protected int angle;
-    protected int force;
+    protected int vitesseInitiale;
     protected int joueur;
 
 
-    public Object(String nom, int ax, int ay, float adx, float ady, float avitesse, int force, int angle, int joueur,
+    public Object(String nom, int ax, int ay, float adx, float ady, float avitesse, int vitesseInitiale, int angle, int joueur,
                   String NomImage) {
         try {
             image = ImageIO.read(new File(NomImage));
