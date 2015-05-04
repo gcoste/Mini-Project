@@ -1,14 +1,14 @@
 public class Bombe extends Object {
 
-    public double puissance; //pour les point de vie du tank
+    public double vitesseInitiale;
     public static String NomImage = "Bombe.png";
     public float vitesse;
 
-    public Bombe(String nom, int l, int h, float x, float y, int angle, int force, int joueur, double puissance) {
+    public Bombe(String nom, int l, int h, float x, float y, int angle, int force, int joueur, double vitesseInitiale) {
 
         super(nom, l, h, x, y, vitesse, force, angle, joueur, NomImage);
 
-        this.puissance = puissance;
+        this.vitesseInitiale = vitesseInitiale;
     }
 
 }
@@ -20,7 +20,7 @@ public class Bombe extends Object {
         public Shot (int x, int y){ 
            this.x = x*Math.cos(angle);
            this.y = y*Math.sin(angle);
-           this.dx = puissace;
+           this.dx = vitesseInitiale;
             }
         
         public void simulate(){
