@@ -42,5 +42,10 @@ public abstract class Object {
         return limites.intersects(O.limites);
     }
 
-    abstract void move(long t);
+    abstract class moveObject{
+        int x;
+        int y;
+        abstract public void simulate();
+        abstract public void paint(Graphics g);
+        }
 }
