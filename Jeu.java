@@ -18,9 +18,9 @@ public class Jeu extends JFrame {
     boolean ToucheDroit;
     boolean ToucheEspace;
     Rectangle Ecran;
-    tanks Tank1;
+    Tank Tank1;
 
-    LinkedList<Objet> Objets;
+    LinkedList<Object> Objets;
     int score;
     boolean finjeu;
     int nombreAliensVivants;
@@ -47,7 +47,7 @@ public class Jeu extends JFrame {
         buffer.setColor(Color.black);
         buffer.fillRect(Ecran.x, Ecran.y, Ecran.x + Ecran.width, Ecran.y + Ecran.height);
         // on dessine l'image de l'objet en mouvement dans le buffer
-        tanks.draw(temps, buffer);
+        Tank.draw(temps, buffer);
         // on dessine l'image associée au buffer dans le JFrame
         g.drawImage(ArrierePlan, 0, 0, this);
     }
