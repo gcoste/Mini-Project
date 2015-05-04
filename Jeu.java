@@ -41,6 +41,30 @@ public class Jeu extends JFrame {
         timer = new Timer(100, new TimerAction());
         timer.start();
     }
+    
+    public void map(Graphics g) {
+        int h = getHeight();
+        int w = getWidth();
+        int n = 20;
+        
+        g.setColor(Color.blue);
+        g.fillRect(0, 0, w, h);
+        
+        g.setColor(Color.green);
+        int horizon1 = 2 * h / 3;
+        
+        for (int i = 0; i < w / n; i++) {
+            Random rand = new Random();
+            int randomNum = rand.nextInt(10) - 5;
+            
+            int horizon2 = horizon1 + randomNum;
+            int[] xpoints = new int[] { n * i, n * i, n * (i + 1), n * (i + 1) };
+            int[] ypoints = new int[] { h, horizon1, horizon2, h };
+            g.fillPolygon(xpoints, ypoints, 4);
+            
+            horizon1 = horizon2;
+        }
+    }
 
     public void paint(Graphics g) {
         // remplir le buffer de noir
