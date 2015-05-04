@@ -11,8 +11,32 @@ public class Bombe extends Object {
         this.puissance = puissance;
     }
 
-    public void move(long t) { //paramètre temps à utiliser
-        x += Math.cos(angle) * force;
-        y += Math.sin(angle) * force - 3; //gravité à tester
-    }
 }
+   
+   class Shot extends moveObject{  //paramètre temps à utiliser
+        double dx;
+        double dy;
+        
+        public Shot (int x, int y){ 
+           this.x = x*Math.cos(angle);
+           this.y = y*Math.sin(angle);
+           this.dx = puissace;
+            }
+        
+        public void simulate(){
+            dy += G;
+            x +=(int)Math.round(dx);
+            y += (int)Math.round(dy);
+            /*if(y<=sol){ besoin des coordonnées du sol
+                dy=0;
+                dx=0;
+                y=sol;
+               }*/
+         }
+            
+        /*public void paint (Graphics g){      besoin image bombe
+            g.drawImage(BombeImage,x,y,this);                                 
+            }*/
+                    
+    
+    }
