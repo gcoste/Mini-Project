@@ -6,6 +6,11 @@ import javax.swing.*;
 
 import java.util.LinkedList;
 import java.util.Random;
+import java.awt.FlowLayout;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
 
 
 public class Jeu extends JFrame {
@@ -88,6 +93,56 @@ public class Jeu extends JFrame {
             temps++;
         }
     }
+    
+    public class Bandeau extends JFrame {
+    
+    private JPanel cadre;
+    private JSlider vitesseInitiale;
+    private JSlider angle;
+    private JLabel labelvit;
+    private JLabel labelangle;
+    private JLabel vie;
+    private JLabel fuel;
+    
+    static final int FPS_MIN = 0;
+    static final int FPS_MAX = 10;
+    static final int FPS_INIT = 5;
+    
+    
+    public Bandeau (){
+       this.setTitle("Gestion des paramètres");
+       this.cadre = new JPanel();
+       cadre.setLayout(new FlowLayout());
+       
+       labelvit = new JLabel("Vitesse");
+       vitesseInitiale = new JSlider(JSlider.HORIZONTAL,FPS_MIN, FPS_MAX, FPS_INIT);
+       labelangle = new JLabel("Angle"); 
+       angle = new JSlider(JSlider.HORIZONTAL, FPS_MIN, FPS_MAX, FPS_INIT);
+       vie = new JLabel("Vie = variablevie");
+       fuel = new JLabel("Fuel = variablefuel");
+       
+       JPanel buttonPane = new JPanel();
+       
+       cadre.add(labelvit);
+       cadre.add(vitesseInitiale);
+       cadre.add(labelangle);
+       cadre.add(angle);
+       cadre.add(vie);
+       cadre.add(fuel);
+       
+       
+              this.setContentPane(cadre);
+       this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+       this.setVisible(true);
+            
+    }
+
+    public static void main (String[] args){
+         Bandeau fenetre = new Bandeau();
+        
+        }
+
+}
 
     public static void main(String[] args) {
         Jeu Monjeu = new Jeu();
