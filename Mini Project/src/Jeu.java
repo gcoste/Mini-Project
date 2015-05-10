@@ -131,7 +131,8 @@ public class Jeu extends JFrame {
        cadre.add(fuel);
        
        
-              this.setContentPane(cadre);
+       this.setContentPane(cadre);
+       this.setSize(250,150);
        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
        this.setVisible(true);
             
