@@ -21,8 +21,8 @@ public class Shot extends Object.move { // paramètre temps à utiliser
 	public static double G;
 
 	public Shot(double x, double y, Object b) {
-		this.x = x * Math.cos(b.angle);
-		this.y = y * Math.sin(b.angle);
+		this.dx = x * Math.cos(b.angle);
+		this.dy = y * Math.sin(b.angle);
 		this.dx = b.vitesse;
 	}
 

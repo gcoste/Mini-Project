@@ -8,17 +8,17 @@ import javax.imageio.ImageIO;
 
 public abstract class Object {
 
-	protected String nom;
-	protected int l, h;
-	protected int x, y;
-	protected float dx, dy;
-	protected float vitesse;
-	protected Image image;
-	protected Rectangle limites;
-	protected Rectangle limitesframe;
-	protected int angle;
-	protected int vitesseInitiale;
-	protected int joueur;
+	public String nom;
+	public int l, h;
+	public static int x, y;
+	public float dx, dy;
+	public float vitesse;
+	public static Image image;
+	public Rectangle limites;
+	public Rectangle limitesframe;
+	public int angle;
+	public int vitesseInitiale;
+	public int joueur;
 
 	public Object(String nom, int ax, int ay, float adx, float ady,
 			double vitesse, int vitesseInitiale, int angle, int joueur,
@@ -42,7 +42,7 @@ public abstract class Object {
 		limites = new Rectangle(ax, ay, l, h);
 	}
 
-	void draw(long t, Graphics g) {
+	static void draw(long t, Graphics g) {
 		g.drawImage(image, x, y, null);
 	}
 
