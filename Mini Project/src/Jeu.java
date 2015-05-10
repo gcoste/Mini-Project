@@ -18,7 +18,7 @@ public class Jeu extends JFrame {
     long temps;
     BufferedImage ArrierePlan;
     Graphics buffer;
-    boolean TouchleHaut;
+    boolean ToucheHaut;
     boolean ToucheBas;
     boolean ToucheGauche;
     boolean ToucheDroit;

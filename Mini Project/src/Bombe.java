@@ -1,19 +1,20 @@
 public class Bombe extends Object {
 
-    public double vitesseInitiale;
+    public static final int puissance = 0;
+    public static double vitesse;
     public static String NomImage = "Bombe.png";
-    public float vitesse;
 
-    public Bombe(String nom, int l, int h, float x, float y, int angle, int force, int joueur, double vitesseInitiale) {
+
+    public Bombe(String nom, int l, int h, float x, float y, int angle, int force, int joueur, double vitesse) {
 
         super(nom, l, h, x, y, vitesse, force, angle, joueur, NomImage);
 
-        this.vitesseInitiale = vitesseInitiale;
+        this.vitesse = vitesse;
     }
 
 }
    
-   class Shot extends moveObject{  //paramÃ¨tre temps Ã  utiliser
+   public class Shot extends Object.move{  //paramètre temps à utiliser
         double dx;
         double dy;
         

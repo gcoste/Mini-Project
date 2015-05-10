@@ -13,15 +13,15 @@ public abstract class Object {
     protected int x, y;
     protected float dx, dy;
     protected float vitesse;
-    Image image;
-    Rectangle limites;
-    Rectangle limitesframe;
+    protected Image image;
+    protected Rectangle limites;
+    protected Rectangle limitesframe;
     protected int angle;
     protected int vitesseInitiale;
     protected int joueur;
 
 
-    public Object(String nom, int ax, int ay, float adx, float ady, float avitesse, int vitesseInitiale, int angle, int joueur,
+    public Object(String nom, int ax, int ay, float adx, float ady, double vitesse, int vitesseInitiale, int angle, int joueur,
                   String NomImage) {
         try {
             image = ImageIO.read(new File(NomImage));
@@ -34,11 +34,11 @@ public abstract class Object {
             System.exit(0);
         }
 
-        // rÃ©cupÃ¨re une fois pour toute la hauteur et largeur de l'image
+        // récupère une fois pour toute la hauteur et largeur de l'image
         h = image.getHeight(null);
         l = image.getWidth(null);
 
-        // dÃ©finir les limites de l'objet pour les collisions et les sorties
+        // définir les limites de l'objet pour les collisions et les sorties
         limites = new Rectangle(ax, ay, l, h);
     }
 
@@ -50,7 +50,7 @@ public abstract class Object {
         return limites.intersects(O.limites);
     }
 
-    abstract class moveObject {
+    abstract class move {
         int x;
         int y;
 

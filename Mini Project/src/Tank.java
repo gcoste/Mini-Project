@@ -1,14 +1,10 @@
-import java.awt.Color;
-import java.awt.Rectangle;
-
-
 public class Tank extends Object {
 
     public int vie;
     public int fuel;
     public boolean estHumain;
     public double collision;
-    public float vitesse;
+    public static float vitesse;
     public static String NomImage = "Tank.png";
 
 
