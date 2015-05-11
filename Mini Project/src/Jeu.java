@@ -28,8 +28,6 @@ public class Jeu extends JFrame {
 	LinkedList<Object> Objets;
 	int score;
 	boolean finjeu;
-	int nombreAliensVivants;
-	int nombreViesRestantes;
 
 	Jeu() {
 		setSize(700, 480);
