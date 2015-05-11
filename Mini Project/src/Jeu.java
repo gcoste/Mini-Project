@@ -130,6 +130,14 @@ public class Jeu extends JFrame {
         // On dessine l'image associée au buffer dans le JFrame
         g.drawImage(ArrierePlan, 0, 0, this);
     }
+    
+        /*public void Collision(){
+        if(Math.abs(x.Tank-x.Bombe)<=l.Tank || Math.abs(y.Tank-y.Bombe)<= h.Tank){
+            vie.tank -= 25;
+            
+        
+        }
+    }*/
 
     public void boucle_principale_jeu() {
 /* RETRAVAILLER BOUCLE PRINCIPALE UNIQUEMENT QUAND TOUT LE RESTE FONCTIONNERA
