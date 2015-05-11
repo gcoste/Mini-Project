@@ -13,14 +13,14 @@ public class Bombe extends Object {
 
 		this.vitesse = vitesse;
 	}
-}
 
-public class Shot extends Object.move { // paramètre temps à utiliser
+
+
 	double dx;
 	double dy;
 	public static double G;
 
-	public Shot(double x, double y, Object b) {
+	public void Shot(double x, double y, Object b) {
 		this.dx = x * Math.cos(b.angle);
 		this.dy = y * Math.sin(b.angle);
 		this.dx = b.vitesse;
@@ -31,7 +31,7 @@ public class Shot extends Object.move { // paramètre temps à utiliser
 		x += (int) Math.round(dx);
 		y += (int) Math.round(dy);
 		/*
-		 * if(y<=sol){ besoin des coordonnées du sol dy=0; dx=0; y=sol; }
+		 * if(y<=sol){ besoin des coordonnÃ©es du sol dy=0; dx=0; y=sol; }
 		 */
 	}
 
