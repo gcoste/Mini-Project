@@ -20,9 +20,7 @@ public abstract class Object {
 	public int vitesseInitiale;
 	public int joueur;
 
-	public Object(String nom, int ax, int ay, float adx, float ady,
-			double vitesse, int vitesseInitiale, int angle, int joueur,
-			String NomImage) {
+	public Object(String nom, int ax, int ay, float adx, float ady,	double vitesse, int vitesseInitiale, int angle, int joueur, String NomImage) {
 		try {
 			image = ImageIO.read(new File(NomImage));
 		}
@@ -34,11 +32,11 @@ public abstract class Object {
 			System.exit(0);
 		}
 
-		// récupère une fois pour toute la hauteur et largeur de l'image
+		// rï¿½cupï¿½re une fois pour toute la hauteur et largeur de l'image
 		h = image.getHeight(null);
 		l = image.getWidth(null);
 
-		// définir les limites de l'objet pour les collisions et les sorties
+		// dï¿½finir les limites de l'objet pour les collisions et les sorties
 		limites = new Rectangle(ax, ay, l, h);
 	}
 
