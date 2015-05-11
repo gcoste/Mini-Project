@@ -25,17 +25,18 @@ public class Jeu extends JFrame {
     boolean ToucheDroite;
     boolean ToucheEspace;
     Rectangle Ecran;
-    Tank Tank1;
-
+    
+    LinkedList<Tank> Tanks;
     LinkedList<Object> Objets;
+    int nombreJoueurs = 2;
     int score;
     boolean finjeu;
 
-    Jeu() {
+    public Jeu() {
         score = 0;
         finjeu = false;
 
-        setTitle("Space Invader");
+        setTitle("Tanks");
         //Taille de l'écran de jeu
         setSize(700, 480);
         //On interdit de changer la taille de la fenêtre
@@ -52,19 +53,52 @@ public class Jeu extends JFrame {
         ToucheGauche = false;
         ToucheDroite = false;
         ToucheEspace = false;
-
+        //L'écran est notre fenêtre de jeu, on doit donc prendre la taille de la fenêtre moins le superflue
+        //(comme les bordures de fenêtre, le truc en haut avec le nom du programme et la croix pour fermer)
+        //getInsets.left(ou top,right,bottom) récupère le taille de ces bordures. Il est utilisé dans une classe reprenant
+        //Jframe donc s'applique à cette JFrame, et on créer notre rectangle avec par exemple une hauteur qui vaut:
+        //hauteur=hauteur de fenêtre - marge en haut - marge en bas
         Ecran =
             new Rectangle(getInsets().left, getInsets().top, getSize().width - getInsets().right - getInsets().left,
                           getSize().height - getInsets().bottom - getInsets().top);
 
+        // On met l'arrière plan fixe pour éviter de scintiller quand on redessinera à chaque fois tout
         ArrierePlan = new BufferedImage(getSize().width, getSize().height, BufferedImage.TYPE_INT_RGB);
+        //On indique que buffer contient les dessins de arrier plan, si on modifie buffer, on modifie arrière plan
         buffer = ArrierePlan.getGraphics();
 
+        // Créer la liste chainée en mémoire
+        Objets = new LinkedList<Object>();
+        // Créer la liste chainée de tanks en mémoire
+        Tanks = new LinkedList<Tank>();
+
+        for (int i = 0; i < nombreJoueurs; i++) {
+            Tank n = new Tank(("Tank_" + i), i, true, 0);
+            // Ajouter le tank dans les listes d'objets
+            Tanks.add(n);
+            Objets.add(n);
+        }
+
+        String NomsImages = null;
+
+        //On initialise le timer à une action toutes les 100 ms
         timer = new Timer(100, new TimerAction());
+        //On lance le timer
         timer.start();
+
+        setVisible(true);
     }
 
-    public void map(Graphics g) {
+    public void paint(Graphics g) {
+        // remplir le buffer de noir
+        buffer.setColor(Color.black);
+        buffer.fillRect(Ecran.x, Ecran.y, Ecran.x + Ecran.width, Ecran.y + Ecran.height);
+        // on dessine l'image de l'objet en mouvement dans le buffer
+        Tank.draw(temps, buffer);
+        // on dessine l'image associée au buffer dans le JFrame
+        g.drawImage(ArrierePlan, 0, 0, this);
+        
+        //On créé la map
         int h = getHeight();
         int w = getWidth();
         int n = 20;
@@ -86,16 +120,6 @@ public class Jeu extends JFrame {
 
             horizon1 = horizon2;
         }
-    }
-
-    public void paint(Graphics g) {
-        // remplir le buffer de noir
-        buffer.setColor(Color.black);
-        buffer.fillRect(Ecran.x, Ecran.y, Ecran.x + Ecran.width, Ecran.y + Ecran.height);
-        // on dessine l'image de l'objet en mouvement dans le buffer
-        Tank.draw(temps, buffer);
-        // on dessine l'image associée au buffer dans le JFrame
-        g.drawImage(ArrierePlan, 0, 0, this);
     }
 
     void boucle_principale_jeu() {
@@ -226,7 +250,7 @@ public class Jeu extends JFrame {
         public void keyPressed(KeyEvent e) {
             NotreCombinaison.this_keyPressed(e);
         }
-BOBOBOBOBOBOBVOBOOOOOS
+
         //Même remarque
         public void keyReleased(KeyEvent e) {
             NotreCombinaison.this_keyReleased(e);

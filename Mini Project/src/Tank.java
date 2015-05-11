@@ -18,7 +18,7 @@ public class Tank extends Object {
 
 	}
 
-	void move(long t) {
+    void move(long t) {
 		x = x + (int) (vitesse * dx);
 		y = y + (int) (vitesse * dy);
 
