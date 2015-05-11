@@ -226,7 +226,7 @@ public class Jeu extends JFrame {
         public void keyPressed(KeyEvent e) {
             NotreCombinaison.this_keyPressed(e);
         }
-
+BOBOBOBOBOBOBVOBOOOOOS
         //Même remarque
         public void keyReleased(KeyEvent e) {
             NotreCombinaison.this_keyReleased(e);
