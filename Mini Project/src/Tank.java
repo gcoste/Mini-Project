@@ -18,22 +18,26 @@ public class Tank extends Object {
 
     }
 
-    void move(long t) {
+    public void move(long t) {
         x = x + (int) (vitesse * dx);
         y = y + (int) (vitesse * dy);
 
+        //On test si on a pas atteint les bords de l'écran, si c'est le cas on se remet sur le bord
         if (x < limitesframe.x) {
             x = limitesframe.x;
-        } else if (x + l > limitesframe.x + limitesframe.width) {
-            x = limitesframe.x + limitesframe.width - l;
+        } else {
+            if (x + l > limitesframe.x + limitesframe.width) {
+                x = limitesframe.x + limitesframe.width - l;
+            }
         }
-
         if (y < limitesframe.y) {
             y = limitesframe.y;
-        } else if (y + h > limitesframe.y + limitesframe.height) {
-            y = limitesframe.y + limitesframe.height - h;
+        } else {
+            if (y + h > limitesframe.y + limitesframe.height) {
+                y = limitesframe.y + limitesframe.height - h;
+            }
         }
-
+        //On place le rectangle de limites sur l'image
         limites.setLocation(x, y);
     }
 
