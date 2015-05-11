@@ -330,10 +330,6 @@ public class Jeu extends JFrame {
         }
     }
 
-    public static void main(String[] args) {
-        Jeu Monjeu = new Jeu();
-    }
-
     public void this_keyPressed(KeyEvent e) {
         //code correspond à la touche appuyée, stock un nombre pour une touche
         int code = e.getKeyCode();
