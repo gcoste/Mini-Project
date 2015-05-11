@@ -183,7 +183,7 @@ public class Jeu extends JFrame {
             System.exit(0);
         }
     }
-    
+
     public void this_keyReleased(KeyEvent e) {
         //code correspond à la touche relachée, stock un nombre pour une touche
         int code = e.getKeyCode();
@@ -215,21 +215,21 @@ public class Jeu extends JFrame {
     private class Jeu_this_keyAdapter extends KeyAdapter {
         //Jeu contenu dans notre écouteur, quand on créé un objet Jeu_this_keyAdapter il stock l'objet Jeu qu'il doit écouter
         //Ainsi l'objet jeu à un écouteur de clavier et l'écouteur de clavier a le Jeu auquel il se réfèrent (ils s'écoutent mutuellement)
-        private Jeu adaptee;
+        private Jeu NotreCombinaison;
 
         Jeu_this_keyAdapter(Jeu adaptee) {
-            this.adaptee = adaptee;
+            this.NotreCombinaison = adaptee;
         }
 
         // Quand on appuie une touche, on créé un KeyEvent, cette méthode est appelée
         //elle demande ensuite au Jeu auquelle elle se réfère de lancer la méthode this_keyPressed(e)
         public void keyPressed(KeyEvent e) {
-            adaptee.this_keyPressed(e);
+            NotreCombinaison.this_keyPressed(e);
         }
 
         //Même remarque
         public void keyReleased(KeyEvent e) {
-            adaptee.this_keyReleased(e);
+            NotreCombinaison.this_keyReleased(e);
         }
 
     }
