@@ -1,6 +1,6 @@
 import java.awt.Rectangle;
 
-public class Bombe extends Object {
+public class Bombe extends Objet {
 
 	static final double GRAVITE = 0.2;
 	static int dommage;
@@ -28,9 +28,9 @@ public class Bombe extends Object {
 		
 		x = x + (int) dx;
 		y = y + (int) dy;
-		dy = (float) (dy + GRAVITE);
+		dy = (float) (dy - GRAVITE);
 		
-		// on test si la bombe montant sort du haut de l'ecran
+		// on test si la bombe touche la carte
 		// La bombe sera supprimee apres
 		if (y <= map.getY(x)) {
 			this.actif = false;

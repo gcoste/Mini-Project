@@ -1,25 +1,16 @@
 import java.awt.*;
 
 public class Carte {
-	//hauteur et largeur de la carte
-	int h, l;
-	int n;
-	
-	//horizon de la carte pour l'instant
+	// hauteur et largeur de la carte
+	static int h, l;
+
+	// horizon de la carte pour l'instant
 	int horizon;
-	
 
-	public Carte(Graphics g, Rectangle aframe) {
-		int h = (int) aframe.getHeight();
-		int l = (int) aframe.getWidth();
-		int n = l;
-
-		g.setColor(Color.blue);
-		g.fillRect(0, 0, l, h);
-
-		g.setColor(Color.green);
-		int horizon = 2 * h / 3;
-
+	public Carte(Rectangle aframe) {
+		h = (int) aframe.height;
+		l = (int) aframe.width;
+		horizon = 2 * h / 3;
 		/*
 		 * METHODE DE STANY, A REVOIR
 		 * 
@@ -33,8 +24,22 @@ public class Carte {
 		 * horizon = horizon2;
 		 */
 	}
-	
-	public int getY (int x) {
+
+	public void paint(Rectangle aframe, Graphics buffer) {
+		h = (int) aframe.height;
+		l = (int) aframe.width;
+		
+		// On remplit le buffer en bleu, ca se repercute sur l'arriere plan
+		// (toujours definir la couleur avant de dessiner)
+		buffer.setColor(Color.blue);
+		buffer.fillRect(aframe.x, aframe.y, l, h);
+
+		horizon = 2 * h / 3;
+		buffer.setColor(Color.green);
+		buffer.fillRect(aframe.x, horizon, l, h);
+	}
+
+	public int getY(int x) {
 		return horizon;
 	}
 

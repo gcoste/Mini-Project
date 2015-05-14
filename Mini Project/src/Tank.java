@@ -1,18 +1,23 @@
 import java.awt.Rectangle;
 
-public class Tank extends Object {
+public class Tank extends Objet {
 
 	double vie;
 	double fuel;
 	boolean estHumain;
 	static String NomImage = "Tank.png";
+	
+	//Constructeur nul mais faut le mettre
+	public Tank(){
+		System.out.println("je suis nul");
+	}
 
 	public Tank(Rectangle aframe, Carte map, String nom, int joueur, boolean Humain) {
 		super(0, 0, 0, 0, 10, NomImage, aframe, map, nom, joueur);
 		
 		//on place le tank aleatoirement mais sur le terrain
-		this.x = (int) (500*Math.random() + 100);
-		this.y = map.getY(x);
+		this.x = (int) (400*Math.random() + 100) - limites.width/2;
+		this.y = map.getY(x)-limites.height;
 
 		this.vie = 100;
 		this.fuel = 100;
@@ -47,6 +52,6 @@ public class Tank extends Object {
 	}
 
 	public void touche(Bombe obus) {
-		vie -= obus.puissance; // A REVOIR
+		vie -= obus.dommage; // A REVOIR
 	}
 }

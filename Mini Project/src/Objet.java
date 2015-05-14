@@ -5,7 +5,7 @@ import java.io.File;
 
 import javax.imageio.ImageIO;
 
-public abstract class Object {
+public abstract class Objet {
 
 	//cadre représentant la fenetre totale (avec les barres)
 	Rectangle aframe;
@@ -29,12 +29,12 @@ public abstract class Object {
 	Carte map;
 
 	// Constructeur nul mais faut le mettre
-	public Object() {
+	public Objet() {
 		System.out.println("je suis nul");
 	}
 
 	// Constructeur initialise les attributs
-	public Object(int ax, int ay, float adx, float ady, float avitesse,
+	public Objet(int ax, int ay, float adx, float ady, float avitesse,
 			String NomImage, Rectangle aframe, Carte amap, String anom, int ajoueur) {
 		x = ax;
 		y = ay;
@@ -71,7 +71,7 @@ public abstract class Object {
 	}
 
 	// Methode qui test si deux objets sont en collision
-	public boolean Collision(Object O) {
+	public boolean Collision(Objet O) {
 		return limites.intersects(O.limites);
 	}
 
