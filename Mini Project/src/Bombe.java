@@ -3,15 +3,15 @@ import java.awt.Graphics;
 public class Bombe extends Object {
 
     public static final int puissance = 0;
-    public static double vitesse;
+    public double vitesse;
     public static String NomImage = "Bombe.png";
     public boolean actif;
 
-    public Bombe(String nom, int l, int h, float x, float y, int angle, int force, int joueur, double vitesse) {
+    public Bombe(String nom, int l, int h, float x, float y, int angle, int force, int joueur, double avitesse) {
 
-        super(nom, l, h, x, y, vitesse, force, angle, joueur, NomImage);
+        super(nom, l, h, x, y, avitesse, force, angle, joueur, NomImage);
 
-        this.vitesse = vitesse;
+        this.vitesse = avitesse;
         this.actif = true;
     }
 
