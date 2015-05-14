@@ -39,47 +39,46 @@ public class Jeu extends JFrame {
 		finjeu = false;
 
 		setTitle("Tanks");
-		// Taille de l'écran de jeu
+		// Taille de l'ecran de jeu
 		setSize(700, 480);
-		// On interdit de changer la taille de la fenêtre
+		// On interdit de changer la taille de la fenetre
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		// On ajoute l'écouteur de clavier qui se réfère à cette classe
-		// même
+		// On ajoute l'ecouteur de clavier qui se refere a cette classe meme
 		this.addKeyListener(new Jeu_this_keyAdapter(this));
 
 		temps = 0;
-		// Aucune touche n'est appuyée, donc tout est false
+		// Aucune touche n'est appuyee, donc tout est false
 		ToucheHaut = false;
 		ToucheBas = false;
 		ToucheGauche = false;
 		ToucheDroite = false;
 		ToucheEspace = false;
-		// L'écran est notre fenêtre de jeu, on doit donc prendre la taille de
-		// la fenêtre moins le superflue
-		// (comme les bordures de fenêtre, le truc en haut avec le nom du
+		// L'ecran est notre fenetre de jeu, on doit donc prendre la taille de
+		// la fenetre moins le superflue
+		// (comme les bordures de fenetre, le truc en haut avec le nom du
 		// programme et la croix pour fermer)
-		// getInsets.left(ou top,right,bottom) récupère le taille de ces
-		// bordures. Il est utilisé dans une classe reprenant
-		// Jframe donc s'applique à cette JFrame, et on créer notre rectangle
+		// getInsets.left(ou top,right,bottom) recupere le taille de ces
+		// bordures. Il est utilise dans une classe reprenant
+		// Jframe donc s'applique a cette JFrame, et on creer notre rectangle
 		// avec par exemple une hauteur qui vaut:
-		// hauteur=hauteur de fenêtre - marge en haut - marge en bas
+		// hauteur=hauteur de fenetre - marge en haut - marge en bas
 		Ecran = new Rectangle(getInsets().left, getInsets().top,
 				getSize().width - getInsets().right - getInsets().left,
 				getSize().height - getInsets().bottom - getInsets().top);
 
-		// On met l'arrière plan fixe pour éviter de scintiller quand on
-		// redessinera à chaque fois tout
+		// On met l'arriere plan fixe pour eviter de scintiller quand on
+		// redessinera a chaque fois tout
 		ArrierePlan = new BufferedImage(getSize().width, getSize().height,
 				BufferedImage.TYPE_INT_RGB);
 		// On indique que buffer contient les dessins de arrier plan, si on
-		// modifie buffer, on modifie arrière plan
+		// modifie buffer, on modifie arriere plan
 		buffer = ArrierePlan.getGraphics();
 
-		// Créer la liste chainée en mémoire
+		// Creer la liste chainee en memoire
 		Objects = new LinkedList<Object>();
-		// Créer la liste chainée de tanks en mémoire
+		// Creer la liste chainee de tanks en memoire
 		Tanks = new LinkedList<Tank>();
 
 		for (int i = 0; i < nombreJoueurs; i++) {
@@ -91,7 +90,7 @@ public class Jeu extends JFrame {
 
 		String NomsImages = null;
 
-		// On initialise le timer à une action toutes les 100 ms
+		// On initialise le timer a une action toutes les 100 ms
 		timer = new Timer(100, new TimerAction());
 		// On lance le timer
 		timer.start();
@@ -100,8 +99,8 @@ public class Jeu extends JFrame {
 	}
 
 	public void paint(Graphics g) {
-		// On remplit le buffer en noir, ça se répercute sur l'arrière plan
-		// (toujours définir la couleur avant de dessiner)
+		// On remplit le buffer en noir, ca se repercute sur l'arriere plan
+		// (toujours definir la couleur avant de dessiner)
 		buffer.setColor(Color.black);
 		buffer.fillRect(Ecran.x, Ecran.y, Ecran.x + Ecran.width, Ecran.y
 				+ Ecran.height);
@@ -109,7 +108,7 @@ public class Jeu extends JFrame {
 		buffer.setColor(Color.white);
 		buffer.drawString("SCORE : " + score, 50, Ecran.height - 20);
 
-		// On créé la map
+		// On cree la map
 		int h = getHeight();
 		int w = getWidth();
 		int n = 20;
@@ -137,7 +136,7 @@ public class Jeu extends JFrame {
 			Object O = (Object) Objects.get(k);
 			O.draw(temps, buffer);
 		}
-		// On dessine l'image associée au buffer dans le JFrame
+		// On dessine l'image associee au buffer dans le JFrame
 		g.drawImage(ArrierePlan, 0, 0, this);
 	}
 
@@ -156,61 +155,61 @@ public class Jeu extends JFrame {
 		 * else if (ToucheDroite) { vaisseau.dx = +1; vaisseau.dy = 0; } else if
 		 * (ToucheHaut) { vaisseau.dx = 0; vaisseau.dy = -1; } else if
 		 * (ToucheBas) { vaisseau.dx = 0; vaisseau.dy = +1; } else { vaisseau.dx
-		 * = 0; vaisseau.dy = 0; } // déplace tous les objets par Polymorphisme
+		 * = 0; vaisseau.dy = 0; } // deplace tous les objets par Polymorphisme
 		 * for (int k = 0; k < Objets.size(); k++) { Objet O = (Objet)
-		 * Objets.get(k); O.move(temps); } //On ajoute le missile si il est
-		 * tiré if (ToucheEspace) { Missile M = new Missile(vaisseau.x +
-		 * vaisseau.l / 2, vaisseau.y, Ecran, "MISSILE"); Objets.add(M); }
+		 * Objets.get(k); O.move(temps); } //On ajoute le missile si il est tire
+		 * if (ToucheEspace) { Missile M = new Missile(vaisseau.x + vaisseau.l /
+		 * 2, vaisseau.y, Ecran, "MISSILE"); Objets.add(M); }
 		 * 
-		 * //On rajoute une bombe qui tombe du haut de l'écran //3/80 de chance
+		 * //On rajoute une bombe qui tombe du haut de l'ecran //3/80 de chance
 		 * de faire tomber une bombe toutes des 100 ms int t = (int) (80 *
 		 * Math.random()); if (t <= 2) { t = 2; } //On ajoute aux 3/80 chances
-		 * 1/2 chances d'être réellement lancé, donc 3/160 chances par 100 ms
-		 * // on va simplifier le jeu en lançant un missile au hasard du haut
-		 * du frame if (temps % t == 0) { Bombe B = new Bombe((int)
-		 * (Math.random() * Ecran.width), 0, Ecran, "BOMBE"); Objets.add(B); }
+		 * 1/2 chances d'etre reellement lance, donc 3/160 chances par 100 ms //
+		 * on va simplifier le jeu en lancant un missile au hasard du haut du
+		 * frame if (temps % t == 0) { Bombe B = new Bombe((int) (Math.random()
+		 * * Ecran.width), 0, Ecran, "BOMBE"); Objets.add(B); }
 		 * 
-		 * //On parcours tous nos objets à la recherche des missiles for (int
-		 * k1 = 0; k1 < Objets.size(); k1++) { Objet O1 = (Objet)
-		 * Objets.get(k1); //On trouve un missile if ((O1.actif) &&
-		 * (O1.nom_objet == "MISSILE")) { for (int k2 = 0; k2 < Objets.size();
-		 * k2++) { Objet O2 = (Objet) Objets.get(k2); //On cherche les aliens
-		 * pour faire des couples miisiles/aliens if ((O2.actif) &&
-		 * (O2.nom_objet == "ALIEN")) { //On regarde si l'alien et le missile
-		 * sont en collision if (O1.Collision(O2)) { //On vérifie si il n'y a
-		 * plus d'alien if (nombreAliensVivants > 1) { nombreAliensVivants--; }
-		 * else { nombreAliensVivants--; finjeu = true; } // mis a jour du score
-		 * score += ((Alien) O2).score; // on supprimera plus tard ces objets
-		 * O1.actif = false; O2.actif = false; } } } } }
+		 * //On parcours tous nos objets a la recherche des missiles for (int k1
+		 * = 0; k1 < Objets.size(); k1++) { Objet O1 = (Objet) Objets.get(k1);
+		 * //On trouve un missile if ((O1.actif) && (O1.nom_objet == "MISSILE"))
+		 * { for (int k2 = 0; k2 < Objets.size(); k2++) { Objet O2 = (Objet)
+		 * Objets.get(k2); //On cherche les aliens pour faire des couples
+		 * miisiles/aliens if ((O2.actif) && (O2.nom_objet == "ALIEN")) { //On
+		 * regarde si l'alien et le missile sont en collision if
+		 * (O1.Collision(O2)) { //On verifie si il n'y a plus d'alien if
+		 * (nombreAliensVivants > 1) { nombreAliensVivants--; } else {
+		 * nombreAliensVivants--; finjeu = true; } // mis a jour du score score
+		 * += ((Alien) O2).score; // on supprimera plus tard ces objets O1.actif
+		 * = false; O2.actif = false; } } } } }
 		 * 
 		 * //On recherche maintenant les bombes for (int k = 0; k <
 		 * Objets.size(); k++) { Objet O = (Objet) Objets.get(k); //On trouve
 		 * une bombe if (O.nom_objet == "BOMBE") { //Il y a bien collision entre
 		 * une bombe et le vaisseau if ((O.actif) && (vaisseau.Collision(O))) {
-		 * //On éteint la bombe, elle disparait O.actif = false; //On vérifie
+		 * //On eteint la bombe, elle disparait O.actif = false; //On verifie
 		 * qu'il reste des vies au joueur if (nombreViesRestantes > 0) {
 		 * nombreViesRestantes--; } else { finjeu = true; } } } }
 		 * 
-		 * // On vérifie qu'un alien actif ne touche pas le vaisseau for (int
-		 * k1 = 0; k1 < Objets.size(); k1++) { Objet O1 = (Objet)
-		 * Objets.get(k1); if ((O1.actif) && (O1.nom_objet == "ALIEN")) { if
+		 * // On verifie qu'un alien actif ne touche pas le vaisseau for (int k1
+		 * = 0; k1 < Objets.size(); k1++) { Objet O1 = (Objet) Objets.get(k1);
+		 * if ((O1.actif) && (O1.nom_objet == "ALIEN")) { if
 		 * (vaisseau.Collision(O1)) { O1.actif = false; //Si il touche le
 		 * vaisseau, on perd une vie sauf si l'on en a plus if
 		 * (nombreViesRestantes > 0) { nombreViesRestantes--; } else { finjeu =
-		 * true; } } } //Si un alien est en bas, le jeu est terminé if ((O1.y
-		 * >= this.getSize().width) && (O1.nom_objet == "ALIEN")) { finjeu =
-		 * true; } }
+		 * true; } } } //Si un alien est en bas, le jeu est termine if ((O1.y >=
+		 * this.getSize().width) && (O1.nom_objet == "ALIEN")) { finjeu = true;
+		 * } }
 		 * 
-		 * //Gère la fin de partie if (finjeu) { //On désactive tous les
-		 * objets for (int k1 = 0; k1 < Objets.size(); k1++) { Objet O1 =
-		 * (Objet) Objets.get(k1); O1.actif = false; } //On voit si c'est
-		 * victoire ou défaite //On créé ensuite l'objet message
-		 * correspondant //L'objet message sera traité comme un objet par le
-		 * Paint //On a donc peu de choses à modifier if (nombreAliensVivants
-		 * == 0) { Objet m = new Message(true, score, Ecran); Objets.add(m); }
-		 * else { Objet m = new Message(false, score, Ecran); Objets.add(m); } }
+		 * //Gere la fin de partie if (finjeu) { //On desactive tous les objets
+		 * for (int k1 = 0; k1 < Objets.size(); k1++) { Objet O1 = (Objet)
+		 * Objets.get(k1); O1.actif = false; } //On voit si c'est victoire ou
+		 * defaite //On cree ensuite l'objet message correspondant //L'objet
+		 * message sera traite comme un objet par le Paint //On a donc peu de
+		 * choses a modifier if (nombreAliensVivants == 0) { Objet m = new
+		 * Message(true, score, Ecran); Objets.add(m); } else { Objet m = new
+		 * Message(false, score, Ecran); Objets.add(m); } }
 		 * 
-		 * // accélère le jeu toutes les 10 secondes if (temps % 100 == 0) {
+		 * // accelere le jeu toutes les 10 secondes if (temps % 100 == 0) {
 		 * timer.setDelay((int) (timer.getDelay() * 0.9)); }
 		 * 
 		 * // balaye la liste et supprime tous les objets inactifs // Ainsi on
@@ -218,7 +217,7 @@ public class Jeu extends JFrame {
 		 * Objets.size(); k++) { Objet O = (Objet) Objets.get(k); if (O.actif ==
 		 * false) { Objets.remove(k); k--; } }
 		 * 
-		 * // force le rafraîchissement de l'image et le dessin de l'objet
+		 * // force le rafraichissement de l'image et le dessin de l'objet
 		 * repaint(); }
 		 */
 	}
@@ -238,7 +237,7 @@ public class Jeu extends JFrame {
 		static final int FPS_INIT = 5;
 
 		public Bandeau() {
-			this.setTitle("Gestion des paramètres");
+			this.setTitle("Gestion des parametres");
 			this.cadre = new JPanel();
 			cadre.setLayout(new FlowLayout());
 
@@ -273,11 +272,9 @@ public class Jeu extends JFrame {
 	}
 
 	public void this_keyPressed(KeyEvent e) {
-		// code correspond à la touche appuyée, stock un nombre pour une
-		// touche
+		// code correspond a la touche appuyee, stock un nombre pour une touche
 		int code = e.getKeyCode();
-		// Suivant la touche appuyée, on prévient jeu que celle-ci est
-		// appuyée
+		// Suivant la touche appuyee, on previent jeu que celle-ci est appuyee
 		if (code == 37) {
 			ToucheGauche = true;
 		} else if (code == 39) {
@@ -290,22 +287,21 @@ public class Jeu extends JFrame {
 			ToucheEspace = true;
 		}
 
-		// Si c'est la touche entrée on fait pause
+		// Si c'est la touche entree on fait pause
 		else if (code == 10) {
 			if (timer.isRunning()) {
 				timer.stop();
 			} else
 				timer.start();
 		}
-		// Si c'est la touche échape on quitte
+		// Si c'est la touche echape on quitte
 		else if (code == 27) {
 			System.exit(0);
 		}
 	}
 
 	public void this_keyReleased(KeyEvent e) {
-		// code correspond à la touche relachée, stock un nombre pour une
-		// touche
+		// code correspond a la touche relachee, stock un nombre pour une touche
 		int code = e.getKeyCode();
 		if (code == 37) {
 			ToucheGauche = false;
@@ -320,11 +316,11 @@ public class Jeu extends JFrame {
 		}
 	}
 
-	// Classe interne à la classe jeu, elle peut modifier les attributs de la
-	// classe jeu (ici temps nous intéresse)
+	// Classe interne a la classe jeu, elle peut modifier les attributs de la
+	// classe jeu (ici temps nous interesse)
 
 	private class TimerAction implements ActionListener {
-		// ActionListener appelee toutes les 100 millisecondes comme demandé à
+		// ActionListener appelee toutes les 100 millisecondes comme demande a
 		// l'initialisation du timer
 		public void actionPerformed(ActionEvent e) {
 			// Lance boucle_principale_jeu toutes les 100 ms
@@ -334,26 +330,28 @@ public class Jeu extends JFrame {
 	}
 
 	private class Jeu_this_keyAdapter extends KeyAdapter {
-		// Jeu contenu dans notre écouteur, quand on créé un objet
-		// Jeu_this_keyAdapter il stock l'objet Jeu qu'il doit écouter
-		// Ainsi l'objet jeu à un écouteur de clavier et l'écouteur de
-		// clavier a le Jeu auquel il se réfèrent (ils s'écoutent
-		// mutuellement)
+		/*
+		 * Jeu contenu dans notre ecouteur, quand on cree un objet
+		 * Jeu_this_keyAdapter il stock l'objet Jeu qu'il doit ecouter Ainsi
+		 * l'objet jeu a un ecouteur de clavier et l'ecouteur de clavier a le
+		 * Jeu auquel il se referent (ils s'ecoutent mutuellement)
+		 */
 		private Jeu NotreCombinaison;
 
 		Jeu_this_keyAdapter(Jeu adaptee) {
 			this.NotreCombinaison = adaptee;
 		}
 
-		// Quand on appuie une touche, on créé un KeyEvent, cette méthode est
-		// appelée
-		// elle demande ensuite au Jeu auquelle elle se réfère de lancer la
-		// méthode this_keyPressed(e)
+		/*
+		 * Quand on appuie une touche, on cree un KeyEvent, cette methode est
+		 * appelee elle demande ensuite au Jeu auquelle elle se refere de lancer
+		 * la methode this_keyPressed(e)
+		 */
 		public void keyPressed(KeyEvent e) {
 			NotreCombinaison.this_keyPressed(e);
 		}
 
-		// Même remarque
+		// Meme remarque
 		public void keyReleased(KeyEvent e) {
 			NotreCombinaison.this_keyReleased(e);
 		}

@@ -1,84 +1,76 @@
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
-
 import java.io.File;
 
 import javax.imageio.ImageIO;
 
 public abstract class Object {
 
-    private static Rectangle aframe;
-    public String nom;
-    //dimensions de l'objet
-    int h, l;
-    //Position haut gauche de l'objet
-    int x, y;
-    //direction de deplacement
-    float dx, dy;
-    public float vitesse;
-    public static Image image;
-    //limites de l'objet lui-mÃªme
-    public Rectangle limites;
-    //limites de l'ecran
-    public Rectangle limitesframe;
-    //L'objet est-il actif
-    boolean actif;
+	Rectangle aframe;
+	// position haut gauche de l'objet
+	int x, y;
+	// dimensions de l'objet
+	int h, l;
+	// direction de deplacement
+	float dx, dy;
+	float vitesse;
+	Image image;
+	// limites de l'objet lui-meme
+	Rectangle limites;
+	// limites de l'ecran
+	Rectangle limitesframe;
+	String nom;
+	// l'objet est-il actif
+	boolean actif;
+	// joueur auquel l'objet appartient
+	int joueur;
 
-    public int angle;
-    public int joueur;
+	// Constructeur nul mais faut le mettre
+	public Object() {
+		System.out.println("je suis nul");
+	}
 
-    //Constructeur nul mais faut le mettre
-    public Object() {
-        System.out.println("je suis nul");
-    }
+	// Constructeur initialise les attributs
+	public Object(int ax, int ay, float adx, float ady, float avitesse,	String NomImage, Rectangle aframe, String anom, int ajoueur) {
+		x = ax;
+		y = ay;
+		dx = adx;
+		dy = ady;
+		vitesse = avitesse;
+		
+		// Test si l'image est bien presente
+		try {
+			image = ImageIO.read(new File(NomImage));
+		} catch (Exception err) {
+			System.out.println(NomImage + " introuvable !");
+			System.out.println("Mettre les images dans le repertoire source :"
+					+ getClass().getClassLoader().getResource(NomImage));
+			System.exit(0);
+		}
+		// Contient la hauteur et largeur de l'image
+		
+		h = image.getHeight(null);
+		l = image.getWidth(null);
+		limites = new Rectangle(ax, ay, l, h);
+		limitesframe = aframe;
+		nom = anom;
+		actif = true;
+		joueur = ajoueur;
+	}
 
-    // Constructeur initialise les attributs
-    public Object(String nom_object, int ax, int ay, float adx, float ady, double avitesse, int vitesseInitiale,
-                  int angle, int joueur, String NomImage) {
+	// Dessine l'image, est dans la classe abstraite pour pouvoir se repercuter au classe filles
+	// On a plus qu'a  parcourir la liste d'elements et tous les dessiner
+	public void draw(long t, Graphics g) {
+		g.drawImage(image, x, y, null);
+	}
 
-        x = ax;
-        y = ay;
-        dx = adx;
-        dy = ady;
-        vitesse = (float) avitesse;
-        // Test si l'image est bien prÃ©sente
-        try {
-            image = ImageIO.read(new File(NomImage));
-        } catch (Exception err) {
-            System.out.println(NomImage + " introuvable !");
-            System.out.println("Mettre les images dans le repertoire :" +
-                               getClass().getClassLoader().getResource(NomImage));
-            System.exit(0);
-        }
-        //Contient la hauteur et largeur de l'image
-        h = image.getHeight(null);
-        l = image.getWidth(null);
-        limites = new Rectangle(ax, ay, l, h);
-        limitesframe = aframe;
-        nom = nom_object;
-        actif = true;
-    }
+	// Methode qui test si deux objets sont en collision
+	public boolean Collision(Object O) {
+		return limites.intersects(O.limites);
+	}
 
-    // Dessine l'image, est dans la classe abstraite pour pouvoir se repercuter au classe filles
-    //On a plus qu'a  parcourir la liste d'elements et tous les dessiner
-    public void draw(long t, Graphics g) {
-        g.drawImage(image, x, y, null);
-    }
-
-    //MÃ©thode qui test si deux objets sont en collision
-    public boolean Collision(Object O) {
-        return limites.intersects(O.limites);
-    }
-}
-
-//Methode qui gere le mouvement des objets
-//Abstraite car le mouvement depend du type d'objet
-abstract class move {
-    int x;
-    int y;
-
-    abstract public void simulate();
-
-    abstract public void paint(Graphics g);
+	//Methode qui gere le mouvement des objets
+	//Abstraite car le mouvement depend du type d'objet
+	abstract void move(long t);
 }

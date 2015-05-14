@@ -2,7 +2,7 @@ import java.awt.Graphics;
 
 public class Bombe extends Object {
 
-	public static final int puissance = 0;
+	public static int puissance = 0;
 	public double vitesse;
 	public static String NomImage = "Bombe.png";
 	public boolean actif;
