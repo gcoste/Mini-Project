@@ -35,8 +35,14 @@ public class Jeu extends JFrame {
 		finjeu = false;
 
 		setTitle("Tanks");
-		// Taille de l'ecran de jeu
-		setSize(1500, 850);
+		
+		//on recupere la taille exploitable de l'ecran
+		GraphicsEnvironment env=GraphicsEnvironment.getLocalGraphicsEnvironment();
+	    Rectangle bounds = env.getMaximumWindowBounds();
+	    
+	    //et on regle notre fenetre a cette taille
+		setSize(bounds.width, bounds.height);
+		
 		// On interdit de changer la taille de la fenetre
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -62,9 +68,14 @@ public class Jeu extends JFrame {
 		 * exemple une hauteur qui vaut: hauteur=hauteur de fenetre - marge en
 		 * haut - marge en bas
 		 */
-		Ecran = new Rectangle(getInsets().left, getInsets().top,
-				getSize().width - getInsets().right - getInsets().left,
-				getSize().height - getInsets().bottom - getInsets().top);
+		Insets k = getInsets();
+		
+		Ecran = new Rectangle(k.left, k.top,
+				getSize().width - k.right - k.left,
+				getSize().height - k.bottom - k.top);
+		
+		System.out.println(Ecran.width);
+		System.out.println(Ecran.height);
 
 		// On met l'arriere plan fixe pour eviter de scintiller quand on
 		// redessinera a chaque fois tout
@@ -84,8 +95,9 @@ public class Jeu extends JFrame {
 		for (int i = 0; i < nombreJoueurs; i++) {
 			Tanks[i] = new Tank(Ecran, map, "Tank_" + i, i, null, true);
 
-			// Ajouter le tank dans les listes d'objets
+			// Ajouter le tank et son canon dans les listes d'objets
 			Objets.add(Tanks[i]);
+			Objets.add(Tanks[i].canon);
 		}
 
 		// On initialise le timer a une action toutes les 100 ms
@@ -113,6 +125,39 @@ public class Jeu extends JFrame {
 	}
 
 	public void boucle_principale_jeu() {
+		if (ToucheGauche) {
+			Tanks[1].dx = -1;
+			Tanks[1].dy = 0;
+		} else if (ToucheDroite) {
+			Tanks[1].dx = +1;
+			Tanks[1].dy = 0;
+		} else if (ToucheHaut) {
+			Tanks[1].dx = 0;
+			Tanks[1].dy = -1;
+		} else if (ToucheBas) {
+			Tanks[1].dx = 0;
+			Tanks[1].dy = +1;
+		} else {
+			Tanks[1].dx = 0;
+			Tanks[1].dy = 0;
+		}
+
+		for (int k = 0; k < Objets.size(); k++) {
+			Objet O = (Objet) Objets.get(k);
+			O.move(temps);
+		}
+
+		// balaye la liste et supprime tous les objets inactifs
+		// Ainsi on ne paindra que les objets encore actifs
+		for (int k = 0; k < Objets.size(); k++) {
+			Objet O = (Objet) Objets.get(k);
+			if (O.actif == false) {
+				Objets.remove(k);
+				k--;
+			}
+		}
+
+		// force le rafraichissement de l'image et le dessin de l'objet
 		repaint();
 	}
 
