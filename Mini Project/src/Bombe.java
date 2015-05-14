@@ -1,4 +1,4 @@
-import java.awt.Rectangle;
+import java.awt.*;
 
 public class Bombe extends Objet {
 

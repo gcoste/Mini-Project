@@ -1,6 +1,4 @@
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.io.File;
 
 import javax.imageio.ImageIO;
@@ -47,8 +45,7 @@ public abstract class Objet {
 			image = ImageIO.read(new File(NomImage));
 		} catch (Exception err) {
 			System.out.println(NomImage + " introuvable !");
-			System.out.println("Mettre les images dans le repertoire source :"
-					+ getClass().getClassLoader().getResource(NomImage));
+			System.out.println("Mettre les images dans le repertoire source");
 			System.exit(0);
 		}
 		// Contient la hauteur et largeur de l'image

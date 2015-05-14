@@ -1,23 +1,15 @@
 import java.awt.*;
-import java.awt.image.BufferedImage;
+import java.awt.image.*;
 import java.awt.event.*;
 
 import javax.swing.*;
 
 import java.util.LinkedList;
-import java.util.Random;
-import java.awt.FlowLayout;
-import java.io.ObjectStreamConstants;
-
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSlider;
 
 public class Jeu extends JFrame {
 	// Liste de tous les objets du jeu (tanks, bombes, canon)
 	LinkedList<Objet> Objets;
-	LinkedList<Tank> Tanks;
+	Tank[] Tanks;
 
 	Timer timer;
 	long temps;
@@ -31,7 +23,7 @@ public class Jeu extends JFrame {
 	boolean ToucheEchap;
 	Rectangle Ecran;
 
-	int nombreJoueurs = 2;
+	int nombreJoueurs = 10;
 	int score;
 	int vent;
 
@@ -44,9 +36,9 @@ public class Jeu extends JFrame {
 
 		setTitle("Tanks");
 		// Taille de l'ecran de jeu
-		setSize(1600, 900);
+		setSize(1500, 850);
 		// On interdit de changer la taille de la fenetre
-		setResizable(true);
+		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		// On ajoute l'ecouteur de clavier qui se refere a cette classe meme
@@ -84,15 +76,17 @@ public class Jeu extends JFrame {
 
 		// Creer la liste chainee en memoire
 		Objets = new LinkedList<Objet>();
-		// Creer la liste chainee de tanks en memoire
-		Tanks = new LinkedList<Tank>();
+		// On initialise le tableau de tanks
+		Tanks = new Tank[nombreJoueurs];
 		// On initialise la map
 		map = new Carte(Ecran);
 
-		Tank tank1 = new Tank(Ecran, map, "Tank_1", 1, true);
-		// Ajouter le tank dans les listes d'objets
-		Tanks.add(tank1);
-		Objets.add(tank1);
+		for (int i = 0; i < nombreJoueurs; i++) {
+			Tanks[i] = new Tank(Ecran, map, "Tank_" + i, i, null, true);
+
+			// Ajouter le tank dans les listes d'objets
+			Objets.add(Tanks[i]);
+		}
 
 		// On initialise le timer a une action toutes les 100 ms
 		timer = new Timer(100, new TimerAction());
@@ -109,7 +103,6 @@ public class Jeu extends JFrame {
 
 		map.paint(Ecran, buffer);
 
-
 		// dessine TOUS les objets dans le buffer
 		for (int k = 0; k < Objets.size(); k++) {
 			Objet O = (Objet) Objets.get(k);
@@ -121,6 +114,54 @@ public class Jeu extends JFrame {
 
 	public void boucle_principale_jeu() {
 		repaint();
+	}
+
+	public static class Bandeau extends JFrame {
+
+		private JPanel cadre;
+		private JSlider vitesseInitiale;
+		private JSlider angle;
+		private JLabel labelvit;
+		private JLabel labelangle;
+		private JLabel vie;
+		private JLabel fuel;
+
+		static final int FPS_MIN = 0;
+		static final int FPS_MAX = 10;
+		static final int FPS_INIT = 5;
+
+		public Bandeau() {
+			this.setTitle("Gestion des parametres");
+			this.cadre = new JPanel();
+			cadre.setLayout(new FlowLayout());
+
+			labelvit = new JLabel("Vitesse");
+			vitesseInitiale = new JSlider(JSlider.HORIZONTAL, FPS_MIN, FPS_MAX,
+					FPS_INIT);
+			labelangle = new JLabel("Angle");
+			angle = new JSlider(JSlider.HORIZONTAL, FPS_MIN, FPS_MAX, FPS_INIT);
+			vie = new JLabel("Vie = variablevie");
+			fuel = new JLabel("Fuel = variablefuel");
+
+			JPanel buttonPane = new JPanel();
+
+			cadre.add(labelvit);
+			cadre.add(vitesseInitiale);
+			cadre.add(labelangle);
+			cadre.add(angle);
+			cadre.add(vie);
+			cadre.add(fuel);
+
+			this.setContentPane(cadre);
+			this.setSize(250, 150);
+			this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			this.setVisible(true);
+
+		}
+
+		// public static void main(String[] args) {
+		// Bandeau fenetre = new Bandeau();
+		// }
 	}
 
 	public void this_keyPressed(KeyEvent e) {
@@ -139,7 +180,7 @@ public class Jeu extends JFrame {
 			ToucheEspace = true;
 		} else if (code == 27) {
 			ToucheEchap = true;
-			
+
 			// Si c'est la touche echape on fait pause
 			if (timer.isRunning()) {
 				timer.stop();
