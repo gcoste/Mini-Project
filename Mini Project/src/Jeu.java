@@ -44,9 +44,9 @@ public class Jeu extends JFrame {
 
 		setTitle("Tanks");
 		// Taille de l'ecran de jeu
-		setSize(800, 600);
+		setSize(1600, 900);
 		// On interdit de changer la taille de la fenetre
-		setResizable(false);
+		setResizable(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		// On ajoute l'ecouteur de clavier qui se refere a cette classe meme
