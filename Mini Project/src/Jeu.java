@@ -33,6 +33,7 @@ public class Jeu extends JFrame {
 	int nombreJoueurs = 2;
 	int score;
 	boolean finjeu;
+	Carte map;
 
 	public Jeu() {
 		score = 0;
@@ -108,28 +109,8 @@ public class Jeu extends JFrame {
 		buffer.setColor(Color.white);
 		buffer.drawString("SCORE : " + score, 50, Ecran.height - 20);
 
-		// On cree la map
-		int h = getHeight();
-		int w = getWidth();
-		int n = 20;
-
-		g.setColor(Color.blue);
-		g.fillRect(0, 0, w, h);
-
-		g.setColor(Color.green);
-		int horizon1 = 2 * h / 3;
-
-		for (int i = 0; i < w / n; i++) {
-			Random rand = new Random();
-			int randomNum = rand.nextInt(10) - 5;
-
-			int horizon2 = horizon1 + randomNum;
-			int[] xpoints = new int[] { n * i, n * i, n * (i + 1), n * (i + 1) };
-			int[] ypoints = new int[] { h, horizon1, horizon2, h };
-			g.fillPolygon(xpoints, ypoints, 4);
-
-			horizon1 = horizon2;
-		}
+		// On initialise la map
+		map = new Carte(g, Ecran);
 
 		// dessine TOUS les objets dans le buffer
 		for (int k = 0; k < Objects.size(); k++) {

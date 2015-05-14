@@ -1,19 +1,20 @@
-import java.awt.Graphics;
+import java.awt.Rectangle;
 
 public class Bombe extends Object {
 
-	public static int puissance = 0;
-	public double vitesse;
+	public static int dommage;
+	public static double vitesse;
 	public static String NomImage = "Bombe.png";
-	public boolean actif;
 
-	public Bombe(String nom, int l, int h, float x, float y, int angle,
-			int force, int joueur, double avitesse) {
+	public Bombe(int ax, int ay, int angle, int avitesse, Rectangle aframe, String nom, int joueur) {
 
-		super(nom, l, h, x, y, avitesse, force, angle, joueur, NomImage);
+		super(ax, ay, 0, 0, 10, NomImage, aframe, nom, joueur);
 
-		this.vitesse = avitesse;
-		this.actif = true;
+		if (nom.equals("bombe")) {
+			dommage = 50;
+		} else if (nom.equals("obus")) {
+			dommage = 100;
+		}
 	}
 
 	double dx;
