@@ -7,6 +7,7 @@ import javax.imageio.ImageIO;
 
 public abstract class Object {
 
+	//cadre représentant la fenetre totale (avec les barres)
 	Rectangle aframe;
 	// position haut gauche de l'objet
 	int x, y;
@@ -32,13 +33,14 @@ public abstract class Object {
 	}
 
 	// Constructeur initialise les attributs
-	public Object(int ax, int ay, float adx, float ady, float avitesse,	String NomImage, Rectangle aframe, String anom, int ajoueur) {
+	public Object(int ax, int ay, float adx, float ady, float avitesse,
+			String NomImage, Rectangle aframe, String anom, int ajoueur) {
 		x = ax;
 		y = ay;
 		dx = adx;
 		dy = ady;
 		vitesse = avitesse;
-		
+
 		// Test si l'image est bien presente
 		try {
 			image = ImageIO.read(new File(NomImage));
@@ -49,7 +51,7 @@ public abstract class Object {
 			System.exit(0);
 		}
 		// Contient la hauteur et largeur de l'image
-		
+
 		h = image.getHeight(null);
 		l = image.getWidth(null);
 		limites = new Rectangle(ax, ay, l, h);
@@ -59,7 +61,8 @@ public abstract class Object {
 		joueur = ajoueur;
 	}
 
-	// Dessine l'image, est dans la classe abstraite pour pouvoir se repercuter au classe filles
+	// Dessine l'image, est dans la classe abstraite pour pouvoir se repercuter
+	// au classe filles
 	// On a plus qu'a  parcourir la liste d'elements et tous les dessiner
 	public void draw(long t, Graphics g) {
 		g.drawImage(image, x, y, null);
@@ -70,7 +73,7 @@ public abstract class Object {
 		return limites.intersects(O.limites);
 	}
 
-	//Methode qui gere le mouvement des objets
-	//Abstraite car le mouvement depend du type d'objet
+	// Methode qui gere le mouvement des objets
+	// Abstraite car le mouvement depend du type d'objet
 	abstract void move(long t);
 }
