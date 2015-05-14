@@ -2,53 +2,40 @@ import java.awt.Rectangle;
 
 public class Bombe extends Object {
 
-	public static int dommage;
-	public static double vitesse;
-	public static String NomImage = "Bombe.png";
+	static final double GRAVITE = 0.2;
+	static int dommage;
+	static String NomImage = "Bombe.png";
 
-	public Bombe(int ax, int ay, int angle, int avitesse, Rectangle aframe, String nom, int joueur) {
+	public Bombe(int ax, int ay, double angle, int avitesse, Carte map, Rectangle aframe, String nom, int joueur) {
 
-		super(ax, ay, 0, 0, 10, NomImage, aframe, nom, joueur);
+		super(ax, ay, 0, 0, avitesse, NomImage, aframe, map, nom, joueur);
 
+		//on regle les dommages en fonction de la bombe
 		if (nom.equals("bombe")) {
 			dommage = 50;
 		} else if (nom.equals("obus")) {
 			dommage = 100;
 		}
+		
+		//on régle dx et dy en fonction de l'angle
+		// le 0 est à droite, le 180 est à gauche
+		angle = Math.toRadians(angle);
+		dx = (float) Math.cos(angle) * vitesse;
+		dy = (float) Math.sin(angle) * vitesse;
 	}
-
-	double dx;
-	double dy;
-	public static double G;
-
-	public void Shot(double x, double y, Object b) {
-		this.dx = x * Math.cos(b.angle);
-		this.dy = y * Math.sin(b.angle);
-		this.dx = b.vitesse;
-	}
-
-	public void simulate() {
-		dy += G;
-		x += (int) Math.round(dx);
-		y += (int) Math.round(dy);
-		/*
-		 * if(y<=sol){ besoin des coordonnees du sol dy=0; dx=0; y=sol; }
-		 */
-	}
-
-	/*
-	 * public void paint (Graphics g){ besoin image bombe
-	 * g.drawImage(BombeImage,x,y,this); }
-	 */
 
 	public void move(long t) {
-		x = x + (int) (vitesse * dx);
-		y = y + (int) (vitesse * dy);
-		// on test si la bombe montant sort du haut de l'Ã©cran
-		if (y + h < limitesframe.y) {
+		
+		x = x + (int) dx;
+		y = y + (int) dy;
+		dy = (float) (dy + GRAVITE);
+		
+		// on test si la bombe montant sort du haut de l'ecran
+		// La bombe sera supprimee apres
+		if (y <= map.getY(x)) {
 			this.actif = false;
 		}
-		// La bombe sera supprimee apres
+
 		limites.setLocation(x, y);
 	}
 }

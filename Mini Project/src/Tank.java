@@ -7,9 +7,12 @@ public class Tank extends Object {
 	boolean estHumain;
 	static String NomImage = "Tank.png";
 
-	public Tank(Rectangle aframe, String nom, int joueur, boolean Humain) {
-		// REVOIR X ET Y EN FONCTION DE LA MAP
-		super(0, 0, 0, 0, 10, NomImage, aframe, nom, joueur);
+	public Tank(Rectangle aframe, Carte map, String nom, int joueur, boolean Humain) {
+		super(0, 0, 0, 0, 10, NomImage, aframe, map, nom, joueur);
+		
+		//on place le tank aleatoirement mais sur le terrain
+		this.x = (int) (500*Math.random() + 100);
+		this.y = map.getY(x);
 
 		this.vie = 100;
 		this.fuel = 100;

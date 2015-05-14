@@ -26,6 +26,7 @@ public abstract class Object {
 	boolean actif;
 	// joueur auquel l'objet appartient
 	int joueur;
+	Carte map;
 
 	// Constructeur nul mais faut le mettre
 	public Object() {
@@ -34,7 +35,7 @@ public abstract class Object {
 
 	// Constructeur initialise les attributs
 	public Object(int ax, int ay, float adx, float ady, float avitesse,
-			String NomImage, Rectangle aframe, String anom, int ajoueur) {
+			String NomImage, Rectangle aframe, Carte amap, String anom, int ajoueur) {
 		x = ax;
 		y = ay;
 		dx = adx;
@@ -59,6 +60,7 @@ public abstract class Object {
 		nom = anom;
 		actif = true;
 		joueur = ajoueur;
+		map = amap;
 	}
 
 	// Dessine l'image, est dans la classe abstraite pour pouvoir se repercuter

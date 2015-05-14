@@ -12,10 +12,10 @@ public class Carte {
 	public Carte(Graphics g, Rectangle aframe) {
 		int h = (int) aframe.getHeight();
 		int l = (int) aframe.getWidth();
-		int n = w;
+		int n = l;
 
 		g.setColor(Color.blue);
-		g.fillRect(0, 0, w, h);
+		g.fillRect(0, 0, l, h);
 
 		g.setColor(Color.green);
 		int horizon = 2 * h / 3;
@@ -23,7 +23,7 @@ public class Carte {
 		/*
 		 * METHODE DE STANY, A REVOIR
 		 * 
-		 * for (int i = 0; i < w / n; i++) { Random rand = new Random(); int
+		 * for (int i = 0; i < l / n; i++) { Random rand = new Random(); int
 		 * randomNum = rand.nextInt(10) - 5;
 		 * 
 		 * int horizon2 = horizon + randomNum; int[] xpoints = new int[] { n *
