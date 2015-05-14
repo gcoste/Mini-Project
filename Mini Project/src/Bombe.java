@@ -51,5 +51,6 @@ public class Bombe extends Object {
         //La bombe sera supprimé après
         limites.setLocation(x, y);
     }
+System.out.println();
 
 }
