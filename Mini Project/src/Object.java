@@ -14,13 +14,13 @@ public abstract class Object {
     int h, l;
     //Position haut gauche de l'objet
     int x, y;
-    //direction de déplacement
+    //direction de deplacement
     float dx, dy;
     public float vitesse;
     public static Image image;
     //limites de l'objet lui-même
     public Rectangle limites;
-    //limites de l'écran
+    //limites de l'ecran
     public Rectangle limitesframe;
     //L'objet est-il actif
     boolean actif;
@@ -60,8 +60,8 @@ public abstract class Object {
         actif = true;
     }
 
-    // Dessine l'image, est dans la classe abstraite pour pouvoir se répercuter au classe filles
-    //On a plus qu'à parcourir la liste d'éléments et tous les dessiner
+    // Dessine l'image, est dans la classe abstraite pour pouvoir se repercuter au classe filles
+    //On a plus qu'a� parcourir la liste d'elements et tous les dessiner
     public void draw(long t, Graphics g) {
         g.drawImage(image, x, y, null);
     }
@@ -72,8 +72,8 @@ public abstract class Object {
     }
 }
 
-//Méthode qui gère le mouvement des objets
-//Abstraite car le mouvement dépend du type d'objet
+//Methode qui gere le mouvement des objets
+//Abstraite car le mouvement depend du type d'objet
 abstract class move {
     int x;
     int y;

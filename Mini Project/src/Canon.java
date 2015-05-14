@@ -19,7 +19,7 @@ public class Canon {
 
 	}
 
-	public void deplacement() { // dépend de l'angle peut etre pas utile ?//
+	public void deplacement() { // depend de l'angle peut etre pas utile ?//
 
 	}
 
