@@ -3,7 +3,7 @@ import java.awt.*;
 
 public class Tank extends Objet {
 	Canon canon;
-	double angle;
+	float angle;
 	float vie;
 	float fuel;
 
@@ -44,14 +44,10 @@ public class Tank extends Objet {
 				x = limitesframe.x;
 			} else if (x + l > limitesframe.x + limitesframe.width) {
 				x = limitesframe.x + limitesframe.width - l;
-			}
+		}
 		}
 
 		// On place le rectangle de limites sur l'image
 		limites.setLocation((int) x, (int) y);
-	}
-
-	public void touche(Bombe obus) {
-		vie -= obus.dommage; // A REVOIR
 	}
 }

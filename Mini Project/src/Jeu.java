@@ -47,14 +47,19 @@ public class Jeu extends JFrame {
 	boolean finJeu;
 	boolean finTour;
 	int joueurActif;
-	long debutTour;
+
 	int vent;
+
+	long force;
 
 	public Jeu() {
 		finJeu = false;
 
 		temps = 0;
 		tempsTour = 0;
+		joueurActif = 0;
+
+		force = 50;
 
 		setTitle("Tanks");
 
@@ -151,8 +156,7 @@ public class Jeu extends JFrame {
 
 	public void boucle_principale_jeu() {
 		if (!finTour && tempsTour / 10 < 30) {
-
-			int i = 2;
+			int i = joueurActif;
 
 			if (ToucheGauche) {
 				Joueurs[i].moveGauche();
@@ -169,7 +173,8 @@ public class Jeu extends JFrame {
 			}
 
 			if (ToucheEspace) {
-				Joueurs[i].tire(100, temps);
+				Joueurs[i].tire(force, temps);
+				finTour = true;
 			}
 
 			for (int k = 0; k < Objets.size(); k++) {
@@ -186,12 +191,21 @@ public class Jeu extends JFrame {
 					k--;
 				}
 			}
-
-			// force le rafraichissement de l'image et le dessin de l'objet
-			repaint();
-		} else {
-			// passage au joueur suivant
+		} else { // passage au joueur suivant
+			Joueurs[joueurActif].fixe();
+			
+			if (joueurActif + 1 == nombreJoueurs) {
+				joueurActif = 0;
+			} else {
+				joueurActif++;
+			}
+			
+			finTour = false;
+			tempsTour = 0;
 		}
+
+		// force le rafraichissement de l'image et le dessin de l'objet
+		repaint();
 	}
 
 	public static class Bandeau extends JFrame {
@@ -284,9 +298,6 @@ public class Jeu extends JFrame {
 			ToucheEchap = false;
 		}
 	}
-
-	// Classe interne a la classe jeu, elle peut modifier les attributs de la
-	// classe jeu (ici temps nous interesse)
 
 	private class TimerAction implements ActionListener {
 		// ActionListener appelee toutes les 100 millisecondes comme demande a
