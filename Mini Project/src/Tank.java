@@ -18,11 +18,11 @@ public class Tank extends Objet {
 
 	public Tank(Rectangle aframe, Carte map, String nom, int joueur,
 			String acouleur, boolean Humain) {
-		super(0, 0, 0, 0, 10, NomImage, aframe, map, nom, joueur);
+		super(0, 0, 0, 0, 2, NomImage, aframe, map, nom, joueur);
 
 		// on place le tank aleatoirement mais sur le terrain
-		this.x = (int) (1300 * Math.random() + 100) - limites.width / 2;
-		this.y = map.getY(x) - limites.height;
+		this.x = (int) ((aframe.width-100) * Math.random() + 50) - limites.width / 2;
+		this.y = map.getY(x+limites.width/2) - limites.height;
 
 		switch (joueur) {
 		case (0):
@@ -81,10 +81,10 @@ public class Tank extends Objet {
 	public void move(long t) {
 		if (fuel > 0) {
 			x = x + (int) (vitesse * dx);
-			y = y + (int) (vitesse * dy);
+			y = map.getY(x+limites.width/2) - limites.height;
 
 			// PREVOIR UN COEFFICIENT
-			fuel -= Math.sqrt(dx + dy) * vitesse;
+			fuel -= 0.1*Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * vitesse;
 
 			// On test si on a pas atteint les bords de l'ecran, si c'est le cas
 			// on se remet sur le bord
@@ -92,12 +92,6 @@ public class Tank extends Objet {
 				x = limitesframe.x;
 			} else if (x + l > limitesframe.x + limitesframe.width) {
 				x = limitesframe.x + limitesframe.width - l;
-			}
-
-			if (y < limitesframe.y) {
-				y = limitesframe.y;
-			} else if (y + h > limitesframe.y + limitesframe.height) {
-				y = limitesframe.y + limitesframe.height - h;
 			}
 		}
 

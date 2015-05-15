@@ -1,11 +1,11 @@
-/move.class
 /Bombe.class
 /Canon.class
+/Carte.class
 /Jeu$Bandeau.class
 /Jeu$Jeu_this_keyAdapter.class
 /Jeu$TimerAction.class
 /Jeu.class
 /LeMain.class
-/map.class
-/Carte.class
+/Mini-Project.jpr
 /Objet.class
+/Tank.class
