@@ -8,20 +8,86 @@ public class Carte {
 	int[] horizon;
 
 	public Carte(Rectangle aframe) {
-		int h = (int) aframe.height;
+		int h = aframe.height;
+		int l = aframe.width;
 
-		horizon = new int[aframe.width];
+		int degre = (int) (20 * Math.random() + 1);
 
-		horizon[0] = (int) (7 * h / 10 + h / 10 * Math.random());
+		double[] polynome = new double[degre];
 
-		for (int i = 0; i < horizon.length - 1; i++) {
-			horizon[i + 1] = horizon[i] + (int) (4 * Math.random() - 2);
+		for (int i = 0; i < degre; i++) {
+			polynome[i] = (l * 2) / degre * Math.random() + i * (l * 2) / degre;
+		}
 
-			if (horizon[i + 1] > 19 * h / 20) {
-				horizon[i + 1] = 19 * h / 20;
-			} else if (horizon[i + 1] < 100) {
-				horizon[i + 1] = 100;
+		double[] horizonTemp = new double[l];
+		double max = 0;
+		double min = 0;
+
+		for (int i = 0; i < l; i++) {
+			horizonTemp[i] = calculPolynome(i + (int) (l / 2), polynome);
+
+			if (max < horizonTemp[i]) {
+				max = horizonTemp[i];
 			}
+
+			if (min > horizonTemp[i]) {
+				min = horizonTemp[i];
+			}
+		}
+
+		for (int i = 0; i < horizonTemp.length; i++) {
+			horizonTemp[i] -= min;
+		}
+
+		max -= min;
+
+		for (int i = 0; i < horizonTemp.length; i++) {
+			horizonTemp[i] = (horizonTemp[i] / max) * (h - 400) + 200;
+		}
+
+		horizon = new int[l];
+
+		for (int i = 0; i < horizonTemp.length; i++) {
+			horizon[i] = (int) horizonTemp[i];
+		}
+
+		double[] alea = new double[l];
+		alea[0] = 0;
+
+		int n = 10;
+
+		for (int i = 0; i < alea.length; i = i + n) {
+			double ecart = 2 * Math.random() - 1;
+
+			for (int k = 0; k < n && (i + k + 1) < alea.length; k++) {
+				alea[i + k + 1] = alea[i + k] + (ecart * (n + 1) / n);
+			}
+		}
+
+		for (int i = 0; i < alea.length; i++) {
+			horizon[i] += (int) alea[i];
+		}
+
+		max = min = horizon[0];
+
+		for (int i = 0; i < l; i++) {
+			if (max < horizon[i]) {
+				max = horizon[i];
+			}
+
+			if (min > horizon[i]) {
+				min = horizon[i];
+			}
+		}
+
+		for (int i = 0; i < horizon.length; i++) {
+			horizon[i] -= min;
+		}
+
+		max -= min;
+
+		for (int i = 0; i < horizon.length; i++) {
+			horizon[i] = (int) (horizon[i] / max) * (h - 400) + 300;
 		}
 	}
 
@@ -42,6 +108,14 @@ public class Carte {
 
 	public float getY(float x) {
 		return horizon[(int) x];
+	}
+
+	public double calculPolynome(double x, double[] polynome) {
+		double sum = 1;
+		for (int p = 0; p < polynome.length; p++) {
+			sum += sum * (x - polynome[p]);
+		}
+		return sum;
 	}
 
 }
