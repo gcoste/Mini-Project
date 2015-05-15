@@ -77,7 +77,7 @@ public class Joueur {
 		if (t > canIShot + debitCanon) {
 			Bombe obus = new Bombe(tank, 100 * jeu.TEMPS * 1.3, "obus");
 			jeu.Objets.add(obus);
-			
+
 			canIShot = t;
 		}
 	}
