@@ -26,7 +26,7 @@ public class Carte {
 		}
 	}
 
-	public void paint(Rectangle aframe, Graphics buffer) {
+	public void draw(Rectangle aframe, Graphics buffer) {
 		// Color random = new Color((int)(Math.random()*255),
 		// (int)(Math.random()*255), (int)(Math.random()*255));
 
@@ -42,8 +42,8 @@ public class Carte {
 		}
 	}
 
-	public int getY(int x) {
-		return horizon[x];
+	public float getY(float x) {
+		return horizon[(int) x];
 	}
 
 }

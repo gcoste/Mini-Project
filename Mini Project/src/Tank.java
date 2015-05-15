@@ -5,8 +5,9 @@ import javax.imageio.ImageIO;
 
 public class Tank extends Objet {
 	Canon canon;
-	double vie;
-	double fuel;
+	double angle;
+	float vie;
+	float fuel;
 	boolean estHumain;
 	Color couleur;
 	static String NomImage = "Tank_bleu.png";
@@ -18,11 +19,13 @@ public class Tank extends Objet {
 
 	public Tank(Rectangle aframe, Carte map, String nom, int joueur,
 			String acouleur, boolean Humain) {
-		super(0, 0, 0, 0, 2, NomImage, aframe, map, nom, joueur);
+		super(0, 0, 0, 0, 0.05, NomImage, aframe, map, nom, joueur);
 
 		// on place le tank aleatoirement mais sur le terrain
-		this.x = (int) ((aframe.width-100) * Math.random() + 50) - limites.width / 2;
+		this.x = (float) ((aframe.width-100) * Math.random() + 50) - limites.width / 2;
 		this.y = map.getY(x+limites.width/2) - limites.height;
+		
+		this.angle = 90;
 
 		switch (joueur) {
 		case (0):
@@ -71,7 +74,7 @@ public class Tank extends Objet {
 		}
 
 		// on cree le canon du tank
-		canon = new Canon(this, aframe, map, joueur, couleur);
+		canon = new Canon(this);
 
 		this.vie = 100;
 		this.fuel = 100;
@@ -80,10 +83,9 @@ public class Tank extends Objet {
 
 	public void move(long t) {
 		if (fuel > 0) {
-			x = x + (int) (vitesse * dx);
+			x = x + (float) (vitesse * dx);
 			y = map.getY(x+limites.width/2) - limites.height;
 
-			// PREVOIR UN COEFFICIENT
 			fuel -= 0.1*Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * vitesse;
 
 			// On test si on a pas atteint les bords de l'ecran, si c'est le cas
@@ -96,7 +98,7 @@ public class Tank extends Objet {
 		}
 
 		// On place le rectangle de limites sur l'image
-		limites.setLocation(x, y);
+		limites.setLocation((int) x, (int) y);
 	}
 
 	public void touche(Bombe obus) {
