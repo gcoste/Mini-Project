@@ -1,10 +1,11 @@
 import java.awt.*;
 
 public class Canon extends Objet {
+	Tank tank;
+	
 	// l'image ne sera pas utilisée mais obligation de la mettre si on veut
 	// créer le canon
-	Tank tank;
-	static String NomImage = "Canon.png";
+	static String NomImage = "Bombe.png";
 
 	public Canon(Tank atank) {
 		// (x,y) represente le point du bas du rectangle representant le

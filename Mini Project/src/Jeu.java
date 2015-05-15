@@ -193,13 +193,15 @@ public class Jeu extends JFrame {
 			}
 		} else { // passage au joueur suivant
 			Joueurs[joueurActif].fixe();
-			
-			if (joueurActif + 1 == nombreJoueurs) {
-				joueurActif = 0;
-			} else {
-				joueurActif++;
-			}
-			
+
+			do {
+				if (joueurActif + 1 == nombreJoueurs) {
+					joueurActif = 0;
+				} else {
+					joueurActif++;
+				}
+			} while (!Joueurs[joueurActif].enVie);
+
 			finTour = false;
 			tempsTour = 0;
 		}

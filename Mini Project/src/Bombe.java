@@ -1,13 +1,14 @@
-import java.awt.*;
-
 public class Bombe extends Objet {
 
 	final float GRAVITE = (float) 0.1;
 	int dommage;
 	Tank tank;
+
+	int nbJoueurActifs;
+	Joueur[] JoueursActifs;
 	static String NomImage = "Bombe.png";
 
-	public Bombe(Tank atank, double avitesse, String nom) {
+	public Bombe(Tank atank, double avitesse, String nom, Joueur[] arrayJoueurs) {
 
 		super(0, 0, 0, 0, avitesse, NomImage, atank.limitesframe, atank.map,
 				nom, atank.joueur);
@@ -24,6 +25,17 @@ public class Bombe extends Objet {
 			dommage = 100;
 		}
 
+		nbJoueurActifs = 0;
+		JoueursActifs = new Joueur[arrayJoueurs.length];
+
+		for (int i = 0; i < arrayJoueurs.length; i++) {
+			if (arrayJoueurs[i].enVie) {
+				JoueursActifs[nbJoueurActifs] = arrayJoueurs[i];
+				nbJoueurActifs++;
+				
+			}
+		}
+
 		// on regle dx et dy en fonction de l'angle
 		// le 0 est a droite, le 180 est a gauche
 		dx = (float) (Math.cos(a) * vitesse);
@@ -34,6 +46,16 @@ public class Bombe extends Objet {
 		x = x + dx;
 		y = y - dy;
 		dy = dy - GRAVITE;
+		
+		System.out.println("lol");
+
+		for (int i = 0; i < nbJoueurActifs; i++) {
+			if (this.Collision(JoueursActifs[i].tank)) {
+				this.actif = false;
+			}
+		}
+		
+		System.out.println("lol2");
 
 		// on test si la bombe touche la carte ou les bords du jeu
 		// on la desactive et la bombe sera supprimee apres

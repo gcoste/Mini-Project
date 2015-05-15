@@ -14,6 +14,7 @@ public class Joueur {
 	boolean estHumain;
 	int score;
 	Color couleur;
+	boolean enVie;
 
 	int debitCanon;
 	long canIShot = 0;
@@ -30,6 +31,7 @@ public class Joueur {
 		n = num;
 		nom = anom;
 		estHumain = Humain;
+		enVie = true;
 		debitCanon = (int) (2 * (double) (1 / jeu.TEMPS));
 
 		// on tranforme la couleur en texte en une couleur Java
@@ -75,7 +77,7 @@ public class Joueur {
 
 	public void tire(long force, long t) {
 		if (t > canIShot + debitCanon) {
-			Bombe obus = new Bombe(tank, force * jeu.TEMPS * 1.3, "obus");
+			Bombe obus = new Bombe(tank, force * jeu.TEMPS * 1.3, "obus", jeu.Joueurs);
 			jeu.Objets.add(obus);
 
 			canIShot = t;

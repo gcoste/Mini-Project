@@ -1,6 +1,3 @@
-import java.awt.*;
-
-
 public class Tank extends Objet {
 	Canon canon;
 	float angle;
@@ -44,7 +41,11 @@ public class Tank extends Objet {
 				x = limitesframe.x;
 			} else if (x + l > limitesframe.x + limitesframe.width) {
 				x = limitesframe.x + limitesframe.width - l;
+			}
 		}
+		
+		if (vie <=0) {
+			actif = false;
 		}
 
 		// On place le rectangle de limites sur l'image
