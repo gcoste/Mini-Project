@@ -73,9 +73,9 @@ public class Joueur {
 		canon = tank.canon;
 	}
 
-	public void tire(long t) {
+	public void tire(long force, long t) {
 		if (t > canIShot + debitCanon) {
-			Bombe obus = new Bombe(tank, 100 * jeu.TEMPS * 1.3, "obus");
+			Bombe obus = new Bombe(tank, force * jeu.TEMPS * 1.3, "obus");
 			jeu.Objets.add(obus);
 
 			canIShot = t;

@@ -151,7 +151,7 @@ public class Jeu extends JFrame {
 		}
 
 		if (ToucheEspace) {
-			Joueurs[i].tire(temps);
+			Joueurs[i].tire(100, temps);
 		}
 
 		for (int k = 0; k < Objets.size(); k++) {
