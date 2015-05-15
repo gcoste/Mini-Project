@@ -1,26 +1,38 @@
-import java.awt.Rectangle;
+import java.awt.*;
 
-public class Canon {
+public class Canon extends Objet {
+	// l'image ne sera pas utilisée mais obligation de la mettre si on veut
+	// créer le canon
+	Tank tank;
+	static String NomImage = "Canon.png";
 
-	public double x1, y1;
-	public double x2, y2;
-	public static int height = 0;
-	public Rectangle canon;
-	int angle;
+	public Canon(Tank atank) {
+		// (x,y) represente le point du bas du rectangle representant le
+		// canon (le point fixé au tank)
+		super(atank.x + 40, atank.y + 14, 0, 0, 0, NomImage,
+				atank.limitesframe, atank.map, ("Canon_" + atank.nom),
+				atank.joueur);
 
-	public Canon(Tank t, Rectangle canon, int angle) {
-
-		this.x1 = t.y / 2;
-		this.y1 = t.x / 2;
-		this.canon = canon;
-		this.angle = angle;
-		this.x2 = height * Math.cos(angle);
-		this.y2 = height * Math.sin(angle);
-
+		tank = atank;
 	}
 
-	public void deplacement() { // depend de l'angle peut etre pas utile ?//
-
+	public void move(long t) {
+		x = tank.x + 40;
+		y = tank.y + 14;
 	}
 
+	public void draw(Graphics buffer) {
+		double a = Math.toRadians(tank.angle);
+
+		// Pour accéder aux fonctions graphiques avancées il suffit de
+		// transtyper g
+		Graphics2D g = (Graphics2D) buffer;
+		// g2 permet de définir l’épaisseur des traits ce que ne peut pas faire
+		// g
+		g.setStroke(new BasicStroke(5));
+		g.setColor(tank.joueur.couleur);
+
+		g.drawLine((int) (x + Math.cos(a) * 15), (int) (y - Math.sin(a) * 15),
+				(int) (x + Math.cos(a) * 40), (int) (y - Math.sin(a) * 40));
+	}
 }
