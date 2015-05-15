@@ -23,7 +23,8 @@ public abstract class Objet {
 	// l'objet est-il actif
 	boolean actif;
 	// joueur auquel l'objet appartient
-	int joueur;
+	Joueur joueur;
+	// carte sur lequel evolue l'objet
 	Carte map;
 
 	// Constructeur nul mais faut le mettre
@@ -34,7 +35,7 @@ public abstract class Objet {
 	// Constructeur initialise les attributs
 	public Objet(float ax, float ay, float adx, float ady, double avitesse,
 			String NomImage, Rectangle aframe, Carte amap, String anom,
-			int ajoueur) {
+			Joueur ajoueur) {
 		x = ax;
 		y = ay;
 		dx = adx;
@@ -49,8 +50,8 @@ public abstract class Objet {
 			System.out.println("Mettre les images dans le repertoire source");
 			System.exit(0);
 		}
+		
 		// Contient la hauteur et largeur de l'image
-
 		h = image.getHeight(null);
 		l = image.getWidth(null);
 		limites = new Rectangle((int) ax, (int) ay, l, h);
