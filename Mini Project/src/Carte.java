@@ -87,7 +87,7 @@ public class Carte {
 		max -= min;
 
 		for (int i = 0; i < horizon.length; i++) {
-			horizon[i] = (int) (horizon[i] / max) * (h - 400) + 300;
+			horizon[i] = (int) ((horizon[i] / max) * (h - 500) + 300);
 		}
 	}
 

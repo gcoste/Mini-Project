@@ -13,10 +13,17 @@ public class Jeu extends JFrame {
 	LinkedList<Objet> Objets;
 	Joueur[] Joueurs = new Joueur[nombreJoueurs];
 
+	// timer qui regit le jeu
 	Timer timer;
+	// timer qui regit le passage des tours
+	Timer timerTour;
+	// compteurs de temps associés aux timers
 	long temps;
+	long tempsTour;
+
 	BufferedImage ArrierePlan;
 	Graphics buffer;
+
 	boolean ToucheHaut;
 	boolean ToucheBas;
 	boolean ToucheGauche;
@@ -37,11 +44,17 @@ public class Jeu extends JFrame {
 
 	final double TEMPS = 0.1;
 
-	boolean finjeu;
+	boolean finJeu;
+	boolean finTour;
+	int joueurActif;
+	long debutTour;
 	int vent;
 
 	public Jeu() {
-		finjeu = false;
+		finJeu = false;
+
+		temps = 0;
+		tempsTour = 0;
 
 		setTitle("Tanks");
 
@@ -59,8 +72,6 @@ public class Jeu extends JFrame {
 
 		// On ajoute l'ecouteur de clavier qui se refere a cette classe meme
 		this.addKeyListener(new Jeu_this_keyAdapter(this));
-
-		temps = 0;
 
 		// Aucune touche n'est appuyee, donc tout est false
 		ToucheHaut = false;
@@ -109,8 +120,13 @@ public class Jeu extends JFrame {
 
 		// On initialise le timer afin d'avoir 60 frames par seconde
 		timer = new Timer((int) (100 * TEMPS), new TimerAction());
-		// On lance le timer
+
+		// On initialise le timer des tours (qui bat tout les 100ms)
+		timerTour = new Timer(100, new TimerTourAction());
+
+		// On lance les timers
 		timer.start();
+		timerTour.start();
 
 		setVisible(true);
 	}
@@ -134,43 +150,48 @@ public class Jeu extends JFrame {
 	}
 
 	public void boucle_principale_jeu() {
-		int i = 2;
+		if (!finTour && tempsTour / 10 < 30) {
 
-		if (ToucheGauche) {
-			Joueurs[i].moveGauche();
-		} else if (ToucheDroite) {
-			Joueurs[i].moveDroite();
-		} else {
-			Joueurs[i].fixe();
-		}
+			int i = 2;
 
-		if (ToucheHaut) {
-			Joueurs[i].anglePlus();
-		} else if (ToucheBas) {
-			Joueurs[i].angleMoins();
-		}
-
-		if (ToucheEspace) {
-			Joueurs[i].tire(100, temps);
-		}
-
-		for (int k = 0; k < Objets.size(); k++) {
-			Objet O = (Objet) Objets.get(k);
-			O.move(temps);
-		}
-
-		// on balaye la liste et supprime tous les objets inactifs
-		// ainsi on ne paindra que les objets encore actifs
-		for (int k = 0; k < Objets.size(); k++) {
-			Objet O = (Objet) Objets.get(k);
-			if (O.actif == false) {
-				Objets.remove(k);
-				k--;
+			if (ToucheGauche) {
+				Joueurs[i].moveGauche();
+			} else if (ToucheDroite) {
+				Joueurs[i].moveDroite();
+			} else {
+				Joueurs[i].fixe();
 			}
-		}
 
-		// force le rafraichissement de l'image et le dessin de l'objet
-		repaint();
+			if (ToucheHaut) {
+				Joueurs[i].anglePlus();
+			} else if (ToucheBas) {
+				Joueurs[i].angleMoins();
+			}
+
+			if (ToucheEspace) {
+				Joueurs[i].tire(100, temps);
+			}
+
+			for (int k = 0; k < Objets.size(); k++) {
+				Objet O = (Objet) Objets.get(k);
+				O.move(temps);
+			}
+
+			// on balaye la liste et supprime tous les objets inactifs
+			// ainsi on ne paindra que les objets encore actifs
+			for (int k = 0; k < Objets.size(); k++) {
+				Objet O = (Objet) Objets.get(k);
+				if (O.actif == false) {
+					Objets.remove(k);
+					k--;
+				}
+			}
+
+			// force le rafraichissement de l'image et le dessin de l'objet
+			repaint();
+		} else {
+			// passage au joueur suivant
+		}
 	}
 
 	public static class Bandeau extends JFrame {
@@ -274,6 +295,15 @@ public class Jeu extends JFrame {
 			// Lance boucle_principale_jeu toutes les 100 ms
 			boucle_principale_jeu();
 			temps++;
+		}
+	}
+
+	private class TimerTourAction implements ActionListener {
+		// ActionListener appelee toutes les 100 millisecondes comme demande a
+		// l'initialisation du timer
+		public void actionPerformed(ActionEvent e) {
+			// Lance boucle_principale_jeu toutes les 100 ms
+			tempsTour++;
 		}
 	}
 
