@@ -64,6 +64,7 @@ public class Bombe extends Objet {
 			this.actif = false;
 		} else if (y >= map.getY(x)) {
 			this.actif = false;
+			map.destructionMap(this.dommage, (int) x);
 		}
 
 		limites.setLocation((int) x, (int) y);

@@ -119,7 +119,7 @@ public class Carte extends Objet {
 		}
 	}
 
-	public void draw(Rectangle aframe, Graphics buffer) {
+	public void drawHorizon(Rectangle aframe, Graphics buffer) {
 		// Color random = new Color((int)(Math.random()*255),
 		// (int)(Math.random()*255), (int)(Math.random()*255));
 
@@ -133,6 +133,17 @@ public class Carte extends Objet {
 			buffer.fillRect(i, horizon[i], 1, aframe.height - horizon[i]);
 		}
 	}
+
+	public void destructionMap(int rayon, int x) {
+		int min = Math.max(0, x- rayon);
+		int max = Math.min(limitesframe.width, x+rayon);
+		
+		for (int i = min ; i < max ; i++) {
+				double h =  (int) (Math.sqrt(Math.pow(rayon, 2)-Math.pow(x-i, 2)));
+				
+				horizon[i] = horizon[i] + 2 * (int) h / 3;
+			}
+		}
 
 	// methode qui donne le y de la carte pour n'importe quel x (permet de
 	// placer les objets sur la carte)

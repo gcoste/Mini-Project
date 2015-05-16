@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.util.LinkedList;
 
 public class Jeu extends JFrame {
-	int nombreJoueurs = 7;
+	int nombreJoueurs = 2;
 
 	// Liste de tous les objets du jeu (tanks, bombes, canon)
 	LinkedList<Objet> Objets;
@@ -190,17 +190,17 @@ public class Jeu extends JFrame {
 		// on dessine d'abord le fond
 		map.draw(temps, buffer);
 		// la carte possede sa propre methode d'affichage
-		map.draw(Ecran, buffer);
+		map.drawHorizon(Ecran, buffer);
 
-		Font fonte2 = new Font("Comic Sans MS", 1, 20);
+		Font comic = new Font("Comic Sans MS", 1, 20);
 
-		buffer.setFont(fonte2);
+		buffer.setFont(comic);
 		buffer.setColor(Color.green);
-		buffer.drawString("50", 20, 150);
+		buffer.drawString("Vie : " + Joueurs[joueurQuiJoue].tank.vie, 20, 150);
+
+		buffer.drawString("Temps : " + (int) (tempsTour / 10), 20, 50);
 
 		// dessine tous les objets dans le buffer
-		// on ne dessine pas l'objet 0 qui correspond au fond puisqu'il
-		// viendrait ecraser la carte
 		for (int k = 1; k < Objets.size(); k++) {
 			Objet O = (Objet) Objets.get(k);
 
