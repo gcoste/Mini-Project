@@ -195,9 +195,9 @@ public class Jeu extends JFrame {
 		String sVent = new String("");
 
 		for (int i = 0; i < (int) 100 * (Math.abs(vent)); i++) {
-			if ((int) 100 * vent > 0) {
+			if (Math.round(100 * vent) > 0) {
 				sVent = sVent + ">";
-			} else if ((int) 100 * vent < 0) {
+			} else if (Math.round(100 * vent) < 0) {
 				sVent = sVent + "<";
 			} else {
 				sVent = "-";
@@ -211,7 +211,7 @@ public class Jeu extends JFrame {
 		buffer.setColor(Color.black);
 		buffer.drawString("Joueur " + Joueurs[joueurQuiJoue].n, 20, 50);
 		buffer.drawString("Vie : " + Joueurs[joueurQuiJoue].tank.vie, 20, 80);
-		buffer.drawString("Fuel : " + ((int) (10*Joueurs[joueurQuiJoue].tank.fuel))*0.1, 20, 110);
+		buffer.drawString("Fuel : " + (int) Joueurs[joueurQuiJoue].tank.fuel, 20, 110);
 		buffer.drawString("Vent : " + sVent, 20, 170);
 		buffer.drawString("Temps : " + (30 - (int) (tempsTour / 10)), 20, 140);
 
