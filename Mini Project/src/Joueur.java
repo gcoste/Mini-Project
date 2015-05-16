@@ -16,9 +16,6 @@ public class Joueur {
 	Color couleur;
 	boolean enVie;
 
-	int debitCanon;
-	long canIShot = 0;
-
 	Tank tank;
 	Canon canon;
 
@@ -32,7 +29,6 @@ public class Joueur {
 		nom = anom;
 		estHumain = Humain;
 		enVie = true;
-		debitCanon = (int) (2 * (double) (1 / jeu.TEMPS));
 
 		// on tranforme la couleur en texte en une couleur Java
 		switch (n) {
@@ -76,12 +72,9 @@ public class Joueur {
 	}
 
 	public void tire(long force, long t) {
-		if (t > canIShot + debitCanon) {
-			Bombe obus = new Bombe(tank, force * jeu.TEMPS * 1.3, "obus", jeu.Joueurs);
-			jeu.Objets.add(obus);
-
-			canIShot = t;
-		}
+		Bombe obus = new Bombe(tank, force * jeu.TEMPS * 1.3, "obus",
+				jeu.Joueurs);
+		jeu.Objets.add(obus);
 	}
 
 	public void moveGauche() {
@@ -107,4 +100,14 @@ public class Joueur {
 			tank.angle -= 5 * jeu.TEMPS;
 		}
 	}
+
+	public void touche(Bombe bombe) {
+		tank.vie -= bombe.dommage / 10;
+
+		if (tank.vie <= 0) {
+			tank.actif = false;
+			enVie = false;
+		}
+	}
+
 }

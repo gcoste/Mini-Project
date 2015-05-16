@@ -5,7 +5,7 @@ public class Canon extends Objet {
 	
 	// l'image ne sera pas utilisée mais obligation de la mettre si on veut
 	// créer le canon
-	static String NomImage = "Bombe.png";
+	static String NomImage = "Canon.png";
 
 	public Canon(Tank atank) {
 		// (x,y) represente le point du bas du rectangle representant le

@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.util.LinkedList;
 
 public class Jeu extends JFrame {
-	int nombreJoueurs = 7;
+	int nombreJoueurs = 2;
 
 	// Liste de tous les objets du jeu (tanks, bombes, canon)
 	LinkedList<Objet> Objets;
@@ -29,6 +29,7 @@ public class Jeu extends JFrame {
 	boolean ToucheGauche;
 	boolean ToucheDroite;
 	boolean ToucheEspace;
+	boolean ToucheEntre;
 	boolean ToucheEchap;
 
 	Rectangle Ecran;
@@ -46,7 +47,9 @@ public class Jeu extends JFrame {
 
 	boolean finJeu;
 	boolean finTour;
+	boolean passageJoueur;
 	int joueurActif;
+	int passageTour;
 
 	int vent;
 
@@ -54,6 +57,8 @@ public class Jeu extends JFrame {
 
 	public Jeu() {
 		finJeu = false;
+		finTour = false;
+		passageJoueur = false;
 
 		temps = 0;
 		tempsTour = 0;
@@ -84,6 +89,7 @@ public class Jeu extends JFrame {
 		ToucheGauche = false;
 		ToucheDroite = false;
 		ToucheEspace = false;
+		ToucheEntre = false;
 		ToucheEchap = false;
 		/*
 		 * L'ecran est notre fenetre de jeu, on doit donc prendre la taille de
@@ -174,24 +180,9 @@ public class Jeu extends JFrame {
 
 			if (ToucheEspace) {
 				Joueurs[i].tire(force, temps);
-				finTour = true;
+				finTour = passageJoueur = true;
 			}
-
-			for (int k = 0; k < Objets.size(); k++) {
-				Objet O = (Objet) Objets.get(k);
-				O.move(temps);
-			}
-
-			// on balaye la liste et supprime tous les objets inactifs
-			// ainsi on ne paindra que les objets encore actifs
-			for (int k = 0; k < Objets.size(); k++) {
-				Objet O = (Objet) Objets.get(k);
-				if (O.actif == false) {
-					Objets.remove(k);
-					k--;
-				}
-			}
-		} else { // passage au joueur suivant
+		} else if (passageJoueur) { // passage au joueur suivant
 			Joueurs[joueurActif].fixe();
 
 			do {
@@ -199,11 +190,39 @@ public class Jeu extends JFrame {
 					joueurActif = 0;
 				} else {
 					joueurActif++;
+					passageTour++;
 				}
-			} while (!Joueurs[joueurActif].enVie);
+			} while (!Joueurs[joueurActif].enVie & passageTour < nombreJoueurs);
 
-			finTour = false;
-			tempsTour = 0;
+			passageTour = 0;
+
+			if (passageTour == nombreJoueurs) {
+				finJeu = true;
+				System.exit(0);
+			}
+
+			passageJoueur = false;
+		} else {
+			if (ToucheEntre) {
+				System.out.println("lol");
+				finTour = false;
+				tempsTour = 0;
+			}
+		}
+
+		for (int k = 0; k < Objets.size(); k++) {
+			Objet O = (Objet) Objets.get(k);
+			O.move(temps);
+		}
+
+		// on balaye la liste et supprime tous les objets inactifs
+		// ainsi on ne paindra que les objets encore actifs
+		for (int k = 0; k < Objets.size(); k++) {
+			Objet O = (Objet) Objets.get(k);
+			if (O.actif == false) {
+				Objets.remove(k);
+				k--;
+			}
 		}
 
 		// force le rafraichissement de l'image et le dessin de l'objet
@@ -272,6 +291,8 @@ public class Jeu extends JFrame {
 			ToucheBas = true;
 		} else if (code == 32) {
 			ToucheEspace = true;
+		} else if (code == 10) {
+			ToucheEntre = true;
 		} else if (code == 27) {
 			ToucheEchap = true;
 
@@ -296,6 +317,8 @@ public class Jeu extends JFrame {
 			ToucheBas = false;
 		} else if (code == 32) {
 			ToucheEspace = false;
+		} else if (code == 10) {
+			ToucheEntre = false;
 		} else if (code == 27) {
 			ToucheEchap = false;
 		}

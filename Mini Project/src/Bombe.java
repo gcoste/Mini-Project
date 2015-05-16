@@ -46,16 +46,13 @@ public class Bombe extends Objet {
 		x = x + dx;
 		y = y - dy;
 		dy = dy - GRAVITE;
-		
-		System.out.println("lol");
 
 		for (int i = 0; i < nbJoueurActifs; i++) {
 			if (this.Collision(JoueursActifs[i].tank)) {
 				this.actif = false;
+				JoueursActifs[i].touche(this);
 			}
 		}
-		
-		System.out.println("lol2");
 
 		// on test si la bombe touche la carte ou les bords du jeu
 		// on la desactive et la bombe sera supprimee apres
