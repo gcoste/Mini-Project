@@ -9,12 +9,16 @@ public class Tank extends Objet {
 		System.out.println("je suis nul");
 	}
 
-	public Tank(Joueur joueur, double avitesse, String NomImage) {
+	public Tank(Joueur joueur, int placement, int nombreJoueurs,
+			double avitesse, String NomImage) {
 		super(0, 0, 0, 0, avitesse, NomImage, joueur.limitesframe, joueur.map,
 				("Tank_" + joueur.n), joueur);
 
-		// on place le tank aleatoirement mais sur le terrain
-		this.x = (float) ((joueur.limitesframe.width - 100) * Math.random() + 50)
+		// on divise la taile du terrain par le nombre de joueur afin de placer
+		// chaque tank dans un secteur
+		this.x = (float) ((limitesframe.width / nombreJoueurs - 100)
+				* Math.random() + 50 + placement
+				* (limitesframe.width / nombreJoueurs))
 				- limites.width / 2;
 		this.y = map.getY(x + limites.width / 2) - limites.height;
 
@@ -43,8 +47,8 @@ public class Tank extends Objet {
 				x = limitesframe.x + limitesframe.width - l;
 			}
 		}
-		
-		if (vie <=0) {
+
+		if (vie <= 0) {
 			actif = false;
 		}
 

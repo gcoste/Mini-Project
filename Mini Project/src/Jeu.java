@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.util.LinkedList;
 
 public class Jeu extends JFrame {
-	int nombreJoueurs = 3;
+	int nombreJoueurs = 7;
 
 	// Liste de tous les objets du jeu (tanks, bombes, canon)
 	LinkedList<Objet> Objets;
@@ -44,24 +44,23 @@ public class Jeu extends JFrame {
 	 * toujours coherents. Seule la gravite sera a ajuster.
 	 */
 
-	final double TEMPS = 0.1;
+	final float TEMPS = (float) 0.1;
 
+	// ces differents boolean servent au passage de tours
 	boolean finJeu;
-	boolean finTour;
+	boolean finTourParTir;
 	boolean attenteJoueur;
 	boolean passageJoueur;
-	int joueurQuiJoue;
-	int passageTour;
 
+	int joueurQuiJoue;
 	Bombe bombeActive;
 
-	int vent;
-
-	long force;
+	float vent;
+	float force;
 
 	public Jeu() {
 		finJeu = false;
-		finTour = false;
+		finTourParTir = false;
 		attenteJoueur = false;
 		passageJoueur = false;
 
@@ -70,6 +69,7 @@ public class Jeu extends JFrame {
 		joueurQuiJoue = 0;
 
 		force = 50;
+		vent = (float) (0.1*Math.random());
 
 		setTitle("Tanks");
 
@@ -127,9 +127,31 @@ public class Jeu extends JFrame {
 		// On initialise la map
 		map = new Carte(Ecran);
 
+		// on cree deux tableau de nombres aléatoires pour le placement des
+		// tanks
+		int[] placement = new int[nombreJoueurs];
+		// temp va referencer les positions deja utilisee par un tank
+		double[] temp = new double[nombreJoueurs];
+
+		// on rempli temp par les id des joueurs
+		for (int i = 0; i < nombreJoueurs; i++) {
+			temp[i] = i;
+			placement[i] = (int) (nombreJoueurs * Math.random());
+		}
+
+		// on rempli ensuite placement aleatoirement mais en verifiant a chaque
+		// fois que la place n'est pas deja prise
+		for (int i = 0; i < nombreJoueurs; i++) {
+			while (temp[placement[i]] == -1) {
+				placement[i] = (int) (nombreJoueurs * Math.random());
+			}
+
+			temp[placement[i]] = -1;
+		}
+
 		// on cree les joueurs (et ainsi leurs tanks et leurs canons)
 		for (int i = 0; i < nombreJoueurs; i++) {
-			Joueurs[i] = new Joueur(i, null, null, true, this);
+			Joueurs[i] = new Joueur(i, placement[i], nombreJoueurs, null, null, true, map, Ecran, TEMPS, JoueursActifs);
 
 			// on ajoute le tank et son canon a la liste d'objets
 			Objets.add(Joueurs[i].canon);
@@ -139,20 +161,32 @@ public class Jeu extends JFrame {
 			JoueursActifs.add(Joueurs[i]);
 		}
 
-		// On initialise le timer afin d'avoir 60 frames par seconde
+		// On initialise le timer du jeu afin d'avoir un jeu fluide (il bat
+		// idealement toute les 100*TEMPS millisecondes)
 		timer = new Timer((int) (100 * TEMPS), new TimerAction());
 
-		// On initialise le timer des tours (qui bat tout les 100ms)
+		/*
+		 * On initialise le timer des tours (qui bat tout les 100ms). On est
+		 * oblige d'utilise un timer separe puisque que le timer principal ne
+		 * bat plus exactement a l'interval demande une fois qu'on reduit cet
+		 * interval pour obtenir un jeu fluide : en effet, le timer demande trop
+		 * d'effort a l'ordinateur, et commence a battre a un temps un peu plus
+		 * long que prevu. On cree donc un autre timer avec une unite de temps
+		 * plus grosse (100ms) afin que l'ordinateur n'ai pas de mal a le garder au
+		 * rythme demande meme quand celui-ci est tres sollicite.
+		 */
 		timerTour = new Timer(100, new TimerTourAction());
 
 		// On lance les timers
 		timer.start();
 		timerTour.start();
 
+		// on affiche la fenetre enfin prete
 		setVisible(true);
 	}
 
 	public void paint(Graphics g) {
+		// la carte possede sa propre methode d'affichage
 		map.draw(Ecran, buffer);
 
 		// dessine tous les objets dans le buffer
@@ -161,6 +195,8 @@ public class Jeu extends JFrame {
 
 			O.draw(temps, buffer);
 
+			// les canons sont dessines a part puisque leur definition n'est pas
+			// la meme que pour les autres objets (pas d'image)
 			if (O instanceof Tank) {
 				O.joueur.canon.draw(buffer);
 			}
@@ -171,7 +207,13 @@ public class Jeu extends JFrame {
 	}
 
 	public void boucle_principale_jeu() {
-		if (!finTour && tempsTour / 10 < 30) {
+		/*
+		 * on gere le passage des tours avec une condition qui devient fausse a
+		 * la fin de chaque tour. Le tour se termine lorsque le joueur tire ou
+		 * lorsqu'il s'est ecoule 30 secondes. Alors, on passe a la trasition
+		 * entre les tours.
+		 */
+		if (!finTourParTir && tempsTour / 10 < 30) {
 			int i = joueurQuiJoue;
 
 			if (ToucheGauche) {
@@ -189,16 +231,37 @@ public class Jeu extends JFrame {
 			}
 
 			if (ToucheEspace) {
-				bombeActive = Joueurs[i].tire(force, temps);
-				finTour = true;
+				bombeActive = Joueurs[i].tire(force, vent, temps);
+				Objets.add(bombeActive);
+				finTourParTir = true;
 			}
-		} else if (finTour && !passageJoueur && !attenteJoueur) {
-			if (!bombeActive.actif) {
-				passageJoueur = true;
-			}
-		} else if (passageJoueur) { // passage au joueur suivant
+
+		} else if (finTourParTir && !passageJoueur && !attenteJoueur) {
+			// la premiere condition arrete le joueur et verifie que la bombe
+			// tire a bien explose avant de changer de joueur
 			Joueurs[joueurQuiJoue].fixe();
 
+			if (!bombeActive.actif) {
+				passageJoueur = true;
+
+				tempsTour = 0;
+				timerTour.stop();
+			}
+
+		} else if (tempsTour / 10 >= 30) {
+			// la deuxieme condition arrete le joueur dans le cas ou le tour ce
+			// serait termine a cause du temps
+			Joueurs[joueurQuiJoue].fixe();
+
+			finTourParTir = true;
+			passageJoueur = true;
+
+			tempsTour = 0;
+			timerTour.stop();
+
+		} else if (passageJoueur) {
+			// on parcourt ensuite la liste des joueurs encore vivants pour
+			// trouver le joueur suivant
 			if (JoueursActifs.size() > 1) {
 				do {
 					if (joueurQuiJoue + 1 == nombreJoueurs) {
@@ -209,6 +272,7 @@ public class Jeu extends JFrame {
 				} while (!Joueurs[joueurQuiJoue].actif);
 			}
 
+			// si il ne reste plus qu'un seul joueur, le jeu est termine
 			if (JoueursActifs.size() <= 1) {
 				finJeu = true;
 				System.exit(0);
@@ -216,14 +280,19 @@ public class Jeu extends JFrame {
 
 			passageJoueur = false;
 			attenteJoueur = true;
+
 		} else if (attenteJoueur) {
+			// on attend enfin que le joueur ai appuye sur entre pour continuer
 			if (ToucheEntre) {
-				finTour = false;
+				finTourParTir = false;
 				attenteJoueur = false;
-				tempsTour = 0;
+
+				timerTour.start();
 			}
 		}
 
+		// on balaye la liste et on fait bouger tout les objets avec la classe
+		// move qui leur est propre
 		for (int k = 0; k < Objets.size(); k++) {
 			Objet O = (Objet) Objets.get(k);
 			O.move(temps);
@@ -339,10 +408,10 @@ public class Jeu extends JFrame {
 	}
 
 	private class TimerAction implements ActionListener {
-		// ActionListener appelee toutes les 100 millisecondes comme demande a
+		// ActionListener appelee toutes les 10 millisecondes comme demande a
 		// l'initialisation du timer
 		public void actionPerformed(ActionEvent e) {
-			// Lance boucle_principale_jeu toutes les 100 ms
+			// Lance boucle_principale_jeu toute les 10 ms
 			boucle_principale_jeu();
 			temps++;
 		}
@@ -352,7 +421,6 @@ public class Jeu extends JFrame {
 		// ActionListener appelee toutes les 100 millisecondes comme demande a
 		// l'initialisation du timer
 		public void actionPerformed(ActionEvent e) {
-			// Lance boucle_principale_jeu toutes les 100 ms
 			tempsTour++;
 		}
 	}

@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.util.LinkedList;
 
 public class Joueur {
 	// limites de l'ecran
@@ -6,7 +7,7 @@ public class Joueur {
 	// carte sur lequel evolue l'objet
 	Carte map;
 	// permet d'acceder a certaines variables de jeu
-	Jeu jeu;
+	final float TEMPS;
 
 	// identifiant du joueur
 	int n;
@@ -16,14 +17,15 @@ public class Joueur {
 	Color couleur;
 	boolean actif;
 
+	LinkedList<Joueur> JoueursActifs;
 	Tank tank;
 	Canon canon;
 
-	public Joueur(int num, String anom, String acouleur, boolean Humain,
-			Jeu ajeu) {
-		jeu = ajeu;
-		map = jeu.map;
-		limitesframe = jeu.Ecran;
+	public Joueur(int num, int placement, int nombreJoueurs, String anom, String acouleur, boolean Humain,
+			Carte amap, Rectangle aframe, final float ATEMPS, LinkedList<Joueur> JoueursEnVie) {
+		map = amap;
+		limitesframe = aframe;
+		TEMPS = ATEMPS;
 
 		n = num;
 		nom = anom;
@@ -66,15 +68,16 @@ public class Joueur {
 			break;
 		}
 
-		tank = new Tank(this, 2 * jeu.TEMPS, "Tank_" + acouleur + ".png");
+		tank = new Tank(this, placement, nombreJoueurs, 2 * TEMPS, "Tank_" + acouleur + ".png");
 
 		canon = tank.canon;
+		
+		JoueursActifs = JoueursEnVie;
 	}
 
-	public Bombe tire(long force, long t) {
-		Bombe obus = new Bombe(tank, force * jeu.TEMPS * 1.3, "obus",
-				jeu.JoueursActifs);
-		jeu.Objets.add(obus);
+	public Bombe tire(float force, float vent, long t) {
+		Bombe obus = new Bombe(tank, force * TEMPS * 1.3, vent, "obus",
+				JoueursActifs);
 		
 		return obus;
 	}
@@ -93,13 +96,13 @@ public class Joueur {
 
 	public void anglePlus() {
 		if (tank.angle < 180) {
-			tank.angle += 5 * jeu.TEMPS;
+			tank.angle += 5 * TEMPS;
 		}
 	}
 
 	public void angleMoins() {
 		if (tank.angle > 0) {
-			tank.angle -= 5 * jeu.TEMPS;
+			tank.angle -= 5 * TEMPS;
 		}
 	}
 
@@ -107,7 +110,7 @@ public class Joueur {
 		tank.vie -= bombe.dommage;
 		
 		if (tank.vie <= 0) {
-			jeu.JoueursActifs.remove(k);
+			JoueursActifs.remove(k);
 			actif = false;
 			tank.actif = false;
 			canon.actif = false;
