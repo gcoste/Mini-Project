@@ -69,7 +69,7 @@ public class Jeu extends JFrame {
 		joueurQuiJoue = 0;
 
 		force = 50;
-		vent = (float) (0.1*Math.random());
+		vent = (float) (0.1 * Math.random() - 0.05);
 
 		setTitle("Tanks");
 
@@ -151,7 +151,8 @@ public class Jeu extends JFrame {
 
 		// on cree les joueurs (et ainsi leurs tanks et leurs canons)
 		for (int i = 0; i < nombreJoueurs; i++) {
-			Joueurs[i] = new Joueur(i, placement[i], nombreJoueurs, null, null, true, map, Ecran, TEMPS, JoueursActifs);
+			Joueurs[i] = new Joueur(i, placement[i], nombreJoueurs, null, null,
+					true, map, Ecran, TEMPS, JoueursActifs);
 
 			// on ajoute le tank et son canon a la liste d'objets
 			Objets.add(Joueurs[i].canon);
@@ -172,8 +173,8 @@ public class Jeu extends JFrame {
 		 * interval pour obtenir un jeu fluide : en effet, le timer demande trop
 		 * d'effort a l'ordinateur, et commence a battre a un temps un peu plus
 		 * long que prevu. On cree donc un autre timer avec une unite de temps
-		 * plus grosse (100ms) afin que l'ordinateur n'ai pas de mal a le garder au
-		 * rythme demande meme quand celui-ci est tres sollicite.
+		 * plus grosse (100ms) afin que l'ordinateur n'ai pas de mal a le garder
+		 * au rythme demande meme quand celui-ci est tres sollicite.
 		 */
 		timerTour = new Timer(100, new TimerTourAction());
 
@@ -286,6 +287,9 @@ public class Jeu extends JFrame {
 			if (ToucheEntre) {
 				finTourParTir = false;
 				attenteJoueur = false;
+
+				// on reinitialise le vent pour le tour a venir
+				vent = (float) (0.1 * Math.random() - 0.05);
 
 				timerTour.start();
 			}
