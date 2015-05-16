@@ -14,7 +14,7 @@ public class Joueur {
 	boolean estHumain;
 	int score;
 	Color couleur;
-	boolean enVie;
+	boolean actif;
 
 	Tank tank;
 	Canon canon;
@@ -28,7 +28,7 @@ public class Joueur {
 		n = num;
 		nom = anom;
 		estHumain = Humain;
-		enVie = true;
+		actif = true;
 
 		// on tranforme la couleur en texte en une couleur Java
 		switch (n) {
@@ -71,10 +71,12 @@ public class Joueur {
 		canon = tank.canon;
 	}
 
-	public void tire(long force, long t) {
+	public Bombe tire(long force, long t) {
 		Bombe obus = new Bombe(tank, force * jeu.TEMPS * 1.3, "obus",
-				jeu.Joueurs);
+				jeu.JoueursActifs);
 		jeu.Objets.add(obus);
+		
+		return obus;
 	}
 
 	public void moveGauche() {
@@ -101,12 +103,14 @@ public class Joueur {
 		}
 	}
 
-	public void touche(Bombe bombe) {
-		tank.vie -= bombe.dommage / 10;
-
+	public void touche(Bombe bombe, int k) {
+		tank.vie -= bombe.dommage;
+		
 		if (tank.vie <= 0) {
+			jeu.JoueursActifs.remove(k);
+			actif = false;
 			tank.actif = false;
-			enVie = false;
+			canon.actif = false;
 		}
 	}
 

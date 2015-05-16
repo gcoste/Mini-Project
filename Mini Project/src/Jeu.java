@@ -7,10 +7,11 @@ import javax.swing.*;
 import java.util.LinkedList;
 
 public class Jeu extends JFrame {
-	int nombreJoueurs = 2;
+	int nombreJoueurs = 3;
 
 	// Liste de tous les objets du jeu (tanks, bombes, canon)
 	LinkedList<Objet> Objets;
+	LinkedList<Joueur> JoueursActifs;
 	Joueur[] Joueurs = new Joueur[nombreJoueurs];
 
 	// timer qui regit le jeu
@@ -47,9 +48,12 @@ public class Jeu extends JFrame {
 
 	boolean finJeu;
 	boolean finTour;
+	boolean attenteJoueur;
 	boolean passageJoueur;
-	int joueurActif;
+	int joueurQuiJoue;
 	int passageTour;
+
+	Bombe bombeActive;
 
 	int vent;
 
@@ -58,11 +62,12 @@ public class Jeu extends JFrame {
 	public Jeu() {
 		finJeu = false;
 		finTour = false;
+		attenteJoueur = false;
 		passageJoueur = false;
 
 		temps = 0;
 		tempsTour = 0;
-		joueurActif = 0;
+		joueurQuiJoue = 0;
 
 		force = 50;
 
@@ -117,6 +122,8 @@ public class Jeu extends JFrame {
 
 		// Creer la liste chainee de tous les objets
 		Objets = new LinkedList<Objet>();
+		// Creer la liste chainee de tous les joueurs en vie
+		JoueursActifs = new LinkedList<Joueur>();
 		// On initialise la map
 		map = new Carte(Ecran);
 
@@ -127,6 +134,9 @@ public class Jeu extends JFrame {
 			// on ajoute le tank et son canon a la liste d'objets
 			Objets.add(Joueurs[i].canon);
 			Objets.add(Joueurs[i].tank);
+
+			// on ajoute le joueur a liste des joueurs en vie
+			JoueursActifs.add(Joueurs[i]);
 		}
 
 		// On initialise le timer afin d'avoir 60 frames par seconde
@@ -162,7 +172,7 @@ public class Jeu extends JFrame {
 
 	public void boucle_principale_jeu() {
 		if (!finTour && tempsTour / 10 < 30) {
-			int i = joueurActif;
+			int i = joueurQuiJoue;
 
 			if (ToucheGauche) {
 				Joueurs[i].moveGauche();
@@ -179,33 +189,37 @@ public class Jeu extends JFrame {
 			}
 
 			if (ToucheEspace) {
-				Joueurs[i].tire(force, temps);
-				finTour = passageJoueur = true;
+				bombeActive = Joueurs[i].tire(force, temps);
+				finTour = true;
+			}
+		} else if (finTour && !passageJoueur && !attenteJoueur) {
+			if (!bombeActive.actif) {
+				passageJoueur = true;
 			}
 		} else if (passageJoueur) { // passage au joueur suivant
-			Joueurs[joueurActif].fixe();
+			Joueurs[joueurQuiJoue].fixe();
 
-			do {
-				if (joueurActif + 1 == nombreJoueurs) {
-					joueurActif = 0;
-				} else {
-					joueurActif++;
-					passageTour++;
-				}
-			} while (!Joueurs[joueurActif].enVie & passageTour < nombreJoueurs);
+			if (JoueursActifs.size() > 1) {
+				do {
+					if (joueurQuiJoue + 1 == nombreJoueurs) {
+						joueurQuiJoue = 0;
+					} else {
+						joueurQuiJoue++;
+					}
+				} while (!Joueurs[joueurQuiJoue].actif);
+			}
 
-			passageTour = 0;
-
-			if (passageTour == nombreJoueurs) {
+			if (JoueursActifs.size() <= 1) {
 				finJeu = true;
 				System.exit(0);
 			}
 
 			passageJoueur = false;
-		} else {
+			attenteJoueur = true;
+		} else if (attenteJoueur) {
 			if (ToucheEntre) {
-				System.out.println("lol");
 				finTour = false;
+				attenteJoueur = false;
 				tempsTour = 0;
 			}
 		}

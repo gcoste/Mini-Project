@@ -1,14 +1,15 @@
+import java.util.LinkedList;
+
 public class Bombe extends Objet {
 
 	final float GRAVITE = (float) 0.1;
 	int dommage;
 	Tank tank;
 
-	int nbJoueurActifs;
-	Joueur[] JoueursActifs;
+	LinkedList<Joueur> JoueursActifs;
 	static String NomImage = "Bombe.png";
 
-	public Bombe(Tank atank, double avitesse, String nom, Joueur[] arrayJoueurs) {
+	public Bombe(Tank atank, double avitesse, String nom, LinkedList<Joueur> ListJoueurs) {
 
 		super(0, 0, 0, 0, avitesse, NomImage, atank.limitesframe, atank.map,
 				nom, atank.joueur);
@@ -20,21 +21,14 @@ public class Bombe extends Objet {
 
 		// on regle les dommages en fonction de la bombe
 		if (nom.equals("bombe")) {
-			dommage = 50;
+			dommage = 10;
 		} else if (nom.equals("obus")) {
+			dommage = 50;
+		} else if (nom.equals("ogive")) {
 			dommage = 100;
 		}
 
-		nbJoueurActifs = 0;
-		JoueursActifs = new Joueur[arrayJoueurs.length];
-
-		for (int i = 0; i < arrayJoueurs.length; i++) {
-			if (arrayJoueurs[i].enVie) {
-				JoueursActifs[nbJoueurActifs] = arrayJoueurs[i];
-				nbJoueurActifs++;
-				
-			}
-		}
+		JoueursActifs = ListJoueurs;
 
 		// on regle dx et dy en fonction de l'angle
 		// le 0 est a droite, le 180 est a gauche
@@ -46,11 +40,13 @@ public class Bombe extends Objet {
 		x = x + dx;
 		y = y - dy;
 		dy = dy - GRAVITE;
+		
+		for (int k = 0; k < JoueursActifs.size(); k++) {
+			Joueur J = (Joueur) JoueursActifs.get(k);
 
-		for (int i = 0; i < nbJoueurActifs; i++) {
-			if (this.Collision(JoueursActifs[i].tank)) {
+			if (this.Collision(J.tank)) {
 				this.actif = false;
-				JoueursActifs[i].touche(this);
+				J.touche(this, k);
 			}
 		}
 
