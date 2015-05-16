@@ -110,6 +110,7 @@ public class Joueur {
 
 	public void touche(Bombe bombe, int k) {
 		tank.vie -= bombe.dommage;
+		map.destructionMap(bombe.dommage, (int) (tank.x+tank.limites.width/2));
 
 		if (tank.vie <= 0) {
 			JoueursActifs.remove(k);

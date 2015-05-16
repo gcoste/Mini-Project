@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.util.LinkedList;
 
 public class Jeu extends JFrame {
-	int nombreJoueurs = 2;
+	int nombreJoueurs = 4;
 
 	// Liste de tous les objets du jeu (tanks, bombes, canon)
 	LinkedList<Objet> Objets;
@@ -192,15 +192,36 @@ public class Jeu extends JFrame {
 		// la carte possede sa propre methode d'affichage
 		map.drawHorizon(Ecran, buffer);
 
+		String sVent = new String("");
+
+		for (int i = 0; i < (int) 100 * (Math.abs(vent)); i++) {
+			if ((int) 100 * vent > 0) {
+				sVent = sVent + ">";
+			} else if ((int) 100 * vent < 0) {
+				sVent = sVent + "<";
+			} else {
+				sVent = "-";
+			}
+		}
+
 		Font comic = new Font("Comic Sans MS", 1, 20);
+		Font comicLarge = new Font("Comic Sans MS", 1, 30);
 
 		buffer.setFont(comic);
 		buffer.setColor(Color.black);
 		buffer.drawString("Joueur " + Joueurs[joueurQuiJoue].n, 20, 50);
 		buffer.drawString("Vie : " + Joueurs[joueurQuiJoue].tank.vie, 20, 80);
-		buffer.drawString("Vent : " + vent * 200 + " / 10", 20, 140);
-		buffer.drawString("Temps : " + (30 - (int) (tempsTour / 10)), 20, 110);
-		
+		buffer.drawString("Fuel : " + ((int) (10*Joueurs[joueurQuiJoue].tank.fuel))*0.1, 20, 110);
+		buffer.drawString("Vent : " + sVent, 20, 170);
+		buffer.drawString("Temps : " + (30 - (int) (tempsTour / 10)), 20, 140);
+
+		if (attenteJoueur) {
+			buffer.setFont(comicLarge);
+			buffer.setColor(Color.red);
+			buffer.drawString("En attente du joueur " + joueurQuiJoue,
+					Ecran.width / 2 - 160, 80);
+			buffer.drawString("Appuyez sur Entrée", Ecran.width / 2 - 135, 120);
+		}
 
 		// dessine tous les objets dans le buffer
 		for (int k = 1; k < Objets.size(); k++) {
@@ -262,10 +283,10 @@ public class Jeu extends JFrame {
 
 			if (!bombeActive.actif) {
 				passageJoueur = true;
-
 				tempsTour = 0;
-				timerTour.stop();
 			}
+
+			timerTour.stop();
 
 		} else if (tempsTour / 10 >= 30) {
 			// la deuxieme condition arrete le joueur dans le cas ou le tour ce
@@ -297,17 +318,23 @@ public class Jeu extends JFrame {
 				System.exit(0);
 			}
 
+			// on modifie le vent pour le tour a venir
+			vent = vent + (float) (0.05 * Math.random() - 0.025);
+
+			if (vent > 0.05) {
+				vent = (float) 0.05;
+			} else if (vent < -0.05) {
+				vent = (float) -0.05;
+			}
+
 			passageJoueur = false;
 			attenteJoueur = true;
 
 		} else if (attenteJoueur) {
-			// on attend enfin que le joueur ai appuye sur entre pour continuer
+			// on attend enfin que le joueur ait appuye sur entre pour continuer
 			if (ToucheEntre) {
 				finTourParTir = false;
 				attenteJoueur = false;
-
-				// on reinitialise le vent pour le tour a venir
-				vent = (float) (0.1 * Math.random() - 0.05);
 
 				timerTour.start();
 			}

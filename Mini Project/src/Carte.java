@@ -135,15 +135,26 @@ public class Carte extends Objet {
 	}
 
 	public void destructionMap(int rayon, int x) {
-		int min = Math.max(0, x- rayon);
-		int max = Math.min(limitesframe.width, x+rayon);
-		
-		for (int i = min ; i < max ; i++) {
-				double h =  (int) (Math.sqrt(Math.pow(rayon, 2)-Math.pow(x-i, 2)));
-				
+		int min = Math.max(1, x - rayon);
+		int max = Math.min(limitesframe.width - 1, x + rayon);
+
+		for (int i = min; i < max; i++) {
+			if (Math.sqrt(Math.pow(x - i, 2) + Math.pow(getY(x) - getY(i), 2)) <= rayon) {
+				double h = (int) (Math
+						.sqrt(Math.pow(rayon, 2)
+								- (Math.pow(x - i, 2) + Math.pow(getY(x)
+										- getY(i), 2))));
+
 				horizon[i] = horizon[i] + 2 * (int) h / 3;
+
+				for (int k = 0; k < 100; k++) {
+					int d = (horizon[i - 1] + horizon[i]) / 2;
+					horizon[i - 1] = (horizon[i - 1] + d) / 2;
+					horizon[i] = (horizon[i] + d) / 2;
+				}
 			}
 		}
+	}
 
 	// methode qui donne le y de la carte pour n'importe quel x (permet de
 	// placer les objets sur la carte)
