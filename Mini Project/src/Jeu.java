@@ -189,6 +189,12 @@ public class Jeu extends JFrame {
 	public void paint(Graphics g) {
 		// la carte possede sa propre methode d'affichage
 		map.draw(Ecran, buffer);
+		
+Font fonte2 = new Font("Comic Sans MS",1,20);
+		
+		buffer.setFont(fonte2);
+		buffer.setColor(Color.green);
+		buffer.drawString("50" ,20, 150);
 
 		// dessine tous les objets dans le buffer
 		for (int k = 0; k < Objets.size(); k++) {

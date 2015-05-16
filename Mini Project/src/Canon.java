@@ -2,15 +2,13 @@ import java.awt.*;
 
 public class Canon extends Objet {
 	Tank tank;
-	
-	// l'image ne sera pas utilisée mais obligation de la mettre si on veut
-	// créer le canon
-	static String NomImage = "Canon.png";
 
 	public Canon(Tank atank) {
+		// l'image ne sera pas utilisée mais obligation de la mettre si on veut
+		// créer le canon
 		// (x,y) represente le point du bas du rectangle representant le
 		// canon (le point fixé au tank)
-		super(atank.x + 40, atank.y + 14, 0, 0, 0, NomImage,
+		super(atank.x + 40, atank.y + 14, 0, 0, 0, "Canon.png",
 				atank.limitesframe, atank.map, ("Canon_" + atank.nom),
 				atank.joueur);
 

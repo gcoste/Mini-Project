@@ -9,11 +9,10 @@ public class Bombe extends Objet {
 	Tank tank;
 
 	LinkedList<Joueur> JoueursActifs;
-	static String NomImage = "Bombe.png";
 
 	public Bombe(Tank atank, double avitesse, float avent, String nom,
 			LinkedList<Joueur> ListJoueurs) {
-		super(0, 0, 0, 0, avitesse, NomImage, atank.limitesframe, atank.map,
+		super(0, 0, 0, 0, avitesse, "Bombe.png", atank.limitesframe, atank.map,
 				nom, atank.joueur);
 
 		// on place la bombe en sortie du canon
