@@ -21,8 +21,9 @@ public class Joueur {
 	Tank tank;
 	Canon canon;
 
-	public Joueur(int num, int placement, int nombreJoueurs, String anom, String acouleur, boolean Humain,
-			Carte amap, Rectangle aframe, final float ATEMPS, LinkedList<Joueur> JoueursEnVie) {
+	public Joueur(int num, int placement, int nombreJoueurs, String anom,
+			String acouleur, boolean Humain, Carte amap, Rectangle aframe,
+			final float ATEMPS, LinkedList<Joueur> JoueursEnVie) {
 		map = amap;
 		limitesframe = aframe;
 		TEMPS = ATEMPS;
@@ -68,17 +69,18 @@ public class Joueur {
 			break;
 		}
 
-		tank = new Tank(this, placement, nombreJoueurs, 2 * TEMPS, "Tank_" + acouleur + ".png");
+		tank = new Tank(this, placement, nombreJoueurs, 2 * TEMPS, "Tank_"
+				+ acouleur + ".png");
 
 		canon = tank.canon;
-		
+
 		JoueursActifs = JoueursEnVie;
 	}
 
 	public Bombe tire(float force, float vent, long t) {
 		Bombe obus = new Bombe(tank, force * TEMPS * 1.3, vent, "obus",
 				JoueursActifs);
-		
+
 		return obus;
 	}
 
@@ -108,9 +110,24 @@ public class Joueur {
 
 	public void touche(Bombe bombe, int k) {
 		tank.vie -= bombe.dommage;
-		
+
 		if (tank.vie <= 0) {
 			JoueursActifs.remove(k);
+			actif = false;
+			tank.actif = false;
+			canon.actif = false;
+		}
+	}
+
+	public void degats(int k) {
+		tank.vie -= k;
+		
+		if (k == 0) {
+			tank.vie = -1;
+		}
+
+		if (tank.vie <= 0) {
+			JoueursActifs.remove(n);
 			actif = false;
 			tank.actif = false;
 			canon.actif = false;

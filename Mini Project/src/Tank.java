@@ -46,10 +46,14 @@ public class Tank extends Objet {
 			} else if (x + l > limitesframe.x + limitesframe.width) {
 				x = limitesframe.x + limitesframe.width - l;
 			}
-		}
 
-		if (vie <= 0) {
-			actif = false;
+			// si le tank atteint la limite basse du jeu, il est instantanement
+			// detruit
+			if (y > limitesframe.height) {
+				// on met 0 en parametre pour faire comprendre a la methode que
+				// le tank es directement detruit
+				joueur.degats(0);
+			}
 		}
 
 		// On place le rectangle de limites sur l'image

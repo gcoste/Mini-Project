@@ -68,7 +68,7 @@ public class Jeu extends JFrame {
 		tempsTour = 0;
 		joueurQuiJoue = 0;
 
-		force = 50;
+		force = 100;
 		vent = (float) (0.1 * Math.random() - 0.05);
 
 		setTitle("Tanks");
@@ -195,10 +195,12 @@ public class Jeu extends JFrame {
 		Font comic = new Font("Comic Sans MS", 1, 20);
 
 		buffer.setFont(comic);
-		buffer.setColor(Color.green);
-		buffer.drawString("Vie : " + Joueurs[joueurQuiJoue].tank.vie, 20, 150);
-
-		buffer.drawString("Temps : " + (int) (tempsTour / 10), 20, 50);
+		buffer.setColor(Color.black);
+		buffer.drawString("Joueur " + Joueurs[joueurQuiJoue].n, 20, 50);
+		buffer.drawString("Vie : " + Joueurs[joueurQuiJoue].tank.vie, 20, 80);
+		buffer.drawString("Vent : " + vent * 200 + " / 10", 20, 140);
+		buffer.drawString("Temps : " + (30 - (int) (tempsTour / 10)), 20, 110);
+		
 
 		// dessine tous les objets dans le buffer
 		for (int k = 1; k < Objets.size(); k++) {
@@ -245,6 +247,12 @@ public class Jeu extends JFrame {
 				bombeActive = Joueurs[i].tire(force, vent, temps);
 				Objets.add(bombeActive);
 				finTourParTir = true;
+			}
+
+			// si jamais le tank est detruit pendant son tour, on accelere le
+			// temps du tour afin que le tour se termine
+			if (!Joueurs[i].actif) {
+				tempsTour = 500;
 			}
 
 		} else if (finTourParTir && !passageJoueur && !attenteJoueur) {
