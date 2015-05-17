@@ -22,6 +22,8 @@ public class Joueur {
 	LinkedList<Joueur> JoueursActifs;
 	Tank tank;
 	Canon canon;
+	
+	Thread tir=new Son("son.wav");
 
 	public Joueur(int num, int placement, int nombreJoueurs, String anom,
 			String acouleur, boolean Humain, Carte amap, Rectangle aframe,
@@ -82,6 +84,8 @@ public class Joueur {
 	public Bombe tire(float force, float vent) {
 		Bombe obus = new Bombe(tank, force * TEMPS * 1.3, vent, "obus",
 				JoueursActifs, GRAVITE);
+		
+	    tir.start();
 
 		return obus;
 	}
