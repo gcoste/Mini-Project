@@ -68,7 +68,8 @@ public class Jeu extends JFrame {
 		tempsTour = 0;
 		joueurQuiJoue = 0;
 
-		force = 100;
+		force = 100; // ON DEVRA A TERME REMPLACER LA FORCE PAR LA VARIABLE DU
+						// BANDEAU
 		vent = (float) (0.1 * Math.random() - 0.05);
 
 		setTitle("Tanks");
@@ -216,11 +217,15 @@ public class Jeu extends JFrame {
 		buffer.drawString("Vent : " + sVent, 20, 170);
 		buffer.drawString("Temps : " + (30 - (int) (tempsTour / 10)), 20, 140);
 
-		int xPrev = Joueurs[joueurQuiJoue].prevision(force, vent);
-
-		buffer.setColor(Color.red);
-		if (xPrev >= 0)
-			buffer.fillOval(xPrev, (int) map.getY(xPrev), 10, 10);
+		float xPrev = Joueurs[joueurQuiJoue].prevision(force, vent);
+		
+		if (xPrev >= 0 && xPrev == (int) xPrev) {
+			buffer.setColor(Color.red);
+			buffer.fillOval((int) xPrev, (int) map.getY(xPrev)-5, 10, 10);
+		} else if (xPrev != (int) xPrev) {
+			buffer.setColor(Color.green);
+			buffer.fillOval((int) xPrev, (int) map.getY(xPrev)-5, 10, 10);
+		}
 
 		if (attenteJoueur && !finJeu) {
 			buffer.setFont(comicLarge);
@@ -229,13 +234,13 @@ public class Jeu extends JFrame {
 					Ecran.width / 2 - 160, 80);
 			buffer.drawString("Appuyez sur Entrée", Ecran.width / 2 - 135, 120);
 		}
-		
+
 		if (finJeu) {
 			buffer.setFont(comicLarge);
 			buffer.setColor(Color.red);
-			buffer.drawString("Game Over",
-					Ecran.width / 2 - 70, 100);
-			buffer.drawString("Le joueur " + joueurQuiJoue + " a gagné !", Ecran.width / 2 - 135, 150);
+			buffer.drawString("Game Over", Ecran.width / 2 - 70, 100);
+			buffer.drawString("Le joueur " + joueurQuiJoue + " a gagné !",
+					Ecran.width / 2 - 135, 150);
 		}
 
 		// dessine tous les objets dans le buffer

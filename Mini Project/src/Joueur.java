@@ -22,8 +22,6 @@ public class Joueur {
 	LinkedList<Joueur> JoueursActifs;
 	Tank tank;
 	Canon canon;
-	
-	Thread tir=new Son("son.wav");
 
 	public Joueur(int num, int placement, int nombreJoueurs, String anom,
 			String acouleur, boolean Humain, Carte amap, Rectangle aframe,
@@ -82,10 +80,11 @@ public class Joueur {
 	}
 
 	public Bombe tire(float force, float vent) {
+		// ON DEVRA A TERME REMPLACER "obus" PAR LE TYPE DE BOMBE ARME
 		Bombe obus = new Bombe(tank, force * TEMPS * 1.3, vent, "obus",
 				JoueursActifs, GRAVITE);
-		
-	    tir.start();
+		Thread tir = new Son("Tir.wav");
+		tir.start();
 
 		return obus;
 	}
@@ -142,7 +141,7 @@ public class Joueur {
 		}
 	}
 
-	public int prevision(float force, float vent) {
+	public float prevision(float force, float vent) {
 		Bombe obus = new Bombe(tank, force * TEMPS * 1.3, vent, "obus",
 				JoueursActifs, GRAVITE);
 
@@ -185,13 +184,14 @@ public class Joueur {
 				Joueur J = (Joueur) JoueursActifs.get(k);
 
 				if (obus.Collision(J.tank)) {
-					retour = -10 - J.n;
+					retour = (float) ((int) obus.x + (J.n+1) * 0.01);
+					System.out.println(retour);
 				}
 			}
 		}
 
 		obus.actif = false;
-		return (int) retour;
+		return retour;
 	}
 
 }

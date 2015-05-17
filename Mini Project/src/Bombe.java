@@ -23,7 +23,7 @@ public class Bombe extends Objet {
 		y = (float) (atank.canon.y - Math.sin(a) * 40);
 
 		// on regle les dommages en fonction du type de bombe
-		if (nom.equals("bombe")) {
+		if (nom.equals("canon")) {
 			dommage = 10;
 		} else if (nom.equals("obus")) {
 			dommage = 50;
@@ -58,6 +58,10 @@ public class Bombe extends Objet {
 
 			if (this.Collision(J.tank)) {
 				this.actif = false;
+				
+				Thread explosion=new Son("Explosion_" + nom + ".wav");
+				explosion.start();
+				
 				J.touche(this, k);
 			}
 		}
@@ -87,6 +91,9 @@ public class Bombe extends Objet {
 		} else if (y >= map.getY(x)) {
 			this.actif = false;
 			map.destructionMap(this.dommage, (int) x);
+			
+			Thread explosion=new Son("Explosion_" + nom + ".wav");
+			explosion.start();
 		}
 
 		limites.setLocation((int) x, (int) y);
