@@ -117,6 +117,10 @@ public class Carte extends Objet {
 		for (int i = 0; i < horizon.length; i++) {
 			horizon[i] = (int) ((horizon[i] / max) * (h - 500) + 300);
 		}
+		
+		for (int i = 200; i < 210; i++) {
+			horizon[i] = 800;
+		}
 	}
 
 	public void drawHorizon(Rectangle aframe, Graphics buffer) {

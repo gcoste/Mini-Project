@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.util.LinkedList;
 
 public class Jeu extends JFrame {
-	int nombreJoueurs = 4;
+	int nombreJoueurs = 2;
 
 	// Liste de tous les objets du jeu (tanks, bombes, canon)
 	LinkedList<Objet> Objets;
@@ -222,12 +222,20 @@ public class Jeu extends JFrame {
 		if (xPrev >= 0)
 			buffer.fillOval(xPrev, (int) map.getY(xPrev), 10, 10);
 
-		if (attenteJoueur) {
+		if (attenteJoueur && !finJeu) {
 			buffer.setFont(comicLarge);
 			buffer.setColor(Color.red);
 			buffer.drawString("En attente du joueur " + joueurQuiJoue,
 					Ecran.width / 2 - 160, 80);
 			buffer.drawString("Appuyez sur Entrée", Ecran.width / 2 - 135, 120);
+		}
+		
+		if (finJeu) {
+			buffer.setFont(comicLarge);
+			buffer.setColor(Color.red);
+			buffer.drawString("Game Over",
+					Ecran.width / 2 - 70, 100);
+			buffer.drawString("Le joueur " + joueurQuiJoue + " a gagné !", Ecran.width / 2 - 135, 150);
 		}
 
 		// dessine tous les objets dans le buffer
@@ -254,113 +262,119 @@ public class Jeu extends JFrame {
 		 * lorsqu'il s'est ecoule 30 secondes. Alors, on passe a la trasition
 		 * entre les tours.
 		 */
-		if (!finTourParTir && tempsTour / 10 < 30) {
-			int i = joueurQuiJoue;
+		if (!finJeu) {
+			if (!finTourParTir && tempsTour / 10 < 30) {
+				int i = joueurQuiJoue;
 
-			if (ToucheGauche) {
-				Joueurs[i].moveGauche();
-			} else if (ToucheDroite) {
-				Joueurs[i].moveDroite();
-			} else {
-				Joueurs[i].fixe();
-			}
+				if (ToucheGauche) {
+					Joueurs[i].moveGauche();
+				} else if (ToucheDroite) {
+					Joueurs[i].moveDroite();
+				} else {
+					Joueurs[i].fixe();
+				}
 
-			if (ToucheHaut) {
-				Joueurs[i].anglePlus();
-			} else if (ToucheBas) {
-				Joueurs[i].angleMoins();
-			}
+				if (ToucheHaut) {
+					Joueurs[i].anglePlus();
+				} else if (ToucheBas) {
+					Joueurs[i].angleMoins();
+				}
 
-			if (ToucheEspace) {
-				bombeActive = Joueurs[i].tire(force, vent);
-				Objets.add(bombeActive);
+				if (ToucheEspace) {
+					bombeActive = Joueurs[i].tire(force, vent);
+					Objets.add(bombeActive);
+					finTourParTir = true;
+				}
+
+				// si jamais le tank est detruit pendant son tour, on accelere
+				// le
+				// temps du tour afin que le tour se termine
+				if (!Joueurs[i].actif) {
+					tempsTour = 500;
+				}
+
+			} else if (finTourParTir && !passageJoueur && !attenteJoueur) {
+				// la premiere condition arrete le joueur et verifie que la
+				// bombe
+				// tire a bien explose avant de changer de joueur
+				Joueurs[joueurQuiJoue].fixe();
+
+				if (!bombeActive.actif) {
+					passageJoueur = true;
+					tempsTour = 0;
+				}
+
+				timerTour.stop();
+
+			} else if (tempsTour / 10 >= 30) {
+				// la deuxieme condition arrete le joueur dans le cas ou le tour
+				// ce
+				// serait termine a cause du temps
+				Joueurs[joueurQuiJoue].fixe();
+
 				finTourParTir = true;
-			}
-
-			// si jamais le tank est detruit pendant son tour, on accelere le
-			// temps du tour afin que le tour se termine
-			if (!Joueurs[i].actif) {
-				tempsTour = 500;
-			}
-
-		} else if (finTourParTir && !passageJoueur && !attenteJoueur) {
-			// la premiere condition arrete le joueur et verifie que la bombe
-			// tire a bien explose avant de changer de joueur
-			Joueurs[joueurQuiJoue].fixe();
-
-			if (!bombeActive.actif) {
 				passageJoueur = true;
+
 				tempsTour = 0;
+				timerTour.stop();
+
+			} else if (passageJoueur) {
+				// on parcourt ensuite la liste des joueurs encore vivants pour
+				// trouver le joueur suivant
+				if (JoueursActifs.size() > 1) {
+					do {
+						if (joueurQuiJoue + 1 == nombreJoueurs) {
+							joueurQuiJoue = 0;
+						} else {
+							joueurQuiJoue++;
+						}
+					} while (!Joueurs[joueurQuiJoue].actif);
+				}
+
+				// si il ne reste plus qu'un seul joueur, le jeu est termine
+				if (JoueursActifs.size() <= 1) {
+					finJeu = true;
+				}
+
+				// on modifie le vent pour le tour a venir
+				vent = vent + (float) (0.05 * Math.random() - 0.025);
+
+				if (vent > 0.05) {
+					vent = (float) 0.05;
+				} else if (vent < -0.05) {
+					vent = (float) -0.05;
+				}
+
+				passageJoueur = false;
+				attenteJoueur = true;
+
+			} else if (attenteJoueur) {
+				// on attend enfin que le joueur ait appuye sur entre pour
+				// continuer
+				if (ToucheEntre) {
+					finTourParTir = false;
+					attenteJoueur = false;
+
+					timerTour.start();
+				}
 			}
 
-			timerTour.stop();
-
-		} else if (tempsTour / 10 >= 30) {
-			// la deuxieme condition arrete le joueur dans le cas ou le tour ce
-			// serait termine a cause du temps
-			Joueurs[joueurQuiJoue].fixe();
-
-			finTourParTir = true;
-			passageJoueur = true;
-
-			tempsTour = 0;
-			timerTour.stop();
-
-		} else if (passageJoueur) {
-			// on parcourt ensuite la liste des joueurs encore vivants pour
-			// trouver le joueur suivant
-			if (JoueursActifs.size() > 1) {
-				do {
-					if (joueurQuiJoue + 1 == nombreJoueurs) {
-						joueurQuiJoue = 0;
-					} else {
-						joueurQuiJoue++;
-					}
-				} while (!Joueurs[joueurQuiJoue].actif);
+			// on balaye la liste et on fait bouger tout les objets avec la
+			// classe
+			// move qui leur est propre
+			for (int k = 0; k < Objets.size(); k++) {
+				Objet O = (Objet) Objets.get(k);
+				O.move(temps);
 			}
 
-			// si il ne reste plus qu'un seul joueur, le jeu est termine
-			if (JoueursActifs.size() <= 1) {
-				finJeu = true;
-				System.exit(0);
-			}
-
-			// on modifie le vent pour le tour a venir
-			vent = vent + (float) (0.05 * Math.random() - 0.025);
-
-			if (vent > 0.05) {
-				vent = (float) 0.05;
-			} else if (vent < -0.05) {
-				vent = (float) -0.05;
-			}
-
-			passageJoueur = false;
-			attenteJoueur = true;
-
-		} else if (attenteJoueur) {
-			// on attend enfin que le joueur ait appuye sur entre pour continuer
-			if (ToucheEntre) {
-				finTourParTir = false;
-				attenteJoueur = false;
-
-				timerTour.start();
-			}
-		}
-
-		// on balaye la liste et on fait bouger tout les objets avec la classe
-		// move qui leur est propre
-		for (int k = 0; k < Objets.size(); k++) {
-			Objet O = (Objet) Objets.get(k);
-			O.move(temps);
-		}
-
-		// on balaye la liste et supprime tous les objets inactifs
-		// ainsi on ne paindra que les objets encore actifs
-		for (int k = 0; k < Objets.size(); k++) {
-			Objet O = (Objet) Objets.get(k);
-			if (O.actif == false) {
-				Objets.remove(k);
-				k--;
+			// on balaye la liste et supprime tous les objets inactifs
+			// ainsi on ne paindra que les objets encore actifs
+			for (int k = 0; k < Objets.size(); k++) {
+				Objet O = (Objet) Objets.get(k);
+				if (O.actif == false) {
+					Objets.remove(k);
+					k--;
+				}
 			}
 		}
 

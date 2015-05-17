@@ -23,7 +23,7 @@ public class Tank extends Objet {
 		this.y = map.getY(x + limites.width / 2) - limites.height;
 
 		this.angle = 0;
-
+		
 		// on cree le canon du tank
 		canon = new Canon(this);
 

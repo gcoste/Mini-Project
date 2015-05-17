@@ -13,11 +13,28 @@ public class Canon extends Objet {
 				atank.joueur);
 
 		tank = atank;
+		 
 	}
 
 	public void move(long t) {
 		x = tank.x + 40;
 		y = tank.y + 14;
+
+		double a = Math.toRadians(tank.angle);
+		float xAngle = (float) (x + Math.cos(a) * 40) - 2;
+		float yAngle = (float) (y - Math.sin(a) * 40);
+
+		while (yAngle > map.getY(xAngle) && tank.angle != 90) {
+			if (tank.angle > 90) {
+				tank.angle = (int) tank.angle - 1;
+			} else if (tank.angle < 90) {
+				tank.angle = (int) tank.angle + 1;
+			}
+			
+			a = Math.toRadians(tank.angle);
+			xAngle = (float) (x + Math.cos(a) * 40) - 2;
+			yAngle = (float) (y - Math.sin(a) * 40);
+		}
 	}
 
 	public void draw(Graphics buffer) {
