@@ -2,7 +2,7 @@ import java.util.LinkedList;
 
 public class Bombe extends Objet {
 
-	final float GRAVITE = (float) 0.1;
+	float gravite;
 	float vent;
 
 	int dommage;
@@ -11,9 +11,11 @@ public class Bombe extends Objet {
 	LinkedList<Joueur> JoueursActifs;
 
 	public Bombe(Tank atank, double avitesse, float avent, String nom,
-			LinkedList<Joueur> ListJoueurs) {
+			LinkedList<Joueur> ListJoueurs, float grav) {
 		super(0, 0, 0, 0, avitesse, "Bombe.png", atank.limitesframe, atank.map,
 				nom, atank.joueur);
+
+		gravite = grav;
 
 		// on place la bombe en sortie du canon
 		double a = Math.toRadians(atank.angle);
@@ -43,10 +45,12 @@ public class Bombe extends Objet {
 		vent = avent;
 	}
 
+	boolean test = true;
+
 	public void move(long t) {
 		x = x + dx;
 		y = y - dy;
-		dy = dy - GRAVITE;
+		dy = dy - gravite;
 		dx = dx + vent;
 
 		for (int k = 0; k < JoueursActifs.size(); k++) {
@@ -61,7 +65,25 @@ public class Bombe extends Objet {
 		// on test si la bombe touche la carte ou les bords du jeu
 		// on la desactive et la bombe sera supprimee apres
 		if (x < 0 | x >= limitesframe.width) {
-			this.actif = false;
+			float xTest = x;
+			float yTest = y;
+			float dxTest = dx;
+			float dyTest = dy;
+			
+			while (test) {
+				xTest = xTest + dxTest;
+				yTest = yTest - dyTest;
+				dyTest = dyTest - gravite;
+				dxTest = dxTest + vent;
+
+				if ((xTest >= 0 && xTest < limitesframe.width)
+						&& yTest < map.getY(xTest)) {
+					test = false;
+				} else if (yTest > limitesframe.height) {
+					this.actif = false;
+					test = false;
+				} 
+			}
 		} else if (y >= map.getY(x)) {
 			this.actif = false;
 			map.destructionMap(this.dommage, (int) x);

@@ -211,9 +211,16 @@ public class Jeu extends JFrame {
 		buffer.setColor(Color.black);
 		buffer.drawString("Joueur " + Joueurs[joueurQuiJoue].n, 20, 50);
 		buffer.drawString("Vie : " + Joueurs[joueurQuiJoue].tank.vie, 20, 80);
-		buffer.drawString("Fuel : " + (int) Joueurs[joueurQuiJoue].tank.fuel, 20, 110);
+		buffer.drawString("Fuel : " + (int) Joueurs[joueurQuiJoue].tank.fuel,
+				20, 110);
 		buffer.drawString("Vent : " + sVent, 20, 170);
 		buffer.drawString("Temps : " + (30 - (int) (tempsTour / 10)), 20, 140);
+
+		int xPrev = Joueurs[joueurQuiJoue].prevision(force, vent);
+
+		buffer.setColor(Color.red);
+		if (xPrev >= 0)
+			buffer.fillOval(xPrev, (int) map.getY(xPrev), 10, 10);
 
 		if (attenteJoueur) {
 			buffer.setFont(comicLarge);
@@ -265,7 +272,7 @@ public class Jeu extends JFrame {
 			}
 
 			if (ToucheEspace) {
-				bombeActive = Joueurs[i].tire(force, vent, temps);
+				bombeActive = Joueurs[i].tire(force, vent);
 				Objets.add(bombeActive);
 				finTourParTir = true;
 			}
