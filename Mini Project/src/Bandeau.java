@@ -16,10 +16,9 @@ public class Bandeau extends JPanel {
 	static final int FPS_MAX = 10;
 	static final int FPS_INIT = 5;
 
-	public Bandeau() {
-		this.setPreferredSize(new Dimension(1000, 200));
+	public Bandeau(boolean isDoubleBuffered) {
+		this.setPreferredSize(new Dimension(0, 100));
 		this.setLayout(new FlowLayout());
-		this.setSize(new Dimension(100, 100));
 		this.setBackground(Color.white);
 
 		forceCanon = new JLabel("Force");

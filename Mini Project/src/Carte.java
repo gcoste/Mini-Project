@@ -19,7 +19,7 @@ public class Carte extends Objet {
 				aframe.height);
 
 		int h = aframe.height;
-		int l = aframe.width;
+		int l = aframe.width+1;
 
 		// degre du polynome qui represente la carte
 		int degre = (int) (20 * Math.random() + 1);

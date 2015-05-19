@@ -13,7 +13,6 @@ public class Canon extends Objet {
 				atank.joueur);
 
 		tank = atank;
-		 
 	}
 
 	public void move(long t) {

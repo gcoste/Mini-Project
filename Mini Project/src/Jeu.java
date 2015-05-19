@@ -62,8 +62,9 @@ public class Jeu extends JFrame {
 	JPanel bandeau;
 
 	public Jeu() {
-		this.setLayout(new FlowLayout());
-		bandeau = new Bandeau();
+		this.setLayout(new BorderLayout());
+		bandeau = new Bandeau(true);
+		this.setLayout(new BorderLayout());
 
 		finJeu = false;
 		finTourParTir = false;
@@ -90,6 +91,7 @@ public class Jeu extends JFrame {
 
 		// On interdit de changer la taille de la fenetre
 		setResizable(false);
+		setUndecorated(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		// On ajoute l'ecouteur de clavier qui se refere a cette classe meme
@@ -109,8 +111,8 @@ public class Jeu extends JFrame {
 
 		// On met l'arriere plan fixe pour eviter de scintiller quand on
 		// redessinera a chaque fois tout
-		ArrierePlan = new BufferedImage(getSize().width, getSize().height,
-				BufferedImage.TYPE_INT_RGB);
+		ArrierePlan = new BufferedImage(getSize().width,
+				getSize().height - 100, BufferedImage.TYPE_INT_RGB);
 		// On indique que buffer contient les dessins de arriere plan, si on
 		// modifie buffer, on modifie arriere plan
 		buffer = ArrierePlan.getGraphics();
@@ -177,14 +179,13 @@ public class Jeu extends JFrame {
 		timer.start();
 		timerTour.start();
 
-		this.add(bandeau);
-		
+		this.add(bandeau, BorderLayout.SOUTH);
+
 		// on affiche la fenetre enfin prete
 		setVisible(true);
 	}
 
 	public void paint(Graphics g) {
-		bandeau.repaint();
 
 		// on dessine d'abord le fond
 		map.draw(temps, buffer);
