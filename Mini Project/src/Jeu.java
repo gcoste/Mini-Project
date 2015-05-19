@@ -411,6 +411,70 @@ public class Jeu extends JFrame {
 		repaint();
 	}
 
+<<<<<<< HEAD
+=======
+	public class Bandeau extends JFrame {
+
+		private JPanel cadre;
+		private JSlider forcesl;
+		private JLabel forceCanon;
+		private JLabel vie;
+		private JLabel fuel;
+
+		static final int FPS_MIN = 0;    // limites du slider
+		static final int FPS_MAX = 100;
+		static final int FPS_INIT = 50;
+		
+		
+
+		public Bandeau() {
+			this.setTitle("Gestion des parametres");
+			this.cadre = new JPanel();
+			cadre.setBackground(Color.white);
+			cadre.setLayout(new FlowLayout());
+
+			forceCanon = new JLabel("Force");
+			forcesl = new JSlider(JSlider.HORIZONTAL, FPS_MIN, FPS_MAX, FPS_INIT);
+			vie = new JLabel("Vie = " + Joueurs[joueurQuiJoue].tank.vie, 20, 80); // prend la vie du tank actif
+			fuel = new JLabel("Fuel = " + (int) Joueurs[joueurQuiJoue].tank.fuel,20, 110);  // pareil avec fuel
+
+			JPanel buttonPane = new JPanel();
+
+			cadre.add(forceCanon);
+			forcesl.setBackground(Color.pink);
+			cadre.add(forcesl);
+			cadre.add(vie);
+			cadre.add(fuel);
+			
+			
+			forcesl.setMajorTickSpacing(100);
+			forcesl.setMinorTickSpacing(0);
+			forcesl.setPaintTicks(true);
+			forcesl.setPaintLabels(true);
+			
+			
+			this.setContentPane(cadre);
+			this.setSize(250, 150);
+			this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			this.setVisible(true);
+
+		}
+		
+	    
+		
+		public void stateChanged(ChangeEvent e) {
+		    JSlider source = (JSlider)e.getSource();
+		    if (!source.getValueIsAdjusting()) {
+		        force = (int)source.getValue();
+		       
+		    }
+		}
+
+		 Bandeau fenetre = new Bandeau();
+		 
+	}
+
+>>>>>>> origin/master
 	public void this_keyPressed(KeyEvent e) {
 		// code correspond a la touche appuyee, stock un nombre pour une touche
 		int code = e.getKeyCode();
