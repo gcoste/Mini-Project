@@ -64,6 +64,8 @@ public class Jeu extends JFrame {
 	private JSlider angle;
 	private JLabel labelvit;
 	private JLabel labelangle;
+	private JSlider forceSlider;
+	private JLabel forceCanon;
 	private JLabel vie;
 	private JLabel fuel;
 
@@ -78,25 +80,33 @@ public class Jeu extends JFrame {
 		cadre.setBackground(Color.white);
 		cadre.setLayout(new FlowLayout());
 
-		JLabel forceCanon = new JLabel("Force");
-		JSlider forcesl = new JSlider(JSlider.HORIZONTAL, FPS_MIN, FPS_MAX,
+		forceCanon = new JLabel("Force");
+		forceSlider = new JSlider(JSlider.HORIZONTAL, FPS_MIN, FPS_MAX,
 				FPS_INIT);
-		
+
 		// prend la vie du tank actif
-		JLabel vie = new JLabel(); 
+		vie = new JLabel();
 		// pareil avec fuel
-		JLabel fuel = new JLabel(); 
+		fuel = new JLabel();
 
 		cadre.add(forceCanon);
-		forcesl.setBackground(Color.pink);
-		cadre.add(forcesl);
+		forceSlider.setBackground(Color.pink);
+		cadre.add(forceSlider);
 		cadre.add(vie);
 		cadre.add(fuel);
 
-		forcesl.setMajorTickSpacing(100);
-		forcesl.setMinorTickSpacing(0);
-		forcesl.setPaintTicks(true);
-		forcesl.setPaintLabels(true);
+		forceSlider.setMajorTickSpacing(100);
+		forceSlider.setMinorTickSpacing(0);
+		forceSlider.setPaintTicks(true);
+		forceSlider.setPaintLabels(true);
+
+		/*
+		 * public void stateChanged(ChangeEvent e) { JSlider source =
+		 * (JSlider)e.getSource(); if (!source.getValueIsAdjusting()) { int fps
+		 * = (int)source.getValue();
+		 * 
+		 * } }
+		 */
 
 		// this.setContentPane(cadre);
 
@@ -398,7 +408,7 @@ public class Jeu extends JFrame {
 			// on balaye la liste et on fait bouger tout les objets avec la
 			// classe
 			// move qui leur est propre
-			Iterator k = Objets.iterator();
+			Iterator<Objet> k = Objets.iterator();
 
 			while (k.hasNext()) {
 				Objet O = (Objet) k.next();
@@ -407,7 +417,7 @@ public class Jeu extends JFrame {
 
 			// on balaye la liste et supprime tous les objets inactifs
 			// ainsi on ne paindra que les objets encore actifs
-			Iterator k1 = Objets.iterator();
+			Iterator<Objet> k1 = Objets.iterator();
 
 			while (k1.hasNext()) {
 				Objet O = (Objet) k1.next();

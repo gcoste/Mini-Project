@@ -181,7 +181,7 @@ public class Joueur {
 				retour = (int) obus.x;
 			}
 
-			Iterator k = JoueursActifs.iterator();
+			Iterator<Joueur> k = JoueursActifs.iterator();
 
 			while (k.hasNext()) {
 				Joueur J = (Joueur) k.next();
