@@ -4,10 +4,11 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
 public class Jeu extends JFrame {
-	int nombreJoueurs = 2;
+	int nombreJoueurs = 3;
 
 	// Liste de tous les objets du jeu (tanks, bombes, canon)
 	LinkedList<Objet> Objets;
@@ -58,7 +59,36 @@ public class Jeu extends JFrame {
 	float vent;
 	float force;
 
+	private JPanel cadre;
+	private JSlider vitesseInitiale;
+	private JSlider angle;
+	private JLabel labelvit;
+	private JLabel labelangle;
+	private JLabel vie;
+	private JLabel fuel;
+
+	static final int FPS_MIN = 0;
+	static final int FPS_MAX = 10;
+	static final int FPS_INIT = 5;
+
 	public Jeu() {
+		/*
+		 * cadre = new JPanel(); cadre.setLayout(new FlowLayout());
+		 * cadre.setSize(500, 500);
+		 * 
+		 * labelvit = new JLabel("Vitesse"); vitesseInitiale = new
+		 * JSlider(JSlider.HORIZONTAL, FPS_MIN, FPS_MAX, FPS_INIT); labelangle =
+		 * new JLabel("Angle"); angle = new JSlider(JSlider.HORIZONTAL, FPS_MIN,
+		 * FPS_MAX, FPS_INIT); vie = new JLabel("Vie = variablevie"); fuel = new
+		 * JLabel("Fuel = variablefuel");
+		 * 
+		 * cadre.add(labelvit); cadre.add(vitesseInitiale);
+		 * cadre.add(labelangle); cadre.add(angle); cadre.add(vie);
+		 * cadre.add(fuel);
+		 * 
+		 * this.add(cadre);
+		 */
+
 		finJeu = false;
 		finTourParTir = false;
 		attenteJoueur = false;
@@ -97,21 +127,9 @@ public class Jeu extends JFrame {
 		ToucheEspace = false;
 		ToucheEntre = false;
 		ToucheEchap = false;
-		/*
-		 * L'ecran est notre fenetre de jeu, on doit donc prendre la taille de
-		 * la fenetre moins le superflue (comme les bordures de fenetre, le truc
-		 * en haut avec le nom du programme et la croix pour fermer)
-		 * getInsets.left(ou top,right,bottom) recupere le taille de ces
-		 * bordures. Il est utilise dans une classe reprenant Jframe donc
-		 * s'applique a cette JFrame, et on creer notre rectangle avec par
-		 * exemple une hauteur qui vaut: hauteur=hauteur de fenetre - marge en
-		 * haut - marge en bas
-		 */
-		Insets k = getInsets();
 
-		Ecran = new Rectangle(k.left, k.top,
-				getSize().width - k.right - k.left, getSize().height - k.bottom
-						- k.top);
+		// l'ecran est notre fenetre de jeu
+		Ecran = new Rectangle(0, 0, getSize().width, getSize().height);
 
 		// On met l'arriere plan fixe pour eviter de scintiller quand on
 		// redessinera a chaque fois tout
@@ -188,6 +206,8 @@ public class Jeu extends JFrame {
 	}
 
 	public void paint(Graphics g) {
+		// cadre.repaint();
+
 		// on dessine d'abord le fond
 		map.draw(temps, buffer);
 		// la carte possede sa propre methode d'affichage
@@ -218,13 +238,13 @@ public class Jeu extends JFrame {
 		buffer.drawString("Temps : " + (30 - (int) (tempsTour / 10)), 20, 140);
 
 		float xPrev = Joueurs[joueurQuiJoue].prevision(force, vent);
-		
+
 		if (xPrev >= 0 && xPrev == (int) xPrev) {
 			buffer.setColor(Color.red);
-			buffer.fillOval((int) xPrev, (int) map.getY(xPrev)-5, 10, 10);
+			buffer.fillOval((int) xPrev, (int) map.getY(xPrev) - 5, 10, 10);
 		} else if (xPrev != (int) xPrev) {
 			buffer.setColor(Color.green);
-			buffer.fillOval((int) xPrev, (int) map.getY(xPrev)-5, 10, 10);
+			buffer.fillOval((int) xPrev, (int) map.getY(xPrev) - 5, 10, 10);
 		}
 
 		if (attenteJoueur && !finJeu) {
@@ -367,72 +387,28 @@ public class Jeu extends JFrame {
 			// on balaye la liste et on fait bouger tout les objets avec la
 			// classe
 			// move qui leur est propre
-			for (int k = 0; k < Objets.size(); k++) {
-				Objet O = (Objet) Objets.get(k);
+			Iterator k = Objets.iterator();
+
+			while (k.hasNext()) {
+				Objet O = (Objet) k.next();
 				O.move(temps);
 			}
 
 			// on balaye la liste et supprime tous les objets inactifs
 			// ainsi on ne paindra que les objets encore actifs
-			for (int k = 0; k < Objets.size(); k++) {
-				Objet O = (Objet) Objets.get(k);
+			Iterator k1 = Objets.iterator();
+
+			while (k1.hasNext()) {
+				Objet O = (Objet) k1.next();
+
 				if (O.actif == false) {
-					Objets.remove(k);
-					k--;
+					k1.remove();
 				}
 			}
 		}
 
 		// force le rafraichissement de l'image et le dessin de l'objet
 		repaint();
-	}
-
-	public static class Bandeau extends JFrame {
-
-		private JPanel cadre;
-		private JSlider vitesseInitiale;
-		private JSlider angle;
-		private JLabel labelvit;
-		private JLabel labelangle;
-		private JLabel vie;
-		private JLabel fuel;
-
-		static final int FPS_MIN = 0;
-		static final int FPS_MAX = 10;
-		static final int FPS_INIT = 5;
-
-		public Bandeau() {
-			this.setTitle("Gestion des parametres");
-			this.cadre = new JPanel();
-			cadre.setLayout(new FlowLayout());
-
-			labelvit = new JLabel("Vitesse");
-			vitesseInitiale = new JSlider(JSlider.HORIZONTAL, FPS_MIN, FPS_MAX,
-					FPS_INIT);
-			labelangle = new JLabel("Angle");
-			angle = new JSlider(JSlider.HORIZONTAL, FPS_MIN, FPS_MAX, FPS_INIT);
-			vie = new JLabel("Vie = variablevie");
-			fuel = new JLabel("Fuel = variablefuel");
-
-			JPanel buttonPane = new JPanel();
-
-			cadre.add(labelvit);
-			cadre.add(vitesseInitiale);
-			cadre.add(labelangle);
-			cadre.add(angle);
-			cadre.add(vie);
-			cadre.add(fuel);
-
-			this.setContentPane(cadre);
-			this.setSize(250, 150);
-			this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			this.setVisible(true);
-
-		}
-
-		// public static void main(String[] args) {
-		// Bandeau fenetre = new Bandeau();
-		// }
 	}
 
 	public void this_keyPressed(KeyEvent e) {

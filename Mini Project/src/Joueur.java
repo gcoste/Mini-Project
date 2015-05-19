@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 public class Joueur {
@@ -113,13 +114,13 @@ public class Joueur {
 		}
 	}
 
-	public void touche(Bombe bombe, int k) {
+	public void touche(Bombe bombe, Iterator k) {
 		tank.vie -= bombe.dommage;
 		map.destructionMap(bombe.dommage,
 				(int) (tank.x + tank.limites.width / 2));
 
 		if (tank.vie <= 0) {
-			JoueursActifs.remove(k);
+			k.remove();
 			actif = false;
 			tank.actif = false;
 			canon.actif = false;
@@ -180,12 +181,13 @@ public class Joueur {
 				retour = (int) obus.x;
 			}
 
-			for (int k = 0; k < JoueursActifs.size(); k++) {
-				Joueur J = (Joueur) JoueursActifs.get(k);
+			Iterator k = JoueursActifs.iterator();
+
+			while (k.hasNext()) {
+				Joueur J = (Joueur) k.next();
 
 				if (obus.Collision(J.tank)) {
 					retour = (float) ((int) obus.x + (J.n+1) * 0.01);
-					System.out.println(retour);
 				}
 			}
 		}

@@ -1,3 +1,4 @@
+import java.util.Iterator;
 import java.util.LinkedList;
 
 public class Bombe extends Objet {
@@ -53,8 +54,10 @@ public class Bombe extends Objet {
 		dy = dy - gravite;
 		dx = dx + vent;
 
-		for (int k = 0; k < JoueursActifs.size(); k++) {
-			Joueur J = (Joueur) JoueursActifs.get(k);
+		Iterator k = JoueursActifs.iterator();
+
+		while (k.hasNext()) {
+			Joueur J = (Joueur) k.next();
 
 			if (this.Collision(J.tank)) {
 				this.actif = false;
