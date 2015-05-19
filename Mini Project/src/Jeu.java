@@ -59,55 +59,11 @@ public class Jeu extends JFrame {
 	float vent;
 	float force;
 
-	private JPanel cadre;
-	private JSlider vitesseInitiale;
-	private JSlider angle;
-	private JLabel labelvit;
-	private JLabel labelangle;
-	private JSlider forceSlider;
-	private JLabel forceCanon;
-	private JLabel vie;
-	private JLabel fuel;
-
-	static final int FPS_MIN = 0;
-	static final int FPS_MAX = 10;
-	static final int FPS_INIT = 5;
+	JPanel bandeau;
 
 	public Jeu() {
-		cadre = new JPanel();
-		cadre.setLayout(new FlowLayout());
-		cadre.setSize(new Dimension(100, 100));
-		cadre.setBackground(Color.white);
-
-		forceCanon = new JLabel("Force");
-		forceSlider = new JSlider(JSlider.HORIZONTAL, FPS_MIN, FPS_MAX,
-				FPS_INIT);
-
-		// prend la vie du tank actif
-		vie = new JLabel();
-		// pareil avec fuel
-		fuel = new JLabel();
-
-		cadre.add(forceCanon);
-		forceSlider.setBackground(Color.pink);
-		cadre.add(forceSlider);
-		cadre.add(vie);
-		cadre.add(fuel);
-
-		forceSlider.setMajorTickSpacing(100);
-		forceSlider.setMinorTickSpacing(0);
-		forceSlider.setPaintTicks(true);
-		forceSlider.setPaintLabels(true);
-
-		/*
-		 * public void stateChanged(ChangeEvent e) { JSlider source =
-		 * (JSlider)e.getSource(); if (!source.getValueIsAdjusting()) { int fps
-		 * = (int)source.getValue();
-		 * 
-		 * } }
-		 */
-
-		// this.setContentPane(cadre);
+		this.setLayout(new FlowLayout());
+		bandeau = new Bandeau();
 
 		finJeu = false;
 		finTourParTir = false;
@@ -221,12 +177,14 @@ public class Jeu extends JFrame {
 		timer.start();
 		timerTour.start();
 
+		this.add(bandeau);
+		
 		// on affiche la fenetre enfin prete
 		setVisible(true);
 	}
 
 	public void paint(Graphics g) {
-		// cadre.repaint();
+		bandeau.repaint();
 
 		// on dessine d'abord le fond
 		map.draw(temps, buffer);
@@ -284,7 +242,7 @@ public class Jeu extends JFrame {
 		}
 
 		// dessine tous les objets dans le buffer
-		
+
 		Iterator<Objet> k = Objets.iterator();
 
 		while (k.hasNext()) {
