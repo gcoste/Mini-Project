@@ -125,7 +125,7 @@ public class Carte extends Objet {
 
 		/*
 		 * On remplit la carte en bleu avec la definition (toujours definir la
-		 * couleur avant de dessiner). Le fond est dessine directement dans la
+ 		 * couleur avant de dessiner). Le fond est dessine directement dans la
 		 * classe Objet.
 		 */
 		buffer.setColor(bleu);
@@ -139,20 +139,26 @@ public class Carte extends Objet {
 		int min = Math.max(1, x - rayon);
 		int max = Math.min(limitesframe.width - 1, x + rayon);
 
+		int[] temp = new int[limitesframe.width];
+
 		for (int i = min; i < max; i++) {
 			if (Math.sqrt(Math.pow(x - i, 2) + Math.pow(getY(x) - getY(i), 2)) <= rayon) {
-				double h = (int) (Math
+				double h = (Math
 						.sqrt(Math.pow(rayon, 2)
 								- (Math.pow(x - i, 2) + Math.pow(getY(x)
 										- getY(i), 2))));
+				temp[i] = (int) h;
+			}
+		}
 
-				horizon[i] = horizon[i] + 2 * (int) h / 3;
+		for (int i = min; i < max; i++) {
+			horizon[i] += temp[i];
 
-				for (int k = 0; k < 100; k++) {
-					int d = (horizon[i - 1] + horizon[i]) / 2;
-					horizon[i - 1] = (horizon[i - 1] + d) / 2;
-					horizon[i] = (horizon[i] + d) / 2;
-				}
+			// lissage du resultat
+			for (int k = 0; k < 10; k++) {
+				int d = (horizon[i - 1] + horizon[i]) / 2;
+				horizon[i - 1] = (horizon[i - 1] + d) / 2;
+				horizon[i] = (horizon[i] + d) / 2;
 			}
 		}
 	}

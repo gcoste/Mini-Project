@@ -74,11 +74,10 @@ public class Jeu extends JFrame {
 	static final int FPS_INIT = 5;
 
 	public Jeu() {
-
-		this.setTitle("Gestion des parametres");
-		this.cadre = new JPanel();
-		cadre.setBackground(Color.white);
+		cadre = new JPanel();
 		cadre.setLayout(new FlowLayout());
+		cadre.setSize(new Dimension(100, 100));
+		cadre.setBackground(Color.white);
 
 		forceCanon = new JLabel("Force");
 		forceSlider = new JSlider(JSlider.HORIZONTAL, FPS_MIN, FPS_MAX,
@@ -285,8 +284,11 @@ public class Jeu extends JFrame {
 		}
 
 		// dessine tous les objets dans le buffer
-		for (int k = 1; k < Objets.size(); k++) {
-			Objet O = (Objet) Objets.get(k);
+		
+		Iterator<Objet> k = Objets.iterator();
+
+		while (k.hasNext()) {
+			Objet O = (Objet) k.next();
 
 			O.draw(temps, buffer);
 
