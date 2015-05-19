@@ -390,7 +390,7 @@ public class Jeu extends JFrame {
 	public class Bandeau extends JFrame {
 
 		private JPanel cadre;
-		private JSlider force;
+		private JSlider forcesl;
 		private JLabel forceCanon;
 		private JLabel vie;
 		private JLabel fuel;
@@ -408,23 +408,23 @@ public class Jeu extends JFrame {
 			cadre.setLayout(new FlowLayout());
 
 			forceCanon = new JLabel("Force");
-			force = new JSlider(JSlider.HORIZONTAL, FPS_MIN, FPS_MAX, FPS_INIT);
+			forcesl = new JSlider(JSlider.HORIZONTAL, FPS_MIN, FPS_MAX, FPS_INIT);
 			vie = new JLabel("Vie = " + Joueurs[joueurQuiJoue].tank.vie, 20, 80); // prend la vie du tank actif
 			fuel = new JLabel("Fuel = " + (int) Joueurs[joueurQuiJoue].tank.fuel,20, 110);  // pareil avec fuel
 
 			JPanel buttonPane = new JPanel();
 
 			cadre.add(forceCanon);
-			force.setBackground(Color.pink);
-			cadre.add(force);
+			forcesl.setBackground(Color.pink);
+			cadre.add(forcesl);
 			cadre.add(vie);
 			cadre.add(fuel);
 			
-			force.addChangeListener(this);
-			force.setMajorTickSpacing(100);
-			force.setMinorTickSpacing(0);
-			force.setPaintTicks(true);
-			force.setPaintLabels(true);
+			
+			forcesl.setMajorTickSpacing(100);
+			forcesl.setMinorTickSpacing(0);
+			forcesl.setPaintTicks(true);
+			forcesl.setPaintLabels(true);
 			
 			
 			this.setContentPane(cadre);
@@ -439,7 +439,7 @@ public class Jeu extends JFrame {
 		public void stateChanged(ChangeEvent e) {
 		    JSlider source = (JSlider)e.getSource();
 		    if (!source.getValueIsAdjusting()) {
-		        int fps = (int)source.getValue();
+		        force = (int)source.getValue();
 		       
 		    }
 		}
