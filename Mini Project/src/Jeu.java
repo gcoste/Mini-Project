@@ -387,52 +387,65 @@ public class Jeu extends JFrame {
 		repaint();
 	}
 
-	public static class Bandeau extends JFrame {
+	public class Bandeau extends JFrame {
 
 		private JPanel cadre;
-		private JSlider vitesseInitiale;
-		private JSlider angle;
-		private JLabel labelvit;
-		private JLabel labelangle;
+		private JSlider force;
+		private JLabel forceCanon;
 		private JLabel vie;
 		private JLabel fuel;
 
-		static final int FPS_MIN = 0;
-		static final int FPS_MAX = 10;
-		static final int FPS_INIT = 5;
+		static final int FPS_MIN = 0;    // limites du slider
+		static final int FPS_MAX = 100;
+		static final int FPS_INIT = 50;
+		
+		
 
 		public Bandeau() {
 			this.setTitle("Gestion des parametres");
 			this.cadre = new JPanel();
+			cadre.setBackground(Color.white);
 			cadre.setLayout(new FlowLayout());
 
-			labelvit = new JLabel("Vitesse");
-			vitesseInitiale = new JSlider(JSlider.HORIZONTAL, FPS_MIN, FPS_MAX,
-					FPS_INIT);
-			labelangle = new JLabel("Angle");
-			angle = new JSlider(JSlider.HORIZONTAL, FPS_MIN, FPS_MAX, FPS_INIT);
-			vie = new JLabel("Vie = variablevie");
-			fuel = new JLabel("Fuel = variablefuel");
+			forceCanon = new JLabel("Force");
+			force = new JSlider(JSlider.HORIZONTAL, FPS_MIN, FPS_MAX, FPS_INIT);
+			vie = new JLabel("Vie = " + Joueurs[joueurQuiJoue].tank.vie, 20, 80); // prend la vie du tank actif
+			fuel = new JLabel("Fuel = " + (int) Joueurs[joueurQuiJoue].tank.fuel,20, 110);  // pareil avec fuel
 
 			JPanel buttonPane = new JPanel();
 
-			cadre.add(labelvit);
-			cadre.add(vitesseInitiale);
-			cadre.add(labelangle);
-			cadre.add(angle);
+			cadre.add(forceCanon);
+			force.setBackground(Color.pink);
+			cadre.add(force);
 			cadre.add(vie);
 			cadre.add(fuel);
-
+			
+			force.addChangeListener(this);
+			force.setMajorTickSpacing(100);
+			force.setMinorTickSpacing(0);
+			force.setPaintTicks(true);
+			force.setPaintLabels(true);
+			
+			
 			this.setContentPane(cadre);
 			this.setSize(250, 150);
 			this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			this.setVisible(true);
 
 		}
+		
+	    
+		
+		public void stateChanged(ChangeEvent e) {
+		    JSlider source = (JSlider)e.getSource();
+		    if (!source.getValueIsAdjusting()) {
+		        int fps = (int)source.getValue();
+		       
+		    }
+		}
 
-		// public static void main(String[] args) {
-		// Bandeau fenetre = new Bandeau();
-		// }
+		 Bandeau fenetre = new Bandeau();
+		 
 	}
 
 	public void this_keyPressed(KeyEvent e) {
