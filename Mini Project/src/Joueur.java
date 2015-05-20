@@ -82,7 +82,7 @@ public class Joueur {
 
 	public Bombe tire(float force, float vent) {
 		// ON DEVRA A TERME REMPLACER "obus" PAR LE TYPE DE BOMBE ARME
-		Bombe obus = new Bombe(tank, force * TEMPS * 1.3, vent, "tsar",
+		Bombe obus = new Bombe(tank, force * TEMPS * 1.5, vent, "tsar",
 				JoueursActifs, GRAVITE);
 		Thread tir = new Son("Tir.wav");
 		tir.start();
@@ -142,7 +142,7 @@ public class Joueur {
 	}
 
 	public float prevision(float force, float vent) {
-		Bombe obus = new Bombe(tank, force * TEMPS * 1.3, vent, "obus",
+		Bombe obus = new Bombe(tank, force * TEMPS * 1.5, vent, "obus",
 				JoueursActifs, GRAVITE);
 
 		float retour = (float) 0.5;

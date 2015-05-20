@@ -1,8 +1,6 @@
 import java.awt.*;
-import java.util.Hashtable;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
 
 public class Bandeau extends JPanel {
 	public JSlider vitesseInitiale;
@@ -26,10 +24,9 @@ public class Bandeau extends JPanel {
 		forceSlider.setFocusable(false);
 		forceSlider.setValue(50);
 
-		Hashtable<Integer, Integer> labelTable = new Hashtable<Integer, Integer>();
-
-	
-		forceSlider.setLabelTable( labelTable );
+		forceSlider.setMajorTickSpacing(20);
+		forceSlider.setLabelTable(forceSlider.createStandardLabels(20));
+		forceSlider.setPaintTicks(true);
 		forceSlider.setPaintLabels(true);
 
 		// prend la vie du tank actif
@@ -41,10 +38,6 @@ public class Bandeau extends JPanel {
 		this.add(forceSlider);
 		this.add(vie);
 		this.add(fuel);
-
-		forceSlider.setMajorTickSpacing(100);
-		forceSlider.setMinorTickSpacing(0);
-		forceSlider.setPaintLabels(true);
 	}
 
 	public int getForce() {

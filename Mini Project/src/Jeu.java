@@ -106,16 +106,16 @@ public class Jeu extends JFrame {
 		ToucheEchap = false;
 
 		// l'ecran est notre fenetre de jeu
-		Ecran = new Rectangle(0, 0, getSize().width, getSize().height - 100);
+		Ecran = new Rectangle(0, 0, getSize().width, getSize().height-100);
 
 		// On met l'arriere plan fixe pour eviter de scintiller quand on
 		// redessinera a chaque fois tout
 		ArrierePlan = new BufferedImage(getSize().width,
-				getSize().height - 100, BufferedImage.TYPE_INT_RGB);
+				getSize().height, BufferedImage.TYPE_INT_RGB);
+		System.out.println(BufferedImage.TYPE_INT_RGB);
 		// On indique que buffer contient les dessins de arriere plan, si on
 		// modifie buffer, on modifie arriere plan
 		buffer = ArrierePlan.getGraphics();
-
 		// Creer la liste chainee de tous les objets
 		Objets = new LinkedList<Objet>();
 		// Creer la liste chainee de tous les joueurs en vie
@@ -178,7 +178,7 @@ public class Jeu extends JFrame {
 		timer.start();
 		timerTour.start();
 
-		this.add(bandeau, BorderLayout.SOUTH);
+		this.getContentPane().add(bandeau, BorderLayout.NORTH);
 
 		// on affiche la fenetre enfin prete
 		setVisible(true);
@@ -186,7 +186,7 @@ public class Jeu extends JFrame {
 
 	public void paint(Graphics g) {
 		bandeau.repaint();
-
+		
 		// on dessine d'abord le fond
 		map.draw(temps, buffer);
 		// la carte possede sa propre methode d'affichage
@@ -269,7 +269,7 @@ public class Jeu extends JFrame {
 		}
 
 		// On dessine l'image associee au buffer dans le JFrame
-		g.drawImage(ArrierePlan, 0, 0, this);
+		g.drawImage(ArrierePlan, 0, 100, this);
 	}
 
 	public void boucle_principale_jeu() {
