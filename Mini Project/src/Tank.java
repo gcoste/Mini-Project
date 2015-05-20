@@ -20,10 +20,11 @@ public class Tank extends Objet {
 				* Math.random() + 50 + placement
 				* (limitesframe.width / nombreJoueurs))
 				- limites.width / 2;
+		// le tank est place directement sur la map
 		this.y = map.getY(x + limites.width / 2) - limites.height;
 
 		this.angle = 0;
-		
+
 		// on cree le canon du tank
 		canon = new Canon(this);
 

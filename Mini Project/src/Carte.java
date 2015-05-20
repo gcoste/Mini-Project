@@ -2,16 +2,18 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class Carte extends Objet {
-	static final Color bleu = new Color(2, 13, 23);
+	static Color bleu;
 
 	// horizon de la carte
 	int[] horizon;
 
-	public Carte(Rectangle aframe) {
+	public Carte(Rectangle aframe, Color ableu) {
 		// on utilise le constructeur de Objet afin que le fond de la carte soit
 		// affiché avec les autres objets (plus simple)
 		super(0, 0, 0, 0, 0, "Fond.png", aframe, null, null, null);
 
+		bleu = ableu;
+		
 		// on redimmensionne l'image de fond afin qu'elle s'adapte a la
 		// resolution de l'ecran
 		image = scaleImage(image,

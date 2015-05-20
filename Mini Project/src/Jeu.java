@@ -37,21 +37,13 @@ public class Jeu extends JFrame {
 	Rectangle Ecran;
 	Carte map;
 
-	/*
-	 * le parametre de temps est utilise pour modifier le temps uniformement :
-	 * on accelere le jeu en le diminuant. Par defaut, si TEMPS = 1, le timer
-	 * sera regle sur 100 ms. On utilise un parametre afin de maintenir les
-	 * different attributs du jeu (vitesse des tanks, vitesse dse bombes)
-	 * toujours coherents. Seule la gravite sera a ajuster.
-	 */
-
-	final float TEMPS = (float) 0.1;
-
 	// ces differents boolean servent au passage de tours
 	boolean finJeu;
 	boolean finTourParTir;
 	boolean attenteJoueur;
 	boolean passageJoueur;
+
+	// deux paramètres pour gerer les tours
 
 	int joueurQuiJoue;
 	Bombe bombeActive;
@@ -59,13 +51,16 @@ public class Jeu extends JFrame {
 	float vent;
 	float force;
 
+	// le JPanel d'affichage des informations du joueur
 	Bandeau bandeau;
+	// couleur du bandeau et de la carte
+	static final Color bleu = new Color(2, 13, 23);
 
 	public Jeu() {
+		// on regle le layout pour le bandeau
 		this.setLayout(new BorderLayout());
 
-		bandeau = new Bandeau();
-
+		// initialisation des parametres
 		finJeu = false;
 		finTourParTir = false;
 		attenteJoueur = false;
@@ -76,6 +71,7 @@ public class Jeu extends JFrame {
 		joueurQuiJoue = 0;
 
 		force = 50;
+		// le vent oscille entre 0.05 et -0.05;
 		vent = (float) (0.1 * Math.random() - 0.05);
 
 		setTitle("Tanks");
@@ -105,14 +101,14 @@ public class Jeu extends JFrame {
 		ToucheEntre = false;
 		ToucheEchap = false;
 
-		// l'ecran est notre fenetre de jeu
-		Ecran = new Rectangle(0, 0, getSize().width, getSize().height-100);
+		// l'ecran est notre fenetre de je, on enleve 100 pour laisser la place
+		// au bandeauu
+		Ecran = new Rectangle(0, 0, getSize().width, getSize().height - 100);
 
 		// On met l'arriere plan fixe pour eviter de scintiller quand on
 		// redessinera a chaque fois tout
-		ArrierePlan = new BufferedImage(getSize().width,
-				getSize().height, BufferedImage.TYPE_INT_RGB);
-		System.out.println(BufferedImage.TYPE_INT_RGB);
+		ArrierePlan = new BufferedImage(getSize().width, getSize().height,
+				BufferedImage.TYPE_INT_RGB);
 		// On indique que buffer contient les dessins de arriere plan, si on
 		// modifie buffer, on modifie arriere plan
 		buffer = ArrierePlan.getGraphics();
@@ -121,7 +117,7 @@ public class Jeu extends JFrame {
 		// Creer la liste chainee de tous les joueurs en vie
 		JoueursActifs = new LinkedList<Joueur>();
 		// On initialise la map
-		map = new Carte(Ecran);
+		map = new Carte(Ecran, bleu);
 
 		// on cree deux tableau de nombres aléatoires pour le placement des
 		// tanks
@@ -148,7 +144,7 @@ public class Jeu extends JFrame {
 		// on cree les joueurs (et ainsi leurs tanks et leurs canons)
 		for (int i = 0; i < nombreJoueurs; i++) {
 			Joueurs[i] = new Joueur(i, placement[i], nombreJoueurs, null, null,
-					true, map, Ecran, TEMPS, JoueursActifs);
+					true, map, Ecran, JoueursActifs);
 
 			// on ajoute le tank et son canon a la liste d'objets
 			Objets.add(Joueurs[i].canon);
@@ -160,7 +156,7 @@ public class Jeu extends JFrame {
 
 		// On initialise le timer du jeu afin d'avoir un jeu fluide (il bat
 		// idealement toute les 100*TEMPS millisecondes)
-		timer = new Timer((int) (100 * TEMPS), new TimerAction());
+		timer = new Timer((int) (10), new TimerAction());
 
 		/*
 		 * On initialise le timer des tours (qui bat tout les 100ms). On est
@@ -177,7 +173,10 @@ public class Jeu extends JFrame {
 		// On lance les timers
 		timer.start();
 		timerTour.start();
-
+		
+		// on cree le bandeau
+		bandeau = new Bandeau(Ecran.width, bleu);
+		// on ajoute notre bandeau a la fenetre
 		this.getContentPane().add(bandeau, BorderLayout.NORTH);
 
 		// on affiche la fenetre enfin prete
@@ -185,6 +184,7 @@ public class Jeu extends JFrame {
 	}
 
 	public void paint(Graphics g) {
+		// on dessine le bandeau
 		bandeau.repaint();
 		
 		// on dessine d'abord le fond
@@ -375,7 +375,7 @@ public class Jeu extends JFrame {
 					timerTour.start();
 				}
 			}
-			
+
 			force = bandeau.getForce();
 
 			// on balaye la liste et on fait bouger tout les objets avec la

@@ -7,8 +7,6 @@ public class Joueur {
 	Rectangle limitesframe;
 	// carte sur lequel evolue l'objet
 	Carte map;
-	// permet d'acceder a certaines variables de jeu
-	final float TEMPS;
 
 	// identifiant du joueur
 	int n;
@@ -26,10 +24,9 @@ public class Joueur {
 
 	public Joueur(int num, int placement, int nombreJoueurs, String anom,
 			String acouleur, boolean Humain, Carte amap, Rectangle aframe,
-			final float ATEMPS, LinkedList<Joueur> JoueursEnVie) {
-		map = amap;
+			LinkedList<Joueur> JoueursEnVie) {
 		limitesframe = aframe;
-		TEMPS = ATEMPS;
+		map = amap;
 
 		n = num;
 		nom = anom;
@@ -72,8 +69,8 @@ public class Joueur {
 			break;
 		}
 
-		tank = new Tank(this, placement, nombreJoueurs, 2 * TEMPS, "Tank_"
-				+ acouleur + ".png");
+		tank = new Tank(this, placement, nombreJoueurs, 0.2, "Tank_" + acouleur
+				+ ".png");
 
 		canon = tank.canon;
 
@@ -82,8 +79,8 @@ public class Joueur {
 
 	public Bombe tire(float force, float vent) {
 		// ON DEVRA A TERME REMPLACER "obus" PAR LE TYPE DE BOMBE ARME
-		Bombe obus = new Bombe(tank, force * TEMPS * 1.5, vent, "tsar",
-				JoueursActifs, GRAVITE);
+		Bombe obus = new Bombe(tank, force * 0.15, vent, "tsar", JoueursActifs,
+				GRAVITE);
 		Thread tir = new Son("Tir.wav");
 		tir.start();
 
@@ -104,13 +101,13 @@ public class Joueur {
 
 	public void anglePlus() {
 		if (tank.angle < 180) {
-			tank.angle += 5 * TEMPS;
+			tank.angle += 0.5;
 		}
 	}
 
 	public void angleMoins() {
 		if (tank.angle > 0) {
-			tank.angle -= 5 * TEMPS;
+			tank.angle -= 0.5;
 		}
 	}
 
@@ -142,8 +139,8 @@ public class Joueur {
 	}
 
 	public float prevision(float force, float vent) {
-		Bombe obus = new Bombe(tank, force * TEMPS * 1.5, vent, "obus",
-				JoueursActifs, GRAVITE);
+		Bombe obus = new Bombe(tank, force * 0.15, vent, "obus", JoueursActifs,
+				GRAVITE);
 
 		float retour = (float) 0.5;
 		boolean test = true;
