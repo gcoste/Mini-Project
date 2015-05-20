@@ -1,6 +1,8 @@
 import java.awt.*;
+import java.util.Hashtable;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
 
 public class Bandeau extends JPanel {
 	public JSlider vitesseInitiale;
@@ -12,18 +14,23 @@ public class Bandeau extends JPanel {
 	public JLabel vie;
 	public JLabel fuel;
 
-	static final int FPS_MIN = 0;
-	static final int FPS_MAX = 10;
-	static final int FPS_INIT = 5;
-
-	public Bandeau(boolean isDoubleBuffered) {
-		this.setPreferredSize(new Dimension(0, 100));
+	public Bandeau() {
 		this.setLayout(new FlowLayout());
-		this.setBackground(Color.white);
+		this.setPreferredSize(new Dimension(0, 100));
+		this.setBackground(Color.black);
 
 		forceCanon = new JLabel("Force");
-		forceSlider = new JSlider(JSlider.HORIZONTAL, FPS_MIN, FPS_MAX,
-				FPS_INIT);
+
+		forceSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 1);
+		forceSlider.setBackground(Color.white);
+		forceSlider.setFocusable(false);
+		forceSlider.setValue(50);
+
+		Hashtable<Integer, Integer> labelTable = new Hashtable<Integer, Integer>();
+
+	
+		forceSlider.setLabelTable( labelTable );
+		forceSlider.setPaintLabels(true);
 
 		// prend la vie du tank actif
 		vie = new JLabel();
@@ -31,29 +38,16 @@ public class Bandeau extends JPanel {
 		fuel = new JLabel();
 
 		this.add(forceCanon);
-		forceSlider.setBackground(Color.pink);
 		this.add(forceSlider);
-		forceSlider.setFocusable(false);
 		this.add(vie);
 		this.add(fuel);
 
 		forceSlider.setMajorTickSpacing(100);
 		forceSlider.setMinorTickSpacing(0);
-		forceSlider.setPaintTicks(true);
 		forceSlider.setPaintLabels(true);
 	}
 
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		// ici le dessin de tes rectangles
+	public int getForce() {
+		return (int) forceSlider.getValue();
 	}
-
-	/*
-	 * public void stateChanged(ChangeEvent e) { JSlider source =
-	 * (JSlider)e.getSource(); if (!source.getValueIsAdjusting()) { int fps =
-	 * (int)source.getValue();
-	 * 
-	 * } }
-	 */
-
 }

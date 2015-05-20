@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 public class Jeu extends JFrame {
-	int nombreJoueurs = 3;
+	int nombreJoueurs = 5;
 
 	// Liste de tous les objets du jeu (tanks, bombes, canon)
 	LinkedList<Objet> Objets;
@@ -59,12 +59,12 @@ public class Jeu extends JFrame {
 	float vent;
 	float force;
 
-	JPanel bandeau;
+	Bandeau bandeau;
 
 	public Jeu() {
 		this.setLayout(new BorderLayout());
-		
-		bandeau = new Bandeau(true);
+
+		bandeau = new Bandeau();
 
 		finJeu = false;
 		finTourParTir = false;
@@ -75,8 +75,7 @@ public class Jeu extends JFrame {
 		tempsTour = 0;
 		joueurQuiJoue = 0;
 
-		force = 100; // ON DEVRA A TERME REMPLACER LA FORCE PAR LA VARIABLE DU
-						// BANDEAU
+		force = 50;
 		vent = (float) (0.1 * Math.random() - 0.05);
 
 		setTitle("Tanks");
@@ -107,12 +106,12 @@ public class Jeu extends JFrame {
 		ToucheEchap = false;
 
 		// l'ecran est notre fenetre de jeu
-		Ecran = new Rectangle(0, 0, getSize().width, getSize().height);
+		Ecran = new Rectangle(0, 0, getSize().width, getSize().height - 100);
 
 		// On met l'arriere plan fixe pour eviter de scintiller quand on
 		// redessinera a chaque fois tout
 		ArrierePlan = new BufferedImage(getSize().width,
-				getSize().height-100, BufferedImage.TYPE_INT_RGB);
+				getSize().height - 100, BufferedImage.TYPE_INT_RGB);
 		// On indique que buffer contient les dessins de arriere plan, si on
 		// modifie buffer, on modifie arriere plan
 		buffer = ArrierePlan.getGraphics();
@@ -181,14 +180,13 @@ public class Jeu extends JFrame {
 
 		this.add(bandeau, BorderLayout.SOUTH);
 
-
 		// on affiche la fenetre enfin prete
 		setVisible(true);
 	}
 
 	public void paint(Graphics g) {
 		bandeau.repaint();
-		
+
 		// on dessine d'abord le fond
 		map.draw(temps, buffer);
 		// la carte possede sa propre methode d'affichage
@@ -237,11 +235,21 @@ public class Jeu extends JFrame {
 		}
 
 		if (finJeu) {
+			Iterator<Joueur> k = JoueursActifs.iterator();
+
+			Joueur O = null;
+
+			while (k.hasNext()) {
+				O = (Joueur) k.next();
+			}
+
 			buffer.setFont(comicLarge);
 			buffer.setColor(Color.red);
 			buffer.drawString("Game Over", Ecran.width / 2 - 70, 100);
-			buffer.drawString("Le joueur " + joueurQuiJoue + " a gagné !",
-					Ecran.width / 2 - 135, 150);
+			if (O != null) {
+				buffer.drawString("Le joueur " + O.n + " a gagné !",
+						Ecran.width / 2 - 135, 150);
+			}
 		}
 
 		// dessine tous les objets dans le buffer
@@ -367,6 +375,8 @@ public class Jeu extends JFrame {
 					timerTour.start();
 				}
 			}
+			
+			force = bandeau.getForce();
 
 			// on balaye la liste et on fait bouger tout les objets avec la
 			// classe move qui leur est propre
@@ -386,6 +396,17 @@ public class Jeu extends JFrame {
 
 				if (O.actif == false) {
 					k1.remove();
+				}
+
+			}
+
+			Iterator<Joueur> k2 = JoueursActifs.iterator();
+
+			while (k2.hasNext()) {
+				Joueur O = (Joueur) k2.next();
+
+				if (O.actif == false) {
+					k2.remove();
 				}
 			}
 		}
