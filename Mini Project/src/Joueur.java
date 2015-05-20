@@ -82,7 +82,7 @@ public class Joueur {
 
 	public Bombe tire(float force, float vent) {
 		// ON DEVRA A TERME REMPLACER "obus" PAR LE TYPE DE BOMBE ARME
-		Bombe obus = new Bombe(tank, force * TEMPS * 1.3, vent, "obus",
+		Bombe obus = new Bombe(tank, force * TEMPS * 1.3, vent, "tsar",
 				JoueursActifs, GRAVITE);
 		Thread tir = new Son("Tir.wav");
 		tir.start();
@@ -114,7 +114,7 @@ public class Joueur {
 		}
 	}
 
-	public void touche(Bombe bombe, Iterator k) {
+	public void touche(Bombe bombe, Iterator<Joueur> k) {
 		tank.vie -= bombe.dommage;
 		map.destructionMap(bombe.dommage,
 				(int) (tank.x + tank.limites.width / 2));
@@ -131,11 +131,11 @@ public class Joueur {
 		tank.vie -= k;
 
 		if (k == 0) {
-			tank.vie = -1;
+			tank.vie = 0;
 		}
 
 		if (tank.vie <= 0) {
-			JoueursActifs.remove(n);
+			JoueursActifs.remove();
 			actif = false;
 			tank.actif = false;
 			canon.actif = false;

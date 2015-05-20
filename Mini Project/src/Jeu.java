@@ -64,7 +64,7 @@ public class Jeu extends JFrame {
 	public Jeu() {
 		this.setLayout(new BorderLayout());
 		bandeau = new Bandeau(true);
-		this.setLayout(new BorderLayout());
+
 
 		finJeu = false;
 		finTourParTir = false;
@@ -112,7 +112,7 @@ public class Jeu extends JFrame {
 		// On met l'arriere plan fixe pour eviter de scintiller quand on
 		// redessinera a chaque fois tout
 		ArrierePlan = new BufferedImage(getSize().width,
-				getSize().height - 100, BufferedImage.TYPE_INT_RGB);
+				getSize().height-100, BufferedImage.TYPE_INT_RGB);
 		// On indique que buffer contient les dessins de arriere plan, si on
 		// modifie buffer, on modifie arriere plan
 		buffer = ArrierePlan.getGraphics();
@@ -367,8 +367,7 @@ public class Jeu extends JFrame {
 			}
 
 			// on balaye la liste et on fait bouger tout les objets avec la
-			// classe
-			// move qui leur est propre
+			// classe move qui leur est propre
 			Iterator<Objet> k = Objets.iterator();
 
 			while (k.hasNext()) {

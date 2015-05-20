@@ -24,12 +24,16 @@ public class Bombe extends Objet {
 		y = (float) (atank.canon.y - Math.sin(a) * 40);
 
 		// on regle les dommages en fonction du type de bombe
-		if (nom.equals("canon")) {
+		if (nom.equals("gun")) {
 			dommage = 10;
+		} else if (nom.equals("rpg")) {
+			dommage = 25;
 		} else if (nom.equals("obus")) {
 			dommage = 50;
 		} else if (nom.equals("ogive")) {
 			dommage = 100;
+		} else if (nom.equals("tsar")) {
+			dommage = 200;
 		}
 
 		// on stocke la liste des joueurs encore presents afin de verifier si la
@@ -54,17 +58,17 @@ public class Bombe extends Objet {
 		dy = dy - gravite;
 		dx = dx + vent;
 
-		Iterator k = JoueursActifs.iterator();
+		Iterator<Joueur> k = JoueursActifs.iterator();
 
 		while (k.hasNext()) {
 			Joueur J = (Joueur) k.next();
 
 			if (this.Collision(J.tank)) {
 				this.actif = false;
-				
-				Thread explosion=new Son("Explosion_" + nom + ".wav");
+
+				Thread explosion = new Son("Explosion_" + nom + ".wav");
 				explosion.start();
-				
+
 				J.touche(this, k);
 			}
 		}
@@ -76,7 +80,7 @@ public class Bombe extends Objet {
 			float yTest = y;
 			float dxTest = dx;
 			float dyTest = dy;
-			
+
 			while (test) {
 				xTest = xTest + dxTest;
 				yTest = yTest - dyTest;
@@ -89,13 +93,13 @@ public class Bombe extends Objet {
 				} else if (yTest > limitesframe.height) {
 					this.actif = false;
 					test = false;
-				} 
+				}
 			}
 		} else if (y >= map.getY(x)) {
 			this.actif = false;
 			map.destructionMap(this.dommage, (int) x);
-			
-			Thread explosion=new Son("Explosion_" + nom + ".wav");
+
+			Thread explosion = new Son("Explosion_" + nom + ".wav");
 			explosion.start();
 		}
 

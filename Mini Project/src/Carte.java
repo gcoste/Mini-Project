@@ -135,7 +135,7 @@ public class Carte extends Objet {
 	}
 
 	public void destructionMap(int rayon, int x) {
-		rayon = (int) (1.5 * rayon);
+		rayon = (int) (2 * rayon);
 		int min = Math.max(1, x - rayon);
 		int max = Math.min(limitesframe.width - 1, x + rayon);
 

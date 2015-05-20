@@ -33,6 +33,7 @@ public class Bandeau extends JPanel {
 		this.add(forceCanon);
 		forceSlider.setBackground(Color.pink);
 		this.add(forceSlider);
+		forceSlider.setFocusable(false);
 		this.add(vie);
 		this.add(fuel);
 
