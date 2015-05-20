@@ -154,6 +154,11 @@ public class Jeu extends JFrame {
 			JoueursActifs.add(Joueurs[i]);
 		}
 
+		// on cree le bandeau
+		bandeau = new Bandeau(Ecran.width, bleu);
+		// on ajoute notre bandeau a la fenetre
+		this.getContentPane().add(bandeau, BorderLayout.NORTH);
+
 		// On initialise le timer du jeu afin d'avoir un jeu fluide (il bat
 		// idealement toute les 100*TEMPS millisecondes)
 		timer = new Timer((int) (10), new TimerAction());
@@ -173,11 +178,6 @@ public class Jeu extends JFrame {
 		// On lance les timers
 		timer.start();
 		timerTour.start();
-		
-		// on cree le bandeau
-		bandeau = new Bandeau(Ecran.width, bleu);
-		// on ajoute notre bandeau a la fenetre
-		this.getContentPane().add(bandeau, BorderLayout.NORTH);
 
 		// on affiche la fenetre enfin prete
 		setVisible(true);
@@ -186,11 +186,13 @@ public class Jeu extends JFrame {
 	public void paint(Graphics g) {
 		// on dessine le bandeau
 		bandeau.repaint();
-		
+
 		// on dessine d'abord le fond
 		map.draw(temps, buffer);
 		// la carte possede sa propre methode d'affichage
 		map.drawHorizon(Ecran, buffer);
+
+		// from here
 
 		String sVent = new String("");
 
@@ -252,8 +254,9 @@ public class Jeu extends JFrame {
 			}
 		}
 
-		// dessine tous les objets dans le buffer
+		// to here : ca vire
 
+		// dessine tous les objets dans le buffer
 		Iterator<Objet> k = Objets.iterator();
 
 		while (k.hasNext()) {

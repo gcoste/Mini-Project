@@ -60,7 +60,6 @@ public class Bandeau extends JPanel {
 		forceSlider.setPaintLabels(true);
 
 		sliders.add(forceSlider);
-
 	}
 
 	public int getForce() {
