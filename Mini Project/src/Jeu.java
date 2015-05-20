@@ -63,8 +63,8 @@ public class Jeu extends JFrame {
 
 	public Jeu() {
 		this.setLayout(new BorderLayout());
+		
 		bandeau = new Bandeau(true);
-
 
 		finJeu = false;
 		finTourParTir = false;
@@ -181,12 +181,14 @@ public class Jeu extends JFrame {
 
 		this.add(bandeau, BorderLayout.SOUTH);
 
+
 		// on affiche la fenetre enfin prete
 		setVisible(true);
 	}
 
 	public void paint(Graphics g) {
-
+		bandeau.repaint();
+		
 		// on dessine d'abord le fond
 		map.draw(temps, buffer);
 		// la carte possede sa propre methode d'affichage
