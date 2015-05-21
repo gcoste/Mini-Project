@@ -7,21 +7,17 @@ public class Bombe extends Objet {
 	float vent;
 
 	int dommage;
-	Tank tank;
 
 	LinkedList<Joueur> JoueursActifs;
 
-	public Bombe(Tank atank, float angle, double avitesse, float avent, String nom,
 			LinkedList<Joueur> ListJoueurs, float grav) {
-		super(0, 0, 0, 0, avitesse, "Bombe.png", atank.limitesframe, atank.map,
-				nom, atank.joueur);
+				atank.limitesframe, atank.map, nom, atank.joueur);
 
 		gravite = grav;
 
 		// on place la bombe en sortie du canon
-		double a = Math.toRadians(angle);
-		x = (float) (atank.canon.x + Math.cos(a) * 40) - 2;
-		y = (float) (atank.canon.y - Math.sin(a) * 40);
+		x = joueur.getXCanon();
+		y = joueur.getYCanon();
 
 		// on regle les dommages en fonction du type de bombe
 		if (nom.equals("gun")) {

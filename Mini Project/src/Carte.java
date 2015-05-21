@@ -10,10 +10,10 @@ public class Carte extends Objet {
 	public Carte(Rectangle aframe, Color ableu) {
 		// on utilise le constructeur de Objet afin que le fond de la carte soit
 		// affiché avec les autres objets (plus simple)
-		super(0, 0, 0, 0, 0, "Fond.png", aframe, null, null, null);
+		super(0, 0, 0, 0, 0, 0, 0, "Fond.png", aframe, null, null, null);
 
 		bleu = ableu;
-		
+
 		// on redimmensionne l'image de fond afin qu'elle s'adapte a la
 		// resolution de l'ecran
 		image = scaleImage(image,
@@ -21,7 +21,7 @@ public class Carte extends Objet {
 				aframe.height);
 
 		int h = aframe.height;
-		int l = aframe.width+1;
+		int l = aframe.width + 1;
 
 		// degre du polynome qui represente la carte
 		int degre = (int) (20 * Math.random() + 1);
@@ -127,7 +127,7 @@ public class Carte extends Objet {
 
 		/*
 		 * On remplit la carte en bleu avec la definition (toujours definir la
- 		 * couleur avant de dessiner). Le fond est dessine directement dans la
+		 * couleur avant de dessiner). Le fond est dessine directement dans la
 		 * classe Objet.
 		 */
 		buffer.setColor(bleu);

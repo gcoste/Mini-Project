@@ -7,6 +7,8 @@ public class Joueur {
 	Rectangle limitesframe;
 	// carte sur lequel evolue l'objet
 	Carte map;
+	// bandeau du jeu pour acceder à la force
+	Bandeau bandeau;
 
 	// identifiant du joueur
 	int n;
@@ -23,10 +25,11 @@ public class Joueur {
 	Canon canon;
 
 	public Joueur(int num, int placement, int nombreJoueurs, String anom,
-			String acouleur, boolean Humain, Carte amap, Rectangle aframe,
+			String acouleur, boolean Humain, Carte amap, Rectangle aframe, Bandeau abandeau,
 			LinkedList<Joueur> JoueursEnVie) {
 		limitesframe = aframe;
 		map = amap;
+		bandeau = abandeau;
 
 		n = num;
 		nom = anom;
@@ -77,10 +80,10 @@ public class Joueur {
 		JoueursActifs = JoueursEnVie;
 	}
 
-	public Bombe tire(float force, float vent) {
+	public Bombe tire(float vent) {
 		// ON DEVRA A TERME REMPLACER "obus" PAR LE TYPE DE BOMBE ARME
-		Bombe obus = new Bombe(tank, tank.angle, force * 0.15, vent, "obus", JoueursActifs,
-				GRAVITE);
+		Bombe obus = new Bombe(tank, vent, canon.angle, "obus",
+				JoueursActifs, GRAVITE);
 		Thread tir = new Son("Tir.wav");
 		tir.start();
 
@@ -100,14 +103,14 @@ public class Joueur {
 	}
 
 	public void anglePlus() {
-		if (tank.angle < 180) {
-			tank.angle += 0.5;
+		if (canon.angle < 180) {
+			canon.angle += 0.5;
 		}
 	}
 
 	public void angleMoins() {
-		if (tank.angle > 0) {
-			tank.angle -= 0.5;
+		if (canon.angle > 0) {
+			canon.angle -= 0.5;
 		}
 	}
 
@@ -138,9 +141,9 @@ public class Joueur {
 		}
 	}
 
-	public float[] prevision(float force, float vent, float angle) {
-		Bombe obus = new Bombe(tank, angle, force * 0.15, vent, "obus", JoueursActifs,
-				GRAVITE);
+	public float[] prevision(float vent, double angle) {
+		Bombe obus = new Bombe(tank, vent, angle, "obus",
+				JoueursActifs, GRAVITE);
 
 		float retour = -2;
 		int tankTouche = -1;
@@ -191,11 +194,20 @@ public class Joueur {
 		}
 
 		obus.actif = false;
-		return (new float[] {retour,tankTouche});
+		return (new float[] { retour, tankTouche });
 	}
 
 	public float getX() {
 		return (tank.x + tank.limites.width / 2);
 	}
-
+	
+	public float getXCanon() {
+		double a = Math.toRadians(canon.angle);
+		return (float) (tank.canon.x + Math.cos(a) * 40);
+	}
+	
+	public float getYCanon() {
+		double a = Math.toRadians(canon.angle);
+		return (float) (tank.canon.y - Math.sin(a) * 40);
+	}
 }
