@@ -11,7 +11,7 @@ public class Bombe extends Objet {
 
 	LinkedList<Joueur> JoueursActifs;
 
-	public Bombe(Tank atank, double avitesse, float avent, String nom,
+	public Bombe(Tank atank, float angle, double avitesse, float avent, String nom,
 			LinkedList<Joueur> ListJoueurs, float grav) {
 		super(0, 0, 0, 0, avitesse, "Bombe.png", atank.limitesframe, atank.map,
 				nom, atank.joueur);
@@ -19,7 +19,7 @@ public class Bombe extends Objet {
 		gravite = grav;
 
 		// on place la bombe en sortie du canon
-		double a = Math.toRadians(atank.angle);
+		double a = Math.toRadians(angle);
 		x = (float) (atank.canon.x + Math.cos(a) * 40) - 2;
 		y = (float) (atank.canon.y - Math.sin(a) * 40);
 

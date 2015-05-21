@@ -79,7 +79,7 @@ public class Joueur {
 
 	public Bombe tire(float force, float vent) {
 		// ON DEVRA A TERME REMPLACER "obus" PAR LE TYPE DE BOMBE ARME
-		Bombe obus = new Bombe(tank, force * 0.15, vent, "tsar", JoueursActifs,
+		Bombe obus = new Bombe(tank, tank.angle, force * 0.15, vent, "obus", JoueursActifs,
 				GRAVITE);
 		Thread tir = new Son("Tir.wav");
 		tir.start();
@@ -138,14 +138,15 @@ public class Joueur {
 		}
 	}
 
-	public float prevision(float force, float vent) {
-		Bombe obus = new Bombe(tank, force * 0.15, vent, "obus", JoueursActifs,
+	public float[] prevision(float force, float vent, float angle) {
+		Bombe obus = new Bombe(tank, angle, force * 0.15, vent, "obus", JoueursActifs,
 				GRAVITE);
 
-		float retour = (float) 0.5;
+		float retour = -2;
+		int tankTouche = -1;
 		boolean test = true;
 
-		while (retour == 0.5) {
+		while (retour == -2) {
 			obus.x = obus.x + obus.dx;
 			obus.y = obus.y - obus.dy;
 			obus.dy = obus.dy - GRAVITE;
@@ -183,13 +184,14 @@ public class Joueur {
 				Joueur J = (Joueur) k.next();
 
 				if (obus.Collision(J.tank)) {
-					retour = (float) ((int) obus.x + (J.n + 1) * 0.01);
+					retour = (int) obus.x;
+					tankTouche = J.n;
 				}
 			}
 		}
 
 		obus.actif = false;
-		return retour;
+		return (new float[] {retour,tankTouche});
 	}
 
 	public float getX() {
