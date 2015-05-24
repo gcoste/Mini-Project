@@ -49,10 +49,9 @@ public class Jeu extends JFrame {
 
 	// parametres IA
 	boolean listeAnglesTermine;
-	float angleIA;
-	float[] angleTanks;
+	double angleIA;
 
-	float vent;
+	double vent;
 
 	// le JPanel d'affichage des informations du joueur
 	Bandeau bandeau;
@@ -75,8 +74,9 @@ public class Jeu extends JFrame {
 
 		listeAnglesTermine = false;
 
+		// On place le vent à 0 pour l'instant
 		// le vent oscille entre 0.05 et -0.05;
-		vent = (float) (0.1 * Math.random() - 0.05);
+		vent = 0;// (0.1 * Math.random() - 0.05);
 
 		setTitle("Tanks");
 
@@ -207,18 +207,6 @@ public class Jeu extends JFrame {
 
 		// from here
 
-		String sVent = new String("");
-
-		for (int i = 0; i < (int) 100 * (Math.abs(vent)); i++) {
-			if (Math.round(100 * vent) > 0) {
-				sVent = sVent + ">";
-			} else if (Math.round(100 * vent) < 0) {
-				sVent = sVent + "<";
-			} else {
-				sVent = "-";
-			}
-		}
-
 		Font comic = new Font("Comic Sans MS", 1, 20);
 		Font comicLarge = new Font("Comic Sans MS", 1, 30);
 
@@ -228,28 +216,7 @@ public class Jeu extends JFrame {
 		buffer.drawString("Vie : " + Joueurs[joueurQuiJoue].tank.vie, 20, 80);
 		buffer.drawString("Fuel : " + (int) Joueurs[joueurQuiJoue].tank.fuel,
 				20, 110);
-		buffer.drawString("Vent : " + sVent, 20, 170);
 		buffer.drawString("Temps : " + (30 - (int) (tempsTour / 10)), 20, 140);
-
-		/*
-		 * float[] xPrev = Joueurs[joueurQuiJoue].prevision(vent,
-		 * Joueurs[joueurQuiJoue].tank.angle);
-		 * 
-		 * if (xPrev[0] >= 0 && xPrev[1] == -1) { buffer.setColor(Color.red);
-		 * buffer.fillOval((int) xPrev[0], (int) map.getY(xPrev[0]) - 5, 10,
-		 * 10); } else if (xPrev[1] != -1) { buffer.setColor(Color.green);
-		 * buffer.fillOval((int) xPrev[0], (int) map.getY(xPrev[0]) - 5, 10,
-		 * 10); }
-		 * 
-		 * buffer.setColor(Color.red); double v =
-		 * (Joueurs[joueurQuiJoue].tank.force * 0.15); double theta =
-		 * Math.toRadians(Joueurs[joueurQuiJoue].canon.angle); double vCarrésurG
-		 * = (v * v) / 0.1; double deuxieme = 2 * vent *
-		 * Math.pow(Math.sin(theta), 2) / 0.1; int d = (int) (vCarrésurG *
-		 * (Math.sin(2 * theta) + deuxieme)); buffer.fillOval((int)
-		 * Joueurs[joueurQuiJoue].getXCanon() + d, (int)
-		 * Joueurs[joueurQuiJoue].getYCanon(), 10, 10);
-		 */
 
 		if (attenteJoueur && !finJeu) {
 			buffer.setFont(comicLarge);
@@ -307,77 +274,71 @@ public class Jeu extends JFrame {
 		 */
 
 		if (!finJeu) {
-			int i = joueurQuiJoue;
+			int j = joueurQuiJoue;
 
-			if (!finTourParTir && tempsTour / 10 < 30 && Joueurs[i].estHumain) {
+			if (!finTourParTir && tempsTour / 10 < 30 && Joueurs[j].estHumain) {
 				if (ToucheGauche) {
-					Joueurs[i].moveGauche();
+					Joueurs[j].moveGauche();
 				} else if (ToucheDroite) {
-					Joueurs[i].moveDroite();
+					Joueurs[j].moveDroite();
 				} else {
-					Joueurs[i].fixe();
+					Joueurs[j].fixe();
 				}
 
 				if (ToucheHaut) {
-					Joueurs[i].anglePlus();
+					Joueurs[j].anglePlus();
 				} else if (ToucheBas) {
-					Joueurs[i].angleMoins();
+					Joueurs[j].angleMoins();
 				}
 
 				if (ToucheEspace) {
-					bombeActive = Joueurs[i].tire(vent);
+					bombeActive = Joueurs[j].tire(vent);
 					Objets.add(bombeActive);
 					finTourParTir = true;
 				}
 
 				// si jamais le tank est detruit pendant son tour, on accelere
-				// le
-				// temps du tour afin que le tour se termine
-				if (!Joueurs[i].actif) {
-					tempsTour = 500;
+				// le temps du tour afin que le tour se termine
+				if (!Joueurs[j].actif) {
+					tempsTour = 1000;
 				}
 
 			} else if (!finTourParTir && tempsTour / 10 < 30
-					&& !Joueurs[i].estHumain) {
+					&& !Joueurs[j].estHumain) {
+				bandeau.setForce(100);
 				if (!listeAnglesTermine) {
-					angleIA = 0;
-					
-					angleTanks = new float[nombreJoueurs];
+					double[] angleTanks = new double[nombreJoueurs];
+					angleIA = -1;
 
-					bandeau.setForce(100);
-					Joueurs[i].tank.force = 100;
+					Iterator<Joueur> k = JoueursActifs.iterator();
+					Joueurs[j].tank.force = 100;
 
-					for (float p = 0; p <= 180; p += 0.1) {
-						float[] prevision = Joueurs[i].prevision(vent, p);
-						if (prevision[1] != -1 && prevision[1] != Joueurs[i].n) {
-							if (angleTanks[(int) prevision[1]] == 0) {
-								angleTanks[(int) prevision[1]] = (float) (p + 0.1);
-							}
+					while (k.hasNext()) {
+						Joueur J = (Joueur) k.next();
+
+						angleTanks[J.n] = Joueurs[j].prevision(J.tank)[1];
+					}
+
+					while (angleIA <= 0 | angleIA > 180) {
+						int p = (int) (nombreJoueurs * Math.random());
+
+						if (p != Joueurs[j].n) {
+							angleIA = angleTanks[p];
 						}
-					}
-
-					for (int o = 0; o < nombreJoueurs; o++) {
-						System.out.println(angleTanks[o]);
-					}
-
-					while (angleIA == 0) {
-						angleIA = angleTanks[(int) (nombreJoueurs * Math
-								.random())];
 					}
 
 					listeAnglesTermine = true;
-					System.out.println("choisie : " + angleIA);
 				} else {
-					if ((int) angleIA != ((int) (Joueurs[i].canon.angle))) {
-						if (angleIA > Joueurs[i].canon.angle) {
-							Joueurs[i].anglePlus();
-						} else if (angleIA < Joueurs[i].canon.angle) {
-							Joueurs[i].angleMoins();
+					if ((int) angleIA != ((int) (Joueurs[j].tank.angle))) {
+						if (angleIA > Joueurs[j].tank.angle) {
+							Joueurs[j].anglePlus();
+						} else if (angleIA < Joueurs[j].tank.angle) {
+							Joueurs[j].angleMoins();
 						}
-					} else if (angleIA != Joueurs[i].canon.angle) {
-						Joueurs[i].canon.angle = angleIA;
+					} else if (angleIA != Joueurs[j].tank.angle) {
+						Joueurs[j].tank.angle = angleIA;
 					} else {
-						bombeActive = Joueurs[i].tire(vent);
+						bombeActive = Joueurs[j].tire(vent);
 						Objets.add(bombeActive);
 						finTourParTir = true;
 					}
@@ -426,14 +387,15 @@ public class Jeu extends JFrame {
 					finJeu = true;
 				}
 
-				// on modifie le vent pour le tour a venir
-				vent = vent + (float) (0.05 * Math.random() - 0.025);
+				bandeau.setForce((int) Joueurs[joueurQuiJoue].tank.force);
 
-				if (vent > 0.05) {
-					vent = (float) 0.05;
-				} else if (vent < -0.05) {
-					vent = (float) -0.05;
-				}
+				/*
+				 * // on modifie le vent pour le tour a venir vent = vent +
+				 * (0.05 * Math.random() - 0.025);
+				 * 
+				 * if (vent > 0.05) { vent = 0.05; } else if (vent < -0.05) {
+				 * vent = -0.05; }
+				 */
 
 				passageJoueur = false;
 				attenteJoueur = true;
@@ -450,7 +412,7 @@ public class Jeu extends JFrame {
 				}
 			}
 
-			Joueurs[i].tank.force = bandeau.getForce();
+			Joueurs[j].tank.force = bandeau.getForce();
 
 			// on balaye la liste et on fait bouger tout les objets avec la
 			// classe move qui leur est propre
@@ -474,6 +436,8 @@ public class Jeu extends JFrame {
 
 			}
 
+			// on balaye la liste et supprime tous les joueurs inactifs
+			// ainsi on ne paindra que les objets encore actifs
 			Iterator<Joueur> k2 = JoueursActifs.iterator();
 
 			while (k2.hasNext()) {
@@ -511,8 +475,11 @@ public class Jeu extends JFrame {
 			// Si c'est la touche echape on fait pause
 			if (timer.isRunning()) {
 				timer.stop();
-			} else
+				timerTour.stop();
+			} else {
 				timer.start();
+				timerTour.start();
+			}
 		}
 	}
 
