@@ -3,15 +3,17 @@ import java.util.LinkedList;
 
 public class Bombe extends Objet {
 
-	float gravite;
-	float vent;
+	double gravite;
+	double vent;
 
 	int dommage;
 
 	LinkedList<Joueur> JoueursActifs;
 
-			LinkedList<Joueur> ListJoueurs, float grav) {
-				atank.limitesframe, atank.map, nom, atank.joueur);
+	public Bombe(Tank atank, double avent, double angle, String nom,
+			LinkedList<Joueur> ListJoueurs, double grav) {
+		super(0, 0, 0, 0, atank.force * 0.15, "Bombe.png", atank.limitesframe,
+				atank.map, nom, atank.joueur);
 
 		gravite = grav;
 
@@ -38,8 +40,9 @@ public class Bombe extends Objet {
 
 		// on regle dx et dy en fonction de l'angle
 		// le 0 est a droite, le 180 est a gauche
-		dx = (float) (Math.cos(a) * vitesse);
-		dy = (float) (Math.sin(a) * vitesse);
+		double a = Math.toRadians(angle);
+		dx = Math.cos(a) * vitesse;
+		dy = Math.sin(a) * vitesse;
 
 		// le vent ne change pas pendant la course d'une bombe, on peut donc le
 		// stocker comme un attribut
@@ -72,10 +75,10 @@ public class Bombe extends Objet {
 		// on test si la bombe touche la carte ou les bords du jeu
 		// on la desactive et la bombe sera supprimee apres
 		if (x < 0 | x >= limitesframe.width) {
-			float xTest = x;
-			float yTest = y;
-			float dxTest = dx;
-			float dyTest = dy;
+			double xTest = x;
+			double yTest = y;
+			double dxTest = dx;
+			double dyTest = dy;
 
 			while (test) {
 				xTest = xTest + dxTest;

@@ -10,7 +10,7 @@ public class Carte extends Objet {
 	public Carte(Rectangle aframe, Color ableu) {
 		// on utilise le constructeur de Objet afin que le fond de la carte soit
 		// affiché avec les autres objets (plus simple)
-		super(0, 0, 0, 0, 0, 0, 0, "Fond.png", aframe, null, null, null);
+		super(0, 0, 0, 0, 0, "Fond.png", aframe, null, null, null);
 
 		bleu = ableu;
 
@@ -167,7 +167,7 @@ public class Carte extends Objet {
 
 	// methode qui donne le y de la carte pour n'importe quel x (permet de
 	// placer les objets sur la carte)
-	public float getY(float x) {
+	public double getY(double x) {
 		return horizon[(int) x];
 	}
 

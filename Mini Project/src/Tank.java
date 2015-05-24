@@ -1,7 +1,11 @@
 public class Tank extends Objet {
 	Canon canon;
-	float vie;
-	float fuel;
+	double vie;
+	double fuel;
+	// angle du canon
+	double angle;
+	// force du tir
+	double force;
 
 	// Constructeur nul mais faut le mettre
 	public Tank() {
@@ -10,17 +14,19 @@ public class Tank extends Objet {
 
 	public Tank(Joueur joueur, int placement, int nombreJoueurs,
 			double avitesse, String NomImage) {
-		super(0, 0, 0, 0, avitesse, 50, 0, NomImage, joueur.limitesframe,
+		super(0, 0, 0, 0, avitesse, NomImage, joueur.limitesframe,
 				joueur.map, ("Tank_" + joueur.n), joueur);
 
 		// on divise la taile du terrain par le nombre de joueur afin de placer
 		// chaque tank dans un secteur
-		this.x = (float) ((limitesframe.width / nombreJoueurs - 100)
-				* Math.random() + 50 + placement
-				* (limitesframe.width / nombreJoueurs))
+		this.x = ((limitesframe.width / nombreJoueurs - 100) * Math.random()
+				+ 50 + placement * (limitesframe.width / nombreJoueurs))
 				- limites.width / 2;
 		// le tank est place directement sur la map
 		this.y = map.getY(x + limites.width / 2) - limites.height;
+		
+		angle = 0;
+		force = 50;
 
 		// on cree le canon du tank
 		canon = new Canon(this);
@@ -31,7 +37,7 @@ public class Tank extends Objet {
 
 	public void move(long t) {
 		if (fuel > 0) {
-			x = x + (float) (vitesse * dx);
+			x = x + (vitesse * dx);
 			y = map.getY(x + limites.width / 2) - limites.height;
 
 			fuel -= 0.1 * Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))

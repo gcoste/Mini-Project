@@ -65,7 +65,7 @@ public class Bandeau extends JPanel {
 	public int getForce() {
 		return (int) forceSlider.getValue();
 	}
-	
+
 	public void setForce(int f) {
 		forceSlider.setValue(f);
 	}

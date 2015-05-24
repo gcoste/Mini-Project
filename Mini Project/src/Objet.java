@@ -6,13 +6,14 @@ import javax.imageio.ImageIO;
 public abstract class Objet {
 	// cadre représentant la fenetre totale (avec les barres)
 	Rectangle aframe;
-	// position haut gauche de l'objet (on prend des float afin que le mouvement
+	// position haut gauche de l'objet (on prend des double afin que le
+	// mouvement
 	// des objets ne soit pas gene par le rafraichissement rapide du jeu)
-	float x, y;
+	double x, y;
 	// dimensions de l'objet
 	int h, l;
 	// direction de deplacement
-	float dx, dy;
+	double dx, dy;
 	double vitesse;
 	Image image;
 	// limites de l'objet lui-meme
@@ -26,10 +27,6 @@ public abstract class Objet {
 	Joueur joueur;
 	// carte sur lequel evolue l'objet
 	Carte map;
-	// angle du canon
-	double angle;
-	// force du tir
-	float force;
 
 	// Constructeur nul mais faut le mettre
 	public Objet() {
@@ -37,17 +34,14 @@ public abstract class Objet {
 	}
 
 	// Constructeur initialise les attributs
-	public Objet(float ax, float ay, float adx, float ady, double avitesse,
-			float aforce, double angleToSet, String NomImage, Rectangle aframe,
-			Carte amap, String anom, Joueur ajoueur) {
+	public Objet(double ax, double ay, double adx, double ady, double avitesse,
+			String NomImage, Rectangle aframe, Carte amap, String anom,
+			Joueur ajoueur) {
 		x = ax;
 		y = ay;
 		dx = adx;
 		dy = ady;
 		vitesse = avitesse;
-		angle = angleToSet;
-		force = aforce;
-		
 
 		// Test si l'image est bien presente
 		try {
