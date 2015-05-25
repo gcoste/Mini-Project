@@ -2,17 +2,14 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class Carte extends Objet {
-	static Color bleu;
 
 	// horizon de la carte
-	int[] horizon;
+	double[] horizon;
 
-	public Carte(Rectangle aframe, Color ableu) {
+	public Carte(Rectangle aframe) {
 		// on utilise le constructeur de Objet afin que le fond de la carte soit
 		// affiché avec les autres objets (plus simple)
 		super(0, 0, 0, 0, 0, "Fond.png", aframe, null, null, null);
-
-		bleu = ableu;
 
 		// on redimmensionne l'image de fond afin qu'elle s'adapte a la
 		// resolution de l'ecran
@@ -40,36 +37,38 @@ public class Carte extends Objet {
 			polynome[i] = (l * 2) / degre * Math.random() + i * (l * 2) / degre;
 		}
 
-		double[] horizonTemp = new double[l];
 		double max = 0;
 		double min = 0;
 
-		for (int i = 0; i < l; i++) {
-			horizonTemp[i] = calculPolynome(i + (int) (l / 2), polynome);
+		double[] polynomialHorizon = new double[l];
 
-			if (max < horizonTemp[i]) {
-				max = horizonTemp[i];
+		for (int i = 0; i < l; i++) {
+			polynomialHorizon[i] = calculPolynome(i + (int) (l / 2), polynome);
+
+			if (max < polynomialHorizon[i]) {
+				max = polynomialHorizon[i];
 			}
 
-			if (min > horizonTemp[i]) {
-				min = horizonTemp[i];
+			if (min > polynomialHorizon[i]) {
+				min = polynomialHorizon[i];
 			}
 		}
 
-		for (int i = 0; i < horizonTemp.length; i++) {
-			horizonTemp[i] -= min;
+		for (int i = 0; i < polynomialHorizon.length; i++) {
+			polynomialHorizon[i] -= min;
 		}
 
 		max -= min;
 
-		for (int i = 0; i < horizonTemp.length; i++) {
-			horizonTemp[i] = (horizonTemp[i] / max) * (h - 400) + 200;
+		for (int i = 0; i < polynomialHorizon.length; i++) {
+			polynomialHorizon[i] = (polynomialHorizon[i] / max) * (h - 400)
+					+ 200;
 		}
 
-		horizon = new int[l];
+		horizon = new double[l];
 
-		for (int i = 0; i < horizonTemp.length; i++) {
-			horizon[i] = (int) horizonTemp[i];
+		for (int i = 0; i < polynomialHorizon.length; i++) {
+			horizon[i] = polynomialHorizon[i];
 		}
 
 		// donc la notre polynome de base est termine
@@ -79,7 +78,7 @@ public class Carte extends Objet {
 		double[] alea = new double[l];
 		alea[0] = 0;
 
-		int n = 10;
+		int n = 20;
 
 		// on attribue les petites variations tout les n points
 		for (int i = 0; i < alea.length; i = i + n) {
@@ -92,7 +91,7 @@ public class Carte extends Objet {
 
 		// on ajoute finalement le polynome et les petites variations
 		for (int i = 0; i < alea.length; i++) {
-			horizon[i] += (int) alea[i];
+			horizon[i] += alea[i];
 		}
 
 		// la fin du constructeur sert a verifier que la definition ne sort
@@ -116,15 +115,20 @@ public class Carte extends Objet {
 
 		max -= min;
 
-		for (int i = 0; i < horizon.length; i++) {
-			horizon[i] = (int) ((horizon[i] / max) * (h - 500) + 300);
+		for (int i = 0; i < horizon.length - 1; i++) {
+			horizon[i] = (horizon[i] / max) * (h - 500) + 300;
+		}
+
+		for (int i = 1; i < horizon.length - 1; i++) {
+			for (int k = 0; k < 50; k++) {
+				double d = (horizon[i - 1] + horizon[i + 1]) / 2;
+				horizon[i - 1] = (horizon[i - 1] + d) / 2;
+				horizon[i + 1] = (horizon[i + 1] + d) / 2;
+			}
 		}
 	}
 
-	public void drawHorizon(Rectangle aframe, Graphics buffer) {
-		// Color random = new Color((int)(Math.random()*255),
-		// (int)(Math.random()*255), (int)(Math.random()*255));
-
+	public void drawHorizon(Rectangle aframe, Graphics buffer, Color bleu) {
 		/*
 		 * On remplit la carte en bleu avec la definition (toujours definir la
 		 * couleur avant de dessiner). Le fond est dessine directement dans la
@@ -132,16 +136,17 @@ public class Carte extends Objet {
 		 */
 		buffer.setColor(bleu);
 		for (int i = 0; i < horizon.length - 1; i++) {
-			buffer.fillRect(i, horizon[i], 1, aframe.height - horizon[i]);
+			buffer.fillRect(i, (int) horizon[i], 1, aframe.height
+					- (int) horizon[i]);
 		}
 	}
 
 	public void destructionMap(int rayon, int x) {
-		rayon = (int) (2 * rayon);
+		rayon = 2 * rayon;
 		int min = Math.max(1, x - rayon);
 		int max = Math.min(limitesframe.width - 1, x + rayon);
 
-		int[] temp = new int[limitesframe.width];
+		double[] temp = new double[limitesframe.width];
 
 		for (int i = min; i < max; i++) {
 			if (Math.sqrt(Math.pow(x - i, 2) + Math.pow(getY(x) - getY(i), 2)) <= rayon) {
@@ -149,7 +154,7 @@ public class Carte extends Objet {
 						.sqrt(Math.pow(rayon, 2)
 								- (Math.pow(x - i, 2) + Math.pow(getY(x)
 										- getY(i), 2))));
-				temp[i] = (int) h;
+				temp[i] = h;
 			}
 		}
 
@@ -158,7 +163,7 @@ public class Carte extends Objet {
 
 			// lissage du resultat
 			for (int k = 0; k < 10; k++) {
-				int d = (horizon[i - 1] + horizon[i]) / 2;
+				double d = (horizon[i - 1] + horizon[i]) / 2;
 				horizon[i - 1] = (horizon[i - 1] + d) / 2;
 				horizon[i] = (horizon[i] + d) / 2;
 			}

@@ -72,7 +72,7 @@ public class Joueur {
 			break;
 		}
 
-		tank = new Tank(this, placement, nombreJoueurs, 0.2, "Tank_" + acouleur
+		tank = new Tank(this, placement, nombreJoueurs, 0.3, "Tank_" + acouleur
 				+ ".png");
 
 		canon = tank.canon;
@@ -82,7 +82,7 @@ public class Joueur {
 
 	public Bombe tire(double vent) {
 		// ON DEVRA A TERME REMPLACER "obus" PAR LE TYPE DE BOMBE ARME
-		Bombe obus = new Bombe(tank, vent, tank.angle, "obus", JoueursActifs,
+		Bombe obus = new Bombe(tank, vent, tank.angle, "rpg", JoueursActifs,
 				GRAVITE);
 		Thread tir = new Son("Tir.wav");
 		tir.start();
@@ -115,7 +115,16 @@ public class Joueur {
 	}
 
 	public void touche(Bombe bombe, Iterator<Joueur> k) {
-		tank.vie -= bombe.dommage;
+		double vieApresCoup = tank.vie - bombe.dommage;
+		bombe.rayonDegats((tank.x + tank.limites.width / 2));
+
+		// on corrige les degats afin que le tank ne se prenne pas deux fois le
+		// coup
+		tank.vie = vieApresCoup;
+		actif = true;
+		tank.actif = true;
+		canon.actif = true;
+
 		map.destructionMap(bombe.dommage,
 				(int) (tank.x + tank.limites.width / 2));
 
@@ -142,44 +151,59 @@ public class Joueur {
 	}
 
 	public double[] prevision(Tank t) {
-		double x = t.x + t.limites.getWidth()/2 - getXCanon();
-		double z = getYCanon() - t.y - t.limites.getHeight()/2;
+		double x = t.x + t.limites.getWidth() / 2 - (canon.x - 2);
+		double z = (canon.y - 2) - t.y - t.limites.getHeight() / 2;
 
 		double h = (Math.pow(0.15 * tank.force, 2)) / (2 * GRAVITE);
 		double delta = x * x - 4 * (z + ((x * x) / (4 * h)))
 				* ((x * x) / (4 * h));
-		double theta1 = Math.atan((-x + Math.sqrt(delta)) / (-2 * (x * x) / (4 * h)));
-		double theta2 = Math.atan((-x - Math.sqrt(delta)) / (-2 * (x * x) / (4 * h)));
+		double theta1 = Math.atan((-x + Math.sqrt(delta))
+				/ (-2 * (x * x) / (4 * h)));
+		double theta2 = Math.atan((-x - Math.sqrt(delta))
+				/ (-2 * (x * x) / (4 * h)));
 
 		if (x < 0) {
 			theta1 += Math.PI;
 			theta2 += Math.PI;
-			
+
 			double echange = theta1;
 			theta1 = theta2;
 			theta2 = echange;
 		}
-		
+
 		if (delta < 0) {
 			theta1 = -1;
+			theta2 = -1;
 		}
-		
-		return new double[] {Math.toDegrees(theta1), Math.toDegrees(theta2)};
+
+		return new double[] { Math.toDegrees(theta1), Math.toDegrees(theta2) };
 	}
 
 	public int testTir(double angle) {
-		Bombe obus = new Bombe(tank, 0, angle, "obus", JoueursActifs,
-				GRAVITE);
+		Bombe obus = new Bombe(tank, 0, angle, "obus", JoueursActifs, GRAVITE);
+
+		// on verifie que la bombe a quitte le rectangle du tank qui l'a tiree
+		// afin d'etre sur de ne pas entrainer une collision au debut du tir
+		boolean bombePartie = false;
 
 		boolean test = true;
 
 		while (true) {
-			obus.x = obus.x + obus.dx;
-			obus.y = obus.y - obus.dy;
-			obus.dy = obus.dy - GRAVITE;
+			obus.x += obus.dx;
+			obus.y -= obus.dy;
+			obus.dy -= GRAVITE;
+
+			// on verifie que la bombe a quitte le rectangle du tank qui l'a
+			// tiree afin d'etre sur de ne pas entrainer une collision au debut
+			// du tir
+			if (!(new Rectangle((int) obus.x, (int) obus.y, obus.l, obus.h))
+					.intersects(tank.limites) && !bombePartie) {
+				bombePartie = true;
+			}
 
 			obus.limites.setLocation((int) obus.x, (int) obus.y);
 
+			// on test si la bombe touche la carte ou les bords du jeu
 			if (obus.x < 0 | obus.x >= limitesframe.width) {
 				double xTest = obus.x;
 				double yTest = obus.y;
@@ -206,7 +230,7 @@ public class Joueur {
 
 			Iterator<Joueur> k = JoueursActifs.iterator();
 
-			while (k.hasNext()) {
+			while (k.hasNext() && bombePartie) {
 				Joueur J = (Joueur) k.next();
 
 				if (obus.Collision(J.tank)) {
