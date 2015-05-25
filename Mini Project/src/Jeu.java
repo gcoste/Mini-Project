@@ -6,6 +6,7 @@ import javax.swing.*;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Scanner;
 
 public class Jeu extends JFrame {
 	int nombreJoueurs = 5;
@@ -50,13 +51,16 @@ public class Jeu extends JFrame {
 	// parametres IA
 	boolean listeAnglesTermine;
 	double angleIA;
+	int forceIA;
 
 	double vent;
 
 	// le JPanel d'affichage des informations du joueur
 	Bandeau bandeau;
 	// couleur du bandeau et de la carte
-	static final Color bleu = new Color(2, 13, 23);
+	Color bleu = new Color(2, 13, 23);
+
+	boolean rainbows;
 
 	public Jeu() {
 		// on regle le layout pour le bandeau
@@ -73,6 +77,7 @@ public class Jeu extends JFrame {
 		joueurQuiJoue = 0;
 
 		listeAnglesTermine = false;
+		forceIA = 0;
 
 		// On place le vent à 0 pour l'instant
 		// le vent oscille entre 0.05 et -0.05;
@@ -107,12 +112,12 @@ public class Jeu extends JFrame {
 
 		// l'ecran est notre fenetre de je, on enleve 100 pour laisser la place
 		// au bandeauu
-		Ecran = new Rectangle(0, 0, getSize().width, getSize().height - 100);
+		Ecran = new Rectangle(0, 0, getSize().width, getSize().height - 150);
 
 		// On met l'arriere plan fixe pour eviter de scintiller quand on
 		// redessinera a chaque fois tout
-		ArrierePlan = new BufferedImage(getSize().width, getSize().height,
-				BufferedImage.TYPE_INT_RGB);
+		ArrierePlan = new BufferedImage(getSize().width,
+				getSize().height - 150, BufferedImage.TYPE_INT_RGB);
 		// On indique que buffer contient les dessins de arriere plan, si on
 		// modifie buffer, on modifie arriere plan
 		buffer = ArrierePlan.getGraphics();
@@ -121,7 +126,7 @@ public class Jeu extends JFrame {
 		// Creer la liste chainee de tous les joueurs en vie
 		JoueursActifs = new LinkedList<Joueur>();
 		// On initialise la map
-		map = new Carte(Ecran, bleu);
+		map = new Carte(Ecran);
 
 		// on cree deux tableau de nombres aléatoires pour le placement des
 		// tanks
@@ -145,8 +150,18 @@ public class Jeu extends JFrame {
 			temp[placement[i]] = -1;
 		}
 
+		Joueurs[0] = new Joueur(0, placement[0], nombreJoueurs, null, null,
+				true, map, Ecran, bandeau, JoueursActifs);
+
+		// on ajoute le tank et son canon a la liste d'objets
+		Objets.add(Joueurs[0].canon);
+		Objets.add(Joueurs[0].tank);
+
+		// on ajoute le joueur a liste des joueurs en vie
+		JoueursActifs.add(Joueurs[0]);
+
 		// on cree les joueurs (et ainsi leurs tanks et leurs canons)
-		for (int i = 0; i < nombreJoueurs; i++) {
+		for (int i = 1; i < nombreJoueurs; i++) {
 			Joueurs[i] = new Joueur(i, placement[i], nombreJoueurs, null, null,
 					false, map, Ecran, bandeau, JoueursActifs);
 
@@ -192,6 +207,8 @@ public class Jeu extends JFrame {
 			O.move(temps);
 		}
 
+		bandeau.setAngle(Joueurs[0].tank.angle);
+
 		// on affiche la fenetre enfin prete
 		setVisible(true);
 	}
@@ -203,7 +220,7 @@ public class Jeu extends JFrame {
 		// on dessine d'abord le fond
 		map.draw(temps, buffer);
 		// la carte possede sa propre methode d'affichage
-		map.drawHorizon(Ecran, buffer);
+		map.drawHorizon(Ecran, buffer, bleu);
 
 		// from here
 
@@ -212,11 +229,7 @@ public class Jeu extends JFrame {
 
 		buffer.setFont(comic);
 		buffer.setColor(Color.black);
-		buffer.drawString("Joueur " + Joueurs[joueurQuiJoue].n, 20, 50);
-		buffer.drawString("Vie : " + Joueurs[joueurQuiJoue].tank.vie, 20, 80);
-		buffer.drawString("Fuel : " + (int) Joueurs[joueurQuiJoue].tank.fuel,
-				20, 110);
-		buffer.drawString("Temps : " + (30 - (int) (tempsTour / 10)), 20, 140);
+		buffer.drawString("Temps : " + (30 - (int) (tempsTour / 10)), 20, 30);
 
 		if (attenteJoueur && !finJeu) {
 			buffer.setFont(comicLarge);
@@ -262,20 +275,23 @@ public class Jeu extends JFrame {
 		}
 
 		// On dessine l'image associee au buffer dans le JFrame
-		g.drawImage(ArrierePlan, 0, 100, this);
+		g.drawImage(ArrierePlan, 0, 150, this);
 	}
 
 	public void boucle_principale_jeu() {
-		/*
-		 * on gere le passage des tours avec une condition qui devient fausse a
-		 * la fin de chaque tour. Le tour se termine lorsque le joueur tire ou
-		 * lorsqu'il s'est ecoule 30 secondes. Alors, on passe a la trasition
-		 * entre les tours.
-		 */
 
 		if (!finJeu) {
 			int j = joueurQuiJoue;
 
+			// mise a jour des parametres du bandeau
+			miseAJourBandeau(j);
+
+			/*
+			 * on gere le passage des tours avec une condition qui devient
+			 * fausse a la fin de chaque tour. Le tour se termine lorsque le
+			 * joueur tire ou lorsqu'il s'est ecoule 30 secondes. Alors, on
+			 * passe a la trasition entre les tours.
+			 */
 			if (!finTourParTir && tempsTour / 10 < 30 && Joueurs[j].estHumain) {
 				if (ToucheGauche) {
 					Joueurs[j].moveGauche();
@@ -293,7 +309,7 @@ public class Jeu extends JFrame {
 
 				if (ToucheEspace) {
 					bombeActive = Joueurs[j].tire(vent);
-					Objets.add(bombeActive);
+					Objets.add(0, bombeActive);
 					finTourParTir = true;
 				}
 
@@ -305,29 +321,78 @@ public class Jeu extends JFrame {
 
 			} else if (!finTourParTir && tempsTour / 10 < 30
 					&& !Joueurs[j].estHumain) {
-				bandeau.setForce(100);
+
+				// si jamais le tank est detruit pendant son tour, on accelere
+				// le temps du tour afin que le tour se termine
+				if (!Joueurs[j].actif) {
+					tempsTour = 1000;
+				}
+
 				if (!listeAnglesTermine) {
+					forceIA = (int) (50 * Math.random() + 50);
 					double[] angleTanks = new double[nombreJoueurs];
 					angleIA = -1;
 
 					Iterator<Joueur> k = JoueursActifs.iterator();
-					Joueurs[j].tank.force = 100;
+					Joueurs[j].tank.force = forceIA;
 
 					while (k.hasNext()) {
 						Joueur J = (Joueur) k.next();
 
-						angleTanks[J.n] = Joueurs[j].prevision(J.tank)[1];
-					}
+						if (J.n != j) {
+							double petitAngle = Joueurs[j].prevision(J.tank)[0];
+							double grandAngle = Joueurs[j].prevision(J.tank)[1];
 
-					while (angleIA <= 0 | angleIA > 180) {
-						int p = (int) (nombreJoueurs * Math.random());
+							if (petitAngle >= 0 && petitAngle <= 180
+									&& Joueurs[j].testTir(petitAngle) == J.n) {
+								angleTanks[J.n] = petitAngle;
 
-						if (p != Joueurs[j].n) {
-							angleIA = angleTanks[p];
+							} else if (grandAngle >= 0 && grandAngle <= 180
+									&& Joueurs[j].testTir(grandAngle) == J.n) {
+								angleTanks[J.n] = grandAngle;
+
+							} else {
+								angleTanks[J.n] = 0;
+							}
 						}
 					}
 
-					listeAnglesTermine = true;
+					double sum = 0;
+
+					// on verifie que le tank a au moins un tank atteignable
+					for (int m = 0; m < nombreJoueurs; m++) {
+						sum += angleTanks[m];
+					}
+
+					// on traite le cas ou le tank ne pourrait toucher personne
+					if (sum == 0) {
+						Joueur J;
+
+						if (((Joueur) JoueursActifs.get(0)).n != j) {
+							J = (Joueur) JoueursActifs.get(0);
+						} else {
+							J = (Joueur) JoueursActifs.get(1);
+						}
+
+						if (J.tank.x >= Joueurs[j].tank.x) {
+							Joueurs[j].moveDroite();
+						} else {
+							Joueurs[j].moveGauche();
+						}
+
+					} else {
+						while (angleIA <= 0 | angleIA > 180) {
+							int p = (int) (nombreJoueurs * Math.random());
+
+							if (p != Joueurs[j].n) {
+								angleIA = angleTanks[p];
+							}
+						}
+
+						Joueurs[j].fixe();
+						listeAnglesTermine = true;
+					}
+
 				} else {
 					if ((int) angleIA != ((int) (Joueurs[j].tank.angle))) {
 						if (angleIA > Joueurs[j].tank.angle) {
@@ -339,10 +404,12 @@ public class Jeu extends JFrame {
 						Joueurs[j].tank.angle = angleIA;
 					} else {
 						bombeActive = Joueurs[j].tire(vent);
-						Objets.add(bombeActive);
+						Objets.add(0, bombeActive);
 						finTourParTir = true;
 					}
 				}
+
+				bandeau.setForce(forceIA);
 
 			} else if (finTourParTir && !passageJoueur && !attenteJoueur) {
 				// la premiere condition arrete le joueur et verifie que la
@@ -387,7 +454,8 @@ public class Jeu extends JFrame {
 					finJeu = true;
 				}
 
-				bandeau.setForce((int) Joueurs[joueurQuiJoue].tank.force);
+				bandeau.setAngle(Joueurs[joueurQuiJoue].tank.angle);
+				bandeau.setForce(Joueurs[joueurQuiJoue].tank.force);
 
 				/*
 				 * // on modifie le vent pour le tour a venir vent = vent +
@@ -411,8 +479,6 @@ public class Jeu extends JFrame {
 					timerTour.start();
 				}
 			}
-
-			Joueurs[j].tank.force = bandeau.getForce();
 
 			// on balaye la liste et on fait bouger tout les objets avec la
 			// classe move qui leur est propre
@@ -449,6 +515,20 @@ public class Jeu extends JFrame {
 			}
 		}
 
+		// cheats code
+		String cheat = "";
+
+		switch (cheat) {
+		case ("rainbows"):
+			rainbows = true;
+			break;
+		}
+
+		if (rainbows) {
+			bleu = new Color((int) (Math.random() * 255),
+					(int) (Math.random() * 255), (int) (Math.random() * 255));
+		}
+
 		// force le rafraichissement de l'image et le dessin de l'objet
 		repaint();
 	}
@@ -481,6 +561,23 @@ public class Jeu extends JFrame {
 				timerTour.start();
 			}
 		}
+	}
+
+	public void miseAJourBandeau(int j) {
+		Joueurs[j].tank.force = bandeau.getForce();
+
+		bandeau.setFuel(Joueurs[j].tank.fuel);
+		bandeau.setVie(Joueurs[j].tank.vie);
+
+		bandeau.setForce((int) Joueurs[j].tank.force);
+		bandeau.setForceLabel();
+
+		if (Math.abs(Joueurs[j].tank.angle - bandeau.getAngle()) >= 1.1) {
+			Joueurs[j].tank.angle = bandeau.getAngle();
+		}
+
+		bandeau.setAngle((int) Joueurs[j].tank.angle);
+		bandeau.setAngleLabel();
 	}
 
 	public void this_keyReleased(KeyEvent e) {
