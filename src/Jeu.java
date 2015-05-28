@@ -51,7 +51,6 @@ public class Jeu extends JFrame {
 	// parametres IA
 	boolean listeAnglesTermine;
 	double angleIA;
-	int forceIA;
 
 	double vent;
 
@@ -77,7 +76,6 @@ public class Jeu extends JFrame {
 		joueurQuiJoue = 0;
 
 		listeAnglesTermine = false;
-		forceIA = 0;
 
 		// On place le vent à 0 pour l'instant
 		// le vent oscille entre 0.05 et -0.05;
@@ -329,12 +327,11 @@ public class Jeu extends JFrame {
 				}
 
 				if (!listeAnglesTermine) {
-					forceIA = (int) (50 * Math.random() + 50);
 					double[] angleTanks = new double[nombreJoueurs];
 					angleIA = -1;
 
 					Iterator<Joueur> k = JoueursActifs.iterator();
-					Joueurs[j].tank.force = forceIA;
+					Joueurs[j].tank.force = (int) (50 * Math.random() + 50);
 
 					while (k.hasNext()) {
 						Joueur J = (Joueur) k.next();
@@ -408,9 +405,6 @@ public class Jeu extends JFrame {
 						finTourParTir = true;
 					}
 				}
-
-				bandeau.setForce(forceIA);
-
 			} else if (finTourParTir && !passageJoueur && !attenteJoueur) {
 				// la premiere condition arrete le joueur et verifie que la
 				// bombe
@@ -533,6 +527,26 @@ public class Jeu extends JFrame {
 		repaint();
 	}
 
+	public void miseAJourBandeau(int j) {
+		if (Joueurs[j].estHumain) {
+			Joueurs[j].tank.force = bandeau.getForce();
+		}
+
+		bandeau.setFuel(Joueurs[j].tank.fuel);
+		bandeau.setVie(Joueurs[j].tank.vie);
+
+		bandeau.setForce((int) Joueurs[j].tank.force);
+		bandeau.setForceLabel();
+
+		if (Math.abs(Joueurs[j].tank.angle - bandeau.getAngle()) >= 1.1
+				&& Joueurs[j].estHumain) {
+			Joueurs[j].tank.angle = bandeau.getAngle();
+		}
+
+		bandeau.setAngle((int) Joueurs[j].tank.angle);
+		bandeau.setAngleLabel();
+	}
+
 	public void this_keyPressed(KeyEvent e) {
 		// code correspond a la touche appuyee, stock un nombre pour une touche
 		int code = e.getKeyCode();
@@ -561,23 +575,6 @@ public class Jeu extends JFrame {
 				timerTour.start();
 			}
 		}
-	}
-
-	public void miseAJourBandeau(int j) {
-		Joueurs[j].tank.force = bandeau.getForce();
-
-		bandeau.setFuel(Joueurs[j].tank.fuel);
-		bandeau.setVie(Joueurs[j].tank.vie);
-
-		bandeau.setForce((int) Joueurs[j].tank.force);
-		bandeau.setForceLabel();
-
-		if (Math.abs(Joueurs[j].tank.angle - bandeau.getAngle()) >= 1.1) {
-			Joueurs[j].tank.angle = bandeau.getAngle();
-		}
-
-		bandeau.setAngle((int) Joueurs[j].tank.angle);
-		bandeau.setAngleLabel();
 	}
 
 	public void this_keyReleased(KeyEvent e) {
