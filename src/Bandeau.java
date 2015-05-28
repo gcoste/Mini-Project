@@ -3,25 +3,28 @@ import java.awt.*;
 import javax.swing.*;
 
 public class Bandeau extends JPanel {
-	public final Font arial = new Font("Arial", Font.BOLD, 20);
+	public final Font Calibri = new Font("Calibri", Font.BOLD, 25);
+	public final Font CalibriBig = new Font("Calibri", Font.BOLD, 40);
 
 	public JPanel bars;
+
 	public JProgressBar vieBar;
 	public JProgressBar fuelBar;
 
 	public JPanel central;
 
-	public JPanel infos;
-	public JLabel nom;
-	public JLabel temps;
-	public JLabel vent;
-
 	public JPanel bombe;
 	public JButton bombeNext;
-	public JButton bombePrev;
 	public JLabel bombeLabel;
+	public JButton bombePrev;
+
+	public JPanel infos;
+	public JLabel tempsLabel;
+	public JLabel nomLabel;
+	public JLabel ventLabel;
 
 	public JPanel sliders;
+
 	public JLabel forceLabel;
 	public JSlider forceSlider;
 	public JLabel angleLabel;
@@ -50,23 +53,89 @@ public class Bandeau extends JPanel {
 		this.add(central);
 		this.add(sliders);
 
+		createBars(largeur, bleu);
+		createCentral(largeur, bleu);
+		createSliders(largeur, bleu);
+	}
+
+	public void createBars(int largeur, Color bleu) {
 		vieBar = new JProgressBar(SwingConstants.HORIZONTAL, 0, 100);
 		vieBar.setPreferredSize(new Dimension((int) ((0.25) * largeur), 40));
 		vieBar.setStringPainted(true);
-		vieBar.setFont(arial);
+		vieBar.setFont(Calibri);
 		vieBar.setBackground(bleu);
 		vieBar.setForeground(new Color(200, 0, 0));
 
 		fuelBar = new JProgressBar(SwingConstants.HORIZONTAL, 0, 100);
 		fuelBar.setPreferredSize(new Dimension((int) ((0.25) * largeur), 40));
 		fuelBar.setStringPainted(true);
-		fuelBar.setFont(arial);
+		fuelBar.setFont(Calibri);
 		fuelBar.setBackground(bleu);
 		fuelBar.setForeground(new Color(28, 142, 62));
 
+		bars.add(vieBar, BorderLayout.NORTH);
+		bars.add(fuelBar, BorderLayout.SOUTH);
+	}
+
+	public void createCentral(int largeur, Color bleu) {
+		ImageIcon Moins = new ImageIcon("moins.png");
+		ImageIcon Plus = new ImageIcon("plus.png");
+
+		bombe = new JPanel(new FlowLayout());
+		bombe.setBackground(bleu);
+
+		bombePrev = new JButton(Moins);
+		bombePrev.setBorder(null);
+		bombePrev.setBackground(bleu);
+		bombePrev.setFocusable(false);
+
+		bombeLabel = new JLabel();
+		bombeLabel
+				.setPreferredSize(new Dimension((int) ((0.31) * largeur), 30));
+		bombeLabel.setHorizontalAlignment(0);
+		bombeLabel.setFont(CalibriBig);
+		bombeLabel.setForeground(Color.white);
+
+		bombeNext = new JButton(Plus);
+		bombeNext.setBorder(null);
+		bombeNext.setBackground(bleu);
+		bombeNext.setFocusable(false);
+
+		bombe.add(bombePrev);
+		bombe.add(bombeLabel);
+		bombe.add(bombeNext);
+
+		infos = new JPanel(new FlowLayout());
+		infos.setBackground(bleu);
+
+		tempsLabel = new JLabel();
+		tempsLabel.setHorizontalAlignment(0);
+		tempsLabel.setFont(CalibriBig);
+		tempsLabel.setForeground(Color.white);
+
+		nomLabel = new JLabel();
+		nomLabel.setPreferredSize(new Dimension((int) ((0.30) * largeur), 30));
+		nomLabel.setHorizontalAlignment(0);
+		nomLabel.setFont(CalibriBig);
+		nomLabel.setForeground(Color.white);
+
+		ventLabel = new JLabel();
+		ventLabel.setHorizontalAlignment(0);
+		ventLabel.setFont(CalibriBig);
+		ventLabel.setForeground(new Color(153, 217, 234));
+
+		infos.add(tempsLabel);
+		infos.add(nomLabel);
+		infos.add(ventLabel);
+
+		central.add(bombe);
+		central.add(infos);
+	}
+
+	public void createSliders(int largeur, Color bleu) {
 		forceLabel = new JLabel();
 		forceLabel.setHorizontalAlignment(0);
-		forceLabel.setFont(arial);
+		forceLabel.setFont(Calibri);
 		forceLabel.setForeground(Color.white);
 
 		forceSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 1);
@@ -77,7 +146,7 @@ public class Bandeau extends JPanel {
 
 		angleLabel = new JLabel();
 		angleLabel.setHorizontalAlignment(0);
-		angleLabel.setFont(arial);
+		angleLabel.setFont(Calibri);
 		angleLabel.setForeground(Color.white);
 
 		angleSlider = new JSlider(JSlider.HORIZONTAL, 0, 180, 1);
@@ -85,9 +154,7 @@ public class Bandeau extends JPanel {
 		angleSlider.setFocusable(false);
 		angleSlider.setForeground(Color.white);
 		angleSlider.setPaintTicks(true);
-
-		bars.add(vieBar, BorderLayout.NORTH);
-		bars.add(fuelBar, BorderLayout.SOUTH);
+		angleSlider.setInverted(true);
 
 		sliders.add(forceLabel);
 		sliders.add(forceSlider);
@@ -101,6 +168,36 @@ public class Bandeau extends JPanel {
 
 	public void setFuel(double fuel) {
 		fuelBar.setValue((int) fuel);
+	}
+
+	public void setTemps(double temps) {
+		// changement de la couleur du temps en fonction du temps ecoule
+		int r = Math.min(255, (int) (-temps * 510 / 30) + 510);
+		int g = Math.min(255, (int) (temps * 510 / 30));
+
+		tempsLabel.setForeground(new Color(r, g, 0));
+
+		tempsLabel.setText("" + (int) temps);
+	}
+
+	public void setNom(String nom) {
+		nomLabel.setText(nom);
+	}
+
+	public void setVent(double v) {
+		String vent = new String("");
+
+		for (int i = 0; i < (int) 300 * (Math.abs(v)); i++) {
+			if (v > 0) {
+				vent = vent + ">";
+			} else if (v < 0) {
+				vent = vent + "<";
+			} else {
+				vent = "-";
+			}
+		}
+
+		ventLabel.setText(vent);
 	}
 
 	public int getForce() {
@@ -127,5 +224,17 @@ public class Bandeau extends JPanel {
 
 	public void setAngleLabel() {
 		angleLabel.setText("Angle : " + getAngle());
+	}
+
+	protected ImageIcon creerIcone(String NomImage) {
+		java.net.URL imgURL = getClass().getResource(NomImage);
+		if (imgURL != null) {
+			return new ImageIcon(imgURL, NomImage);
+		} else {
+			System.out.println(NomImage + " introuvable !");
+			System.out.println("Mettre les images dans le repertoire source");
+			System.exit(0);
+			return null;
+		}
 	}
 }

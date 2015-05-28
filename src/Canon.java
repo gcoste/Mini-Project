@@ -11,7 +11,7 @@ public class Canon extends Objet {
 		// créer le canon
 		// (x,y) represente le point du bas du recttank.angle representant le
 		// canon (le point fixé au tank)
-		super(atank.x + 40, atank.y + 14, 0, 0, 0, "Canon.png",
+		super(atank.x + atank.limites.width/2, atank.y + 9, 0, 0, 0, "Canon.png",
 				atank.limitesframe, atank.map, ("Canon_" + atank.nom),
 				atank.joueur);
 
@@ -23,8 +23,8 @@ public class Canon extends Objet {
 	}
 
 	public void move(long t) {
-		x = tank.x + 40;
-		y = tank.y + 14;
+		x = tank.x + 25;
+		y = tank.y + 9;
 
 		xCanon = joueur.getXCanon();
 		yCanon = joueur.getYCanon();
@@ -49,10 +49,10 @@ public class Canon extends Objet {
 		Graphics2D g = (Graphics2D) buffer;
 		// g2 permet de définir l’épaisseur des traits ce que ne peut pas faire
 		// g
-		g.setStroke(new BasicStroke(5));
+		g.setStroke(new BasicStroke(3));
 		g.setColor(joueur.couleur);
 
-		g.drawLine((int) (x + Math.cos(a) * 15), (int) (y - Math.sin(a) * 15),
+		g.drawLine((int) (x + Math.cos(a) * 8), (int) (y - Math.sin(a) * 8),
 				(int) xCanon, (int) yCanon);
 	}
 }

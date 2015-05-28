@@ -28,8 +28,8 @@ public class Bombe extends Objet {
 		gravite = grav;
 
 		// on place la bombe en entree du canon
-		x = joueur.canon.x - 2;
-		y = joueur.canon.y - 2;
+		x = joueur.canon.x - 1;
+		y = joueur.canon.y - 1;
 
 		// on regle les dommages en fonction du type de bombe
 		if (nom.equals("gun")) {

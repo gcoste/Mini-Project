@@ -247,11 +247,11 @@ public class Joueur {
 
 	public double getXCanon() {
 		double a = Math.toRadians(tank.angle);
-		return (tank.canon.x + Math.cos(a) * 40);
+		return (tank.canon.x + Math.cos(a) * 28);
 	}
 
 	public double getYCanon() {
 		double a = Math.toRadians(tank.angle);
-		return (tank.canon.y - Math.sin(a) * 40);
+		return (tank.canon.y - Math.sin(a) * 28);
 	}
 }
