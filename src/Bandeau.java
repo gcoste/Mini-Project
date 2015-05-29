@@ -3,8 +3,8 @@ import java.awt.*;
 import javax.swing.*;
 
 public class Bandeau extends JPanel {
-	public final Font Calibri = new Font("Calibri", Font.BOLD, 25);
-	public final Font CalibriBig = new Font("Calibri", Font.BOLD, 40);
+	public Font Calibri = new Font("Calibri", Font.BOLD, 25);
+	public Font Captain;
 
 	public JPanel bars;
 
@@ -31,7 +31,9 @@ public class Bandeau extends JPanel {
 	public JSlider angleSlider;
 
 	// largeur est la largeur de l'ecran
-	public Bandeau(int largeur, Color bleu) {
+	public Bandeau(int largeur, Color bleu, Font cap, Font capBig) {
+		Captain = cap.deriveFont((float) 50);
+		
 		this.setLayout(new FlowLayout());
 		this.setPreferredSize(new Dimension(0, 150));
 		this.setBackground(bleu);
@@ -93,7 +95,7 @@ public class Bandeau extends JPanel {
 		bombeLabel
 				.setPreferredSize(new Dimension((int) ((0.31) * largeur), 30));
 		bombeLabel.setHorizontalAlignment(0);
-		bombeLabel.setFont(CalibriBig);
+		bombeLabel.setFont(Captain);
 		bombeLabel.setForeground(Color.white);
 
 		bombeNext = new JButton(Plus);
@@ -110,18 +112,17 @@ public class Bandeau extends JPanel {
 
 		tempsLabel = new JLabel();
 		tempsLabel.setHorizontalAlignment(0);
-		tempsLabel.setFont(CalibriBig);
+		tempsLabel.setFont(Captain);
 		tempsLabel.setForeground(Color.white);
 
 		nomLabel = new JLabel();
-		nomLabel.setPreferredSize(new Dimension((int) ((0.30) * largeur), 30));
+		nomLabel.setPreferredSize(new Dimension((int) ((0.30) * largeur), 60));
 		nomLabel.setHorizontalAlignment(0);
-		nomLabel.setFont(CalibriBig);
-		nomLabel.setForeground(Color.white);
+		nomLabel.setFont(Captain);
 
 		ventLabel = new JLabel();
 		ventLabel.setHorizontalAlignment(0);
-		ventLabel.setFont(CalibriBig);
+		ventLabel.setFont(Captain);
 		ventLabel.setForeground(new Color(153, 217, 234));
 
 		infos.add(tempsLabel);
@@ -180,7 +181,8 @@ public class Bandeau extends JPanel {
 		tempsLabel.setText("" + (int) temps);
 	}
 
-	public void setNom(String nom) {
+	public void setNom(String nom, Color c) {
+		nomLabel.setForeground(c);
 		nomLabel.setText(nom);
 	}
 

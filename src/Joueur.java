@@ -48,7 +48,7 @@ public class Joueur {
 			break;
 		case (2):
 			acouleur = "bleu";
-			couleur = new Color(14, 1, 67);
+			couleur = new Color(125, 241, 244);
 			break;
 		case (3):
 			acouleur = "jaune";
@@ -65,6 +65,10 @@ public class Joueur {
 		case (6):
 			acouleur = "marron";
 			couleur = new Color(96, 78, 34);
+			break;
+		case (7):
+			acouleur = "rose";
+			couleur = new Color(234, 64, 209);
 			break;
 		default:
 			acouleur = "vert";
