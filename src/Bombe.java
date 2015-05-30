@@ -65,7 +65,7 @@ public class Bombe extends Objet {
 
 	boolean test = true;
 
-	public void move(long t) {
+	public void move() {
 		x += dx;
 		y -= dy;
 		dy -= gravite;

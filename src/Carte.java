@@ -129,6 +129,9 @@ public class Carte extends Objet {
 	}
 
 	public void drawHorizon(Rectangle aframe, Graphics buffer, Color bleu) {
+		// on dessine d'abord le fond
+		draw(buffer);
+		
 		/*
 		 * On remplit la carte en bleu avec la definition (toujours definir la
 		 * couleur avant de dessiner). Le fond est dessine directement dans la
@@ -199,7 +202,7 @@ public class Carte extends Objet {
 
 	// on est oblige de definir cette methode meme si la carte ne "bouge" pas
 	// puisqu'elle extends de Objet
-	public void move(long t) {
+	public void move() {
 	}
 
 }

@@ -22,7 +22,7 @@ public class Canon extends Objet {
 		yCanon = y - Math.sin(a) * 40;
 	}
 
-	public void move(long t) {
+	public void move() {
 		x = tank.x + 25;
 		y = tank.y + 9;
 

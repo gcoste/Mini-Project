@@ -66,7 +66,7 @@ public abstract class Objet {
 	// Dessine l'image, est dans la classe abstraite pour pouvoir se repercuter
 	// au classe filles
 	// On a plus qu'a  parcourir la liste d'elements et tous les dessiner
-	public void draw(long t, Graphics buffer) {
+	public void draw(Graphics buffer) {
 		buffer.drawImage(image, (int) x, (int) y, null);
 	}
 
@@ -85,5 +85,5 @@ public abstract class Objet {
 
 	// Methode qui gere le mouvement des objets
 	// Abstraite car le mouvement depend du type d'objet
-	abstract void move(long t);
+	abstract void move();
 }

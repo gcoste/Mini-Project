@@ -27,6 +27,8 @@ public class Joueur {
 	// force du tir
 	double force;
 
+	boolean isMoving;
+
 	// parametre IA pour la dichotomie
 	double dico[];
 	double defaut;
@@ -38,13 +40,13 @@ public class Joueur {
 	Canon canon;
 
 	public Joueur(int num, int placement, int nombreJoueurs, String anom,
-			String acouleur, boolean Humain, int nombreBombe, Carte amap,
+			String acouleur, boolean Humain, int nombreBombes, Carte amap,
 			Rectangle aframe, Bandeau abandeau, LinkedList<Joueur> JoueursEnVie) {
 		limitesframe = aframe;
 		map = amap;
 		bandeau = abandeau;
 
-		arsenal = new int[nombreBombe];
+		arsenal = new int[nombreBombes];
 		arsenal[0] = 100000;
 		arsenal[1] = 10;
 		arsenal[2] = 0;
@@ -54,20 +56,20 @@ public class Joueur {
 		estHumain = Humain;
 		actif = true;
 
-		angle = 0;
+		isMoving = false;
 
+		angle = 0;
 		force = 80;
 
-		vie = 1000;
+		vie = 100;
 		fuel = 100;
-
-		dico = new double[] { -20, 20 };
 
 		if (estHumain) {
 			defaut = 0;
+			dico = new double[] { 0, 0 };
 		} else {
 			defaut = 40 * Math.random() - 20;
-			System.out.println("DEFAUT : " + defaut);
+			dico = new double[] { -20, 20 };
 		}
 
 		// on tranforme la couleur en texte en une couleur Java
@@ -121,8 +123,8 @@ public class Joueur {
 	public Bombe tire(double vent, String bombe, int n) {
 		arsenal[n]--;
 
-		Bombe obus = new Bombe(tank, vent, force + defaut,
-				angle, bombe, JoueursActifs, GRAVITE);
+		Bombe obus = new Bombe(tank, vent, force + defaut, angle, bombe,
+				JoueursActifs, GRAVITE);
 
 		Thread tir = new Son("Tir.wav");
 		tir.start();
@@ -132,14 +134,17 @@ public class Joueur {
 
 	public void moveGauche() {
 		tank.dx = -1;
+		isMoving = true;
 	}
 
 	public void moveDroite() {
 		tank.dx = 1;
+		isMoving = true;
 	}
 
 	public void fixe() {
 		tank.dx = 0;
+		isMoving = false;
 	}
 
 	public void anglePlus() {
@@ -221,7 +226,7 @@ public class Joueur {
 	public double testTir(double forceTest, double angleTest, Tank tankVise) {
 		Bombe obus = new Bombe(tank, 0, forceTest, angleTest, "obus",
 				JoueursActifs, GRAVITE);
-
+		
 		boolean dichot;
 		boolean cestBon = false;
 
@@ -249,15 +254,18 @@ public class Joueur {
 			// on verifie que la bombe a quitte le rectangle du tank qui l'a
 			// tiree afin d'etre sur de ne pas entrainer une collision au debut
 			// du tir
-			if (!(new Rectangle((int) obus.x, (int) obus.y, obus.l, obus.h))
-					.intersects(tank.limites) && !bombePartie) {
+			if (!(new Rectangle((int) obus.x, (int) obus.y,
+					obus.l, obus.h)).intersects(tank.limites)
+					&& !bombePartie) {
 				bombePartie = true;
 			}
 
-			obus.limites.setLocation((int) obus.x, (int) obus.y);
+			obus.limites.setLocation((int) obus.x,
+					(int) obus.y);
 
 			// on test si la bombe touche la carte ou les bords du jeu
-			if ((obus.x < 0 | obus.x >= limitesframe.width) && !dichot) {
+			if ((obus.x < 0 | obus.x >= limitesframe.width)
+					&& !dichot) {
 				double xTest = obus.x;
 				double yTest = obus.y;
 				double dxTest = obus.dx;
@@ -280,7 +288,8 @@ public class Joueur {
 			} else if (!dichot && obus.y >= map.getY(obus.x)) {
 				obus.actif = false;
 				return -1;
-			} else if (dichot && obus.y >= tankVise.getCenterY() && cestBon) {
+			} else if (dichot && obus.y >= tankVise.getCenterY()
+					&& cestBon) {
 				return (obus.x - tankVise.getCenterX());
 			}
 
@@ -307,5 +316,10 @@ public class Joueur {
 	public double getYCanon() {
 		double a = Math.toRadians(angle);
 		return (tank.canon.y - Math.sin(a) * 28);
+	}
+
+	public void move() {
+		tank.move();
+		canon.move();
 	}
 }

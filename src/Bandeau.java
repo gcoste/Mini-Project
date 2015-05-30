@@ -66,16 +66,12 @@ public class Bandeau extends JPanel {
 
 	public void createBars(int largeur, Color bleu) {
 		vieBar = new JProgressBar(SwingConstants.HORIZONTAL, 0, 100);
-		vieBar.setPreferredSize(new Dimension((int) ((0.25) * largeur), 40));
-		vieBar.setStringPainted(true);
-		vieBar.setFont(Calibri);
+		vieBar.setPreferredSize(new Dimension((int) ((0.25) * largeur), 20));
 		vieBar.setBackground(bleu);
 		vieBar.setForeground(new Color(200, 0, 0));
 
 		fuelBar = new JProgressBar(SwingConstants.HORIZONTAL, 0, 100);
-		fuelBar.setPreferredSize(new Dimension((int) ((0.25) * largeur), 40));
-		fuelBar.setStringPainted(true);
-		fuelBar.setFont(Calibri);
+		fuelBar.setPreferredSize(new Dimension((int) ((0.25) * largeur), 20));
 		fuelBar.setBackground(bleu);
 		fuelBar.setForeground(new Color(28, 142, 62));
 

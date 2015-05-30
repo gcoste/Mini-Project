@@ -23,7 +23,7 @@ public class Tank extends Objet {
 		canon = new Canon(this);
 	}
 
-	public void move(long t) {
+	public void move() {
 		if (joueur.fuel > 0) {
 			x = x + vitesse * dx;
 			y = map.getY(getCenterX()) - limites.height;

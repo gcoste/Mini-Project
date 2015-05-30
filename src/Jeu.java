@@ -14,7 +14,7 @@ public class Jeu extends JFrame implements ActionListener {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	int nombreJoueurs = 2;
+	int nombreJoueurs = 5;
 	boolean IA = !true;
 
 	final String[] nomsIA = new String[] { "Cewen", "Kekin", "Mib", "Loll",
@@ -280,7 +280,7 @@ public class Jeu extends JFrame implements ActionListener {
 
 		while (k.hasNext()) {
 			Objet O = (Objet) k.next();
-			O.move(temps);
+			O.move();
 		}
 
 		bandeau.setForce(Joueurs[0].force);
@@ -295,40 +295,8 @@ public class Jeu extends JFrame implements ActionListener {
 		// on dessine le bandeau
 		bandeau.repaint();
 
-		// on dessine d'abord le fond
-		map.draw(temps, buffer);
 		// la carte possede sa propre methode d'affichage
 		map.drawHorizon(Ecran, buffer, bleu);
-
-		buffer.setFont(Captain);
-		buffer.setColor(bleu);
-
-		if (attenteJoueur && !finJeu) {
-			drawStringCentre("En attente de " + Joueurs[joueurQuiJoue].nom,
-					Ecran.width / 2, 130);
-			drawStringCentre("Appuyez sur Entree", Ecran.width / 2, 190);
-
-		} else if (finJeu) {
-			buffer.setColor(new Color(200, 0, 0));
-
-			Iterator<Joueur> k = JoueursActifs.iterator();
-
-			Joueur O = null;
-
-			while (k.hasNext()) {
-				O = (Joueur) k.next();
-			}
-
-			drawStringCentre("Game Over", Ecran.width / 2, 120);
-
-			if (O != null) {
-				drawStringCentre(O.nom + " a gagne !", Ecran.width / 2, 200);
-			}
-		}
-
-		if (!finJeu) {
-			message.drawMessage(temps);
-		}
 
 		// dessine tous les objets dans le buffer
 		Iterator<Objet> k = Objets.iterator();
@@ -336,7 +304,7 @@ public class Jeu extends JFrame implements ActionListener {
 		while (k.hasNext()) {
 			Objet O = (Objet) k.next();
 
-			O.draw(temps, buffer);
+			O.draw(buffer);
 
 			// les canons sont dessines a part puisque leur definition n'est pas
 			// la meme que pour les autres objets (pas d'image)
@@ -345,13 +313,22 @@ public class Jeu extends JFrame implements ActionListener {
 
 				t.canon.draw(buffer);
 
-				buffer.setFont(CaptainSmall);
-				drawStringCentre("" + (int) t.joueur.vie,
-						(int) (O.getCenterX()), (int) (O.y - 25));
+				if (!O.joueur.isMoving) {
+					buffer.setFont(CaptainSmall);
+					drawStringCentre("" + (int) t.joueur.vie,
+							(int) (O.getCenterX()), (int) (O.y - 25));
+				}
 			}
 		}
 
-		// On dessine l'image associee au buffer dans le JFrame
+		// on dessine tout les messages
+		drawInfos();
+
+		if (!Joueurs[joueurQuiJoue].isMoving) {
+			drawViseur();
+		}
+
+		// On dessine finalement l'image associee au buffer dans le JFrame
 		g.drawImage(ArrierePlan, 0, 150, this);
 	}
 
@@ -380,14 +357,7 @@ public class Jeu extends JFrame implements ActionListener {
 				passageTour();
 			}
 
-			// on balaye la liste et on fait bouger tout les objets avec la
-			// classe move qui leur est propre
-			Iterator<Objet> k = Objets.iterator();
-
-			while (k.hasNext()) {
-				Objet O = (Objet) k.next();
-				O.move(temps);
-			}
+			Joueurs[joueurQuiJoue].move();
 
 			// on balaye la liste et supprime tous les objets inactifs
 			// ainsi on ne paindra que les objets encore actifs
@@ -589,6 +559,7 @@ public class Jeu extends JFrame implements ActionListener {
 			// bombe
 			// tire a bien explose avant de changer de joueur
 			Joueurs[joueurQuiJoue].fixe();
+			bombeActive.move();
 
 			if (!bombeActive.actif) {
 				passageJoueur = true;
@@ -644,7 +615,27 @@ public class Jeu extends JFrame implements ActionListener {
 						+ " va prendre son tour", null);
 			}
 
+			for (int u = 0; u < 3; u++) {
+				// on balaye la liste et on fait bouger tout les objets avec la
+				// classe move qui leur est propre
+				Iterator<Objet> k = Objets.iterator();
+
+				while (k.hasNext()) {
+					Objet O = (Objet) k.next();
+					O.move();
+				}
+			}
+
 		} else if (attenteJoueur) {
+			// on balaye la liste et on fait bouger tout les objets avec la
+			// classe move qui leur est propre
+			Iterator<Objet> k = Objets.iterator();
+
+			while (k.hasNext()) {
+				Objet O = (Objet) k.next();
+				O.move();
+			}
+
 			// on attend enfin que le joueur ait appuye sur entre pour
 			// continuer
 			if (ToucheEntre) {
@@ -696,6 +687,49 @@ public class Jeu extends JFrame implements ActionListener {
 
 		bandeau.setAngle((int) Joueurs[j].angle);
 		bandeau.setAngleLabel();
+	}
+
+	public void drawInfos() {
+		buffer.setFont(Captain);
+		buffer.setColor(bleu);
+
+		if (attenteJoueur && !finJeu) {
+			drawStringCentre("En attente de " + Joueurs[joueurQuiJoue].nom,
+					Ecran.width / 2, 130);
+			drawStringCentre("Appuyez sur Entree", Ecran.width / 2, 190);
+
+		} else if (finJeu) {
+			buffer.setColor(new Color(200, 0, 0));
+
+			Iterator<Joueur> k = JoueursActifs.iterator();
+
+			Joueur O = null;
+
+			while (k.hasNext()) {
+				O = (Joueur) k.next();
+			}
+
+			drawStringCentre("Game Over", Ecran.width / 2, 120);
+
+			if (O != null) {
+				drawStringCentre(O.nom + " a gagne !", Ecran.width / 2, 200);
+			}
+		}
+
+		if (!finJeu) {
+			message.drawMessage(temps);
+		}
+	}
+
+	public void drawViseur() {
+		buffer.setColor(Joueurs[joueurQuiJoue].couleur);
+
+		double a = Math.toRadians(Joueurs[joueurQuiJoue].angle);
+
+		int xV = (int) (Joueurs[joueurQuiJoue].tank.canon.x + Math.cos(a) * 70);
+		int yV = (int) (Joueurs[joueurQuiJoue].tank.canon.y - Math.sin(a) * 70);
+
+		buffer.drawOval(xV - 6, yV - 6, 12, 12);
 	}
 
 	private Font creerFont(int taille, String font) {
