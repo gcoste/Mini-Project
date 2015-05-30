@@ -226,7 +226,7 @@ public class Joueur {
 	public double testTir(double forceTest, double angleTest, Tank tankVise) {
 		Bombe obus = new Bombe(tank, 0, forceTest, angleTest, "obus",
 				JoueursActifs, GRAVITE);
-		
+
 		boolean dichot;
 		boolean cestBon = false;
 
@@ -254,18 +254,15 @@ public class Joueur {
 			// on verifie que la bombe a quitte le rectangle du tank qui l'a
 			// tiree afin d'etre sur de ne pas entrainer une collision au debut
 			// du tir
-			if (!(new Rectangle((int) obus.x, (int) obus.y,
-					obus.l, obus.h)).intersects(tank.limites)
-					&& !bombePartie) {
+			if (!(new Rectangle((int) obus.x, (int) obus.y, obus.l, obus.h))
+					.intersects(tank.limites) && !bombePartie) {
 				bombePartie = true;
 			}
 
-			obus.limites.setLocation((int) obus.x,
-					(int) obus.y);
+			obus.limites.setLocation((int) obus.x, (int) obus.y);
 
 			// on test si la bombe touche la carte ou les bords du jeu
-			if ((obus.x < 0 | obus.x >= limitesframe.width)
-					&& !dichot) {
+			if ((obus.x < 0 | obus.x >= limitesframe.width) && !dichot) {
 				double xTest = obus.x;
 				double yTest = obus.y;
 				double dxTest = obus.dx;
@@ -288,8 +285,7 @@ public class Joueur {
 			} else if (!dichot && obus.y >= map.getY(obus.x)) {
 				obus.actif = false;
 				return -1;
-			} else if (dichot && obus.y >= tankVise.getCenterY()
-					&& cestBon) {
+			} else if (dichot && obus.y >= tankVise.getCenterY() && cestBon) {
 				return (obus.x - tankVise.getCenterX());
 			}
 

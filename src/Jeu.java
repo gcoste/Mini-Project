@@ -59,8 +59,10 @@ public class Jeu extends JFrame implements ActionListener {
 	// moment du jeu
 	Message message;
 
-	JPanel cadre;
+	JPanel centralPanel;
+	JPanel milieuPanel;
 	JButton quitter;
+	JProgressBar forceBar;
 
 	boolean ToucheHaut;
 	boolean ToucheBas;
@@ -232,9 +234,17 @@ public class Jeu extends JFrame implements ActionListener {
 		// on ajoute notre bandeau a la fenetre
 		this.getContentPane().add(bandeau, BorderLayout.NORTH);
 
-		cadre = new JPanel(new FlowLayout());
-		cadre.setOpaque(false);
-		this.getContentPane().add(cadre, BorderLayout.CENTER);
+		centralPanel = new JPanel();
+		centralPanel
+				.setLayout(new BoxLayout(centralPanel, BoxLayout.PAGE_AXIS));
+		centralPanel.setOpaque(false);
+		centralPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		centralPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
+		this.getContentPane().add(centralPanel, BorderLayout.CENTER);
+
+		milieuPanel = new JPanel(
+				new BoxLayout(milieuPanel, BoxLayout.LINE_AXIS));
+		milieuPanel.setOpaque(false);
 
 		quitter = new JButton("Quitter");
 		quitter.setPreferredSize(new Dimension(250, 100));
@@ -244,7 +254,13 @@ public class Jeu extends JFrame implements ActionListener {
 		quitter.addActionListener(this);
 		quitter.setVisible(false);
 
-		cadre.add(quitter);
+		forceBar = new JProgressBar(SwingConstants.HORIZONTAL, 0, 100);
+		forceBar.setPreferredSize(new Dimension(400, 30));
+		forceBar.setBackground(new Color(0, 255, 0));
+		forceBar.setVisible(false);
+
+		centralPanel.add(forceBar);
+		centralPanel.add(quitter);
 
 		// On initialise le timer du jeu afin d'avoir un jeu fluide (il bat
 		// idealement toute les 100*TEMPS millisecondes)
@@ -291,7 +307,10 @@ public class Jeu extends JFrame implements ActionListener {
 	}
 
 	public void paint(Graphics g) {
+		// on dessine les boutons meme s'ils ne sont pas visibles;
 		quitter.repaint();
+		forceBar.repaint();
+
 		// on dessine le bandeau
 		bandeau.repaint();
 
@@ -313,7 +332,7 @@ public class Jeu extends JFrame implements ActionListener {
 
 				t.canon.draw(buffer);
 
-				if (!O.joueur.isMoving) {
+				if (O.joueur.n != joueurQuiJoue) {
 					buffer.setFont(CaptainSmall);
 					drawStringCentre("" + (int) t.joueur.vie,
 							(int) (O.getCenterX()), (int) (O.y - 25));
@@ -418,7 +437,10 @@ public class Jeu extends JFrame implements ActionListener {
 			Joueurs[j].angleMoins();
 		}
 
-		if (ToucheEspace) {
+		while (ToucheEspace) {
+
+			Joueurs[j].force++;
+
 			bombeActive = Joueurs[j].tire(vent, bombes[bombeArmee], bombeArmee);
 			Objets.add(0, bombeActive);
 			finTourParTir = true;
@@ -726,10 +748,10 @@ public class Jeu extends JFrame implements ActionListener {
 
 		double a = Math.toRadians(Joueurs[joueurQuiJoue].angle);
 
-		int xV = (int) (Joueurs[joueurQuiJoue].tank.canon.x + Math.cos(a) * 70);
-		int yV = (int) (Joueurs[joueurQuiJoue].tank.canon.y - Math.sin(a) * 70);
+		int xV = (int) (Joueurs[joueurQuiJoue].tank.canon.x + Math.cos(a) * 100);
+		int yV = (int) (Joueurs[joueurQuiJoue].tank.canon.y - Math.sin(a) * 100);
 
-		buffer.drawOval(xV - 6, yV - 6, 12, 12);
+		buffer.drawOval(xV - 10, yV - 10, 20, 20);
 	}
 
 	private Font creerFont(int taille, String font) {
