@@ -9,7 +9,7 @@ public class Canon extends Objet {
 	public Canon(Tank atank) {
 		// l'image ne sera pas utilisée mais obligation de la mettre si on veut
 		// créer le canon
-		// (x,y) represente le point du bas du recttank.angle representant le
+		// (x,y) represente le point du bas du rectangle representant le
 		// canon (le point fixé au tank)
 		super(atank.x + atank.limites.width/2, atank.y + 9, 0, 0, 0, "Canon.png",
 				atank.limitesframe, atank.map, ("Canon_" + atank.nom),
@@ -17,7 +17,7 @@ public class Canon extends Objet {
 
 		tank = atank;
 
-		double a = Math.toRadians(tank.angle);
+		double a = Math.toRadians(joueur.angle);
 		xCanon = x + Math.cos(a) * 40;
 		yCanon = y - Math.sin(a) * 40;
 	}
@@ -29,11 +29,11 @@ public class Canon extends Objet {
 		xCanon = joueur.getXCanon();
 		yCanon = joueur.getYCanon();
 
-		while (yCanon > map.getY(xCanon) && tank.angle != 90) {
-			if (tank.angle > 90) {
-				tank.angle = (int) tank.angle - 1;
-			} else if (tank.angle < 90) {
-				tank.angle = (int) tank.angle + 1;
+		while (yCanon > map.getY(xCanon) && joueur.angle != 90) {
+			if (joueur.angle > 90) {
+				joueur.angle = (int) joueur.angle - 1;
+			} else if (joueur.angle < 90) {
+				joueur.angle = (int) joueur.angle + 1;
 			}
 
 			xCanon = joueur.getXCanon();
@@ -42,7 +42,7 @@ public class Canon extends Objet {
 	}
 
 	public void draw(Graphics buffer) {
-		double a = Math.toRadians(tank.angle);
+		double a = Math.toRadians(joueur.angle);
 
 		// Pour accéder aux fonctions graphiques avancées il suffit de
 		// transtyper g

@@ -17,6 +17,15 @@ public class Joueur {
 	int score;
 	Color couleur;
 	boolean actif;
+	
+	int[] arsenal;
+	
+	double vie;
+	double fuel;
+	// angle du canon
+	double angle;
+	// force du tir
+	double force;
 
 	final double GRAVITE = 0.1;
 
@@ -25,16 +34,27 @@ public class Joueur {
 	Canon canon;
 
 	public Joueur(int num, int placement, int nombreJoueurs, String anom,
-			String acouleur, boolean Humain, Carte amap, Rectangle aframe,
+			String acouleur, boolean Humain, int nombreBombe, Carte amap, Rectangle aframe,
 			Bandeau abandeau, LinkedList<Joueur> JoueursEnVie) {
 		limitesframe = aframe;
 		map = amap;
 		bandeau = abandeau;
+		
+		arsenal = new int[nombreBombe];
+		arsenal[0] = 100000;
+		arsenal[1] = 10;
+		arsenal[2] = 1;
 
 		n = num;
 		nom = anom;
 		estHumain = Humain;
 		actif = true;
+		
+		angle = 0;
+		force = 50;
+
+		vie = 100;
+		fuel = 100;
 
 		// on tranforme la couleur en texte en une couleur Java
 		switch (n) {
@@ -84,9 +104,10 @@ public class Joueur {
 		JoueursActifs = JoueursEnVie;
 	}
 
-	public Bombe tire(double vent) {
-		// ON DEVRA A TERME REMPLACER "obus" PAR LE TYPE DE BOMBE ARME
-		Bombe obus = new Bombe(tank, vent, tank.angle, "rpg", JoueursActifs,
+	public Bombe tire(double vent, String bombe, int n) {
+		arsenal[n]--;
+		
+		Bombe obus = new Bombe(tank, vent, angle, bombe, JoueursActifs,
 				GRAVITE);
 		Thread tir = new Son("Tir.wav");
 		tir.start();
@@ -107,24 +128,24 @@ public class Joueur {
 	}
 
 	public void anglePlus() {
-		if (tank.angle < 180) {
-			tank.angle += 0.5;
+		if (angle < 180) {
+			angle += 0.5;
 		}
 	}
 
 	public void angleMoins() {
-		if (tank.angle > 0) {
-			tank.angle -= 0.5;
+		if (angle > 0) {
+			angle -= 0.5;
 		}
 	}
 
 	public void touche(Bombe bombe, Iterator<Joueur> k) {
-		double vieApresCoup = tank.vie - bombe.dommage;
+		double vieApresCoup = vie - bombe.dommage;
 		bombe.rayonDegats((tank.x + tank.limites.width / 2));
 
 		// on corrige les degats afin que le tank ne se prenne pas deux fois le
 		// coup
-		tank.vie = vieApresCoup;
+		vie = vieApresCoup;
 		actif = true;
 		tank.actif = true;
 		canon.actif = true;
@@ -132,7 +153,7 @@ public class Joueur {
 		map.destructionMap(bombe.dommage,
 				(int) (tank.x + tank.limites.width / 2));
 
-		if (tank.vie <= 0) {
+		if (vie <= 0) {
 			k.remove();
 			actif = false;
 			tank.actif = false;
@@ -141,13 +162,13 @@ public class Joueur {
 	}
 
 	public void degats(int k) {
-		tank.vie -= k;
+		vie -= k;
 
 		if (k == 0) {
-			tank.vie = 0;
+			vie = 0;
 		}
 
-		if (tank.vie <= 0) {
+		if (vie <= 0) {
 			actif = false;
 			tank.actif = false;
 			canon.actif = false;
@@ -158,7 +179,7 @@ public class Joueur {
 		double x = t.x + t.limites.getWidth() / 2 - (canon.x - 2);
 		double z = (canon.y - 2) - t.y - t.limites.getHeight() / 2;
 
-		double h = (Math.pow(0.15 * tank.force, 2)) / (2 * GRAVITE);
+		double h = (Math.pow(0.15 * force, 2)) / (2 * GRAVITE);
 		double delta = x * x - 4 * (z + ((x * x) / (4 * h)))
 				* ((x * x) / (4 * h));
 		double theta1 = Math.atan((-x + Math.sqrt(delta))
@@ -250,12 +271,12 @@ public class Joueur {
 	}
 
 	public double getXCanon() {
-		double a = Math.toRadians(tank.angle);
+		double a = Math.toRadians(angle);
 		return (tank.canon.x + Math.cos(a) * 28);
 	}
 
 	public double getYCanon() {
-		double a = Math.toRadians(tank.angle);
+		double a = Math.toRadians(angle);
 		return (tank.canon.y - Math.sin(a) * 28);
 	}
 }

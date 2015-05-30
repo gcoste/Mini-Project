@@ -43,7 +43,7 @@ public class Bandeau extends JPanel {
 		bars.setBackground(bleu);
 
 		central = new JPanel(new GridLayout(2, 1));
-		central.setPreferredSize(new Dimension((int) ((0.45) * largeur), 100));
+		central.setPreferredSize(new Dimension((int) ((0.45) * largeur), 150));
 		central.setBackground(bleu);
 
 		sliders = new JPanel(new GridLayout(4, 1));
@@ -80,8 +80,8 @@ public class Bandeau extends JPanel {
 	}
 
 	public void createCentral(int largeur, Color bleu) {
-		ImageIcon Moins = new ImageIcon("moins.png");
-		ImageIcon Plus = new ImageIcon("plus.png");
+		ImageIcon Moins = new ImageIcon(Toolkit.getDefaultToolkit().getImage("moins.png"));
+		ImageIcon Plus = new ImageIcon(Toolkit.getDefaultToolkit().getImage("plus.png"));
 
 		bombe = new JPanel(new FlowLayout());
 		bombe.setBackground(bleu);
@@ -92,8 +92,7 @@ public class Bandeau extends JPanel {
 		bombePrev.setFocusable(false);
 
 		bombeLabel = new JLabel();
-		bombeLabel
-				.setPreferredSize(new Dimension((int) ((0.31) * largeur), 30));
+		bombeLabel.setPreferredSize(new Dimension((int) ((0.2) * largeur), 80));
 		bombeLabel.setHorizontalAlignment(0);
 		bombeLabel.setFont(Captain);
 		bombeLabel.setForeground(Color.white);
@@ -111,16 +110,18 @@ public class Bandeau extends JPanel {
 		infos.setBackground(bleu);
 
 		tempsLabel = new JLabel();
+		tempsLabel.setPreferredSize(new Dimension((int) ((0.05) * largeur), 60));
 		tempsLabel.setHorizontalAlignment(0);
 		tempsLabel.setFont(Captain);
 		tempsLabel.setForeground(Color.white);
 
 		nomLabel = new JLabel();
-		nomLabel.setPreferredSize(new Dimension((int) ((0.30) * largeur), 60));
+		nomLabel.setPreferredSize(new Dimension((int) ((0.25) * largeur), 60));
 		nomLabel.setHorizontalAlignment(0);
 		nomLabel.setFont(Captain);
 
 		ventLabel = new JLabel();
+		ventLabel.setPreferredSize(new Dimension((int) ((0.05) * largeur), 60));
 		ventLabel.setHorizontalAlignment(0);
 		ventLabel.setFont(Captain);
 		ventLabel.setForeground(new Color(153, 217, 234));
@@ -169,6 +170,16 @@ public class Bandeau extends JPanel {
 
 	public void setFuel(double fuel) {
 		fuelBar.setValue((int) fuel);
+	}
+	
+	public void setBombe(String bombe, int n) {
+		if (bombe.equals("gun")) {
+			bombe += "  -  INFINI";
+		} else {
+			bombe += "  -  " + n;
+		}
+		
+		bombeLabel.setText(bombe);
 	}
 
 	public void setTemps(double temps) {

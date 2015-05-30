@@ -20,7 +20,7 @@ public class Bombe extends Objet {
 
 	public Bombe(Tank atank, double avent, double angle, String nom,
 			LinkedList<Joueur> ListJoueurs, double grav) {
-		super(0, 0, 0, 0, atank.force * 0.15, "Bombe.png", atank.limitesframe,
+		super(0, 0, 0, 0, atank.joueur.force * 0.15, "Bombe.png", atank.limitesframe,
 				atank.map, nom, atank.joueur);
 
 		tank = atank;
@@ -38,9 +38,11 @@ public class Bombe extends Objet {
 			dommage = 25;
 		} else if (nom.equals("obus")) {
 			dommage = 50;
+		} else if (nom.equals("v2")) {
+			dommage = 80;
 		} else if (nom.equals("ogive")) {
 			dommage = 100;
-		} else if (nom.equals("tsar")) {
+		} else if (nom.equals("tsar bomba")) {
 			dommage = 200;
 		}
 

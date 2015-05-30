@@ -1,11 +1,5 @@
 public class Tank extends Objet {
 	Canon canon;
-	double vie;
-	double fuel;
-	// angle du canon
-	double angle;
-	// force du tir
-	double force;
 
 	// Constructeur nul mais faut le mettre
 	public Tank() {
@@ -24,23 +18,17 @@ public class Tank extends Objet {
 				- limites.width / 2;
 		// le tank est place directement sur la map
 		this.y = map.getY(x + limites.width / 2) - limites.height;
-
-		angle = 0;
-		force = 50;
-
+		
 		// on cree le canon du tank
 		canon = new Canon(this);
-
-		this.vie = 100;
-		this.fuel = 100;
 	}
 
 	public void move(long t) {
-		if (fuel > 0) {
+		if (joueur.fuel > 0) {
 			x = x + vitesse * dx;
 			y = map.getY(x + limites.width / 2) - limites.height;
 
-			fuel -= 0.1 * Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))
+			joueur.fuel -= 0.1 * Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))
 					* vitesse;
 
 			// On test si on a pas atteint les bords de l'ecran, si c'est le cas
