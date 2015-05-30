@@ -144,9 +144,9 @@ public class Carte extends Objet {
 	public void destructionMap(int rayon, int x) {
 		rayon = 2 * rayon;
 		int min = Math.max(1, x - rayon);
-		int max = Math.min(limitesframe.width - 1, x + rayon);
+		int max = Math.min(limitesFrame.width - 1, x + rayon);
 
-		double[] temp = new double[limitesframe.width];
+		double[] temp = new double[limitesFrame.width];
 
 		for (int i = min; i < max; i++) {
 			if (Math.sqrt(Math.pow(x - i, 2) + Math.pow(getY(x) - getY(i), 2)) <= rayon) {

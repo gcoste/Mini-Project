@@ -8,10 +8,13 @@ import javax.swing.*;
 
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Scanner;
 
 public class Jeu extends JFrame implements ActionListener {
-	int nombreJoueurs = 8;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	int nombreJoueurs = 2;
 	boolean IA = !true;
 
 	final String[] nomsIA = new String[] { "Cewen", "Kekin", "Mib", "Loll",
@@ -49,11 +52,12 @@ public class Jeu extends JFrame implements ActionListener {
 	long temps;
 	long tempsTour;
 
-	// parametre qui sert a gerer le temps d'affichage des messages a l'ecran
-	int tempsMessage;
-
 	BufferedImage ArrierePlan;
 	Graphics buffer;
+	// on cree un objet du type message afin de pouvoir donner des
+	// informations a l'utilisateur de maniere simple a n'importe quelle
+	// moment du jeu
+	Message message;
 
 	JPanel cadre;
 	JButton quitter;
@@ -91,8 +95,7 @@ public class Jeu extends JFrame implements ActionListener {
 	// difficulte de 1 a 5
 	int difficulte = 1;
 
-	// le vent est fixe entre 0.01 et -0.01
-	final double VENT = (0.02 * Math.random() - 0.01);
+	double vent;
 
 	// le JPanel d'affichage des informations du joueur
 	Bandeau bandeau;
@@ -112,13 +115,15 @@ public class Jeu extends JFrame implements ActionListener {
 		attenteIA = false;
 		passageJoueur = false;
 
-		tempsMessage = 0;
 		tempsTour = 0;
 		joueurQuiJoue = 0;
 
 		bombeArmee = 0;
 
 		temps = 0;
+
+		// le vent varie entre 0.01 et -0.01
+		vent = (1 / (double) difficulte) * 0.02 * Math.random() - 0.01;
 
 		angleChoisi = false;
 
@@ -161,6 +166,10 @@ public class Jeu extends JFrame implements ActionListener {
 		// On indique que buffer contient les dessins de arriere plan, si on
 		// modifie buffer, on modifie arriere plan
 		buffer = ArrierePlan.getGraphics();
+		// on cree le message qui s'affichera lorqu'on aura besoin de donner un
+		// message au joueur
+		message = new Message(buffer, Ecran, Captain);
+
 		// Creer la liste chainee de tous les objets
 		Objets = new LinkedList<Objet>();
 		// Creer la liste chainee de tous les joueurs en vie
@@ -216,7 +225,7 @@ public class Jeu extends JFrame implements ActionListener {
 
 		// on cree le bandeau
 		bandeau = new Bandeau(Ecran.width, bleu, CaptainSmall, Captain);
-		bandeau.setVent(VENT);
+		bandeau.setVent(vent);
 		bandeau.setNom(Joueurs[0].nom, Joueurs[0].couleur);
 		bandeau.bombePrev.addActionListener(this);
 		bandeau.bombeNext.addActionListener(this);
@@ -274,6 +283,7 @@ public class Jeu extends JFrame implements ActionListener {
 			O.move(temps);
 		}
 
+		bandeau.setForce(Joueurs[0].force);
 		bandeau.setAngle(Joueurs[0].angle);
 
 		// on affiche la fenetre enfin prete
@@ -298,10 +308,6 @@ public class Jeu extends JFrame implements ActionListener {
 					Ecran.width / 2, 130);
 			drawStringCentre("Appuyez sur Entree", Ecran.width / 2, 190);
 
-		} else if (attenteIA && !finJeu) {
-			drawStringCentre(Joueurs[joueurQuiJoue].nom
-					+ " va prendre son tour", Ecran.width / 2, 160);
-
 		} else if (finJeu) {
 			buffer.setColor(new Color(200, 0, 0));
 
@@ -318,6 +324,10 @@ public class Jeu extends JFrame implements ActionListener {
 			if (O != null) {
 				drawStringCentre(O.nom + " a gagne !", Ecran.width / 2, 200);
 			}
+		}
+
+		if (!finJeu) {
+			message.drawMessage(temps);
 		}
 
 		// dessine tous les objets dans le buffer
@@ -337,7 +347,7 @@ public class Jeu extends JFrame implements ActionListener {
 
 				buffer.setFont(CaptainSmall);
 				drawStringCentre("" + (int) t.joueur.vie,
-						(int) (O.x + O.limites.width / 2), (int) (O.y - 25));
+						(int) (O.getCenterX()), (int) (O.y - 25));
 			}
 		}
 
@@ -345,7 +355,7 @@ public class Jeu extends JFrame implements ActionListener {
 		g.drawImage(ArrierePlan, 0, 150, this);
 	}
 
-	public void boucle_principale_jeu() {
+	private void boucle_principale_jeu() {
 
 		if (!finJeu) {
 			int j = joueurQuiJoue;
@@ -360,143 +370,10 @@ public class Jeu extends JFrame implements ActionListener {
 			 * passe a la trasition entre les tours.
 			 */
 			if (!finTourParTir && tempsTour / 10 < 30 && Joueurs[j].estHumain) {
-				if (ToucheGauche) {
-					Joueurs[j].moveGauche();
-				} else if (ToucheDroite) {
-					Joueurs[j].moveDroite();
-				} else {
-					Joueurs[j].fixe();
-				}
-
-				if (ToucheHaut) {
-					Joueurs[j].anglePlus();
-				} else if (ToucheBas) {
-					Joueurs[j].angleMoins();
-				}
-
-				if (ToucheEspace) {
-					bombeActive = Joueurs[j].tire(VENT, bombes[bombeArmee],
-							bombeArmee);
-					Objets.add(0, bombeActive);
-					finTourParTir = true;
-				}
-
-				// si jamais le tank est detruit pendant son tour, on accelere
-				// le temps du tour afin que le tour se termine
-				if (!Joueurs[j].actif) {
-					tempsTour = 1000;
-				}
-
+				boucleHumain(j);
 			} else if (!finTourParTir && tempsTour / 10 < 30
 					&& !Joueurs[j].estHumain) {
-
-				// si jamais le tank est detruit pendant son tour, on accelere
-				// le temps du tour afin que le tour se termine
-				if (!Joueurs[j].actif) {
-					tempsTour = 1000;
-				}
-
-				if (!angleChoisi) {
-					double[] angleTanks = new double[nombreJoueurs];
-					bombeArmee = bombes.length - 1;
-
-					while (Joueurs[j].arsenal[bombeArmee] == 0) {
-						bombeArmee--;
-					}
-
-					angleIA = -1;
-
-					Iterator<Joueur> k = JoueursActifs.iterator();
-					Joueurs[j].force = (int) (25 * Math.random() + 65);
-
-					while (k.hasNext()) {
-						Joueur J = (Joueur) k.next();
-
-						if (J.n != j) {
-							double petitAngle = Joueurs[j].prevision(J.tank)[0];
-							double grandAngle = Joueurs[j].prevision(J.tank)[1];
-
-							if (petitAngle >= 0 && petitAngle <= 180
-									&& Joueurs[j].testTir(petitAngle) == J.n) {
-								angleTanks[J.n] = petitAngle;
-
-							} else if (grandAngle >= 0 && grandAngle <= 180
-									&& Joueurs[j].testTir(grandAngle) == J.n) {
-								angleTanks[J.n] = grandAngle;
-
-							} else {
-								angleTanks[J.n] = 0;
-							}
-						}
-					}
-
-					double sum = 0;
-
-					// on verifie que le tank a au moins un tank atteignable
-					for (int m = 0; m < nombreJoueurs; m++) {
-						sum += angleTanks[m];
-					}
-
-					// on traite le cas ou le tank ne pourrait toucher personne
-					if (sum == 0) {
-						Joueur J;
-
-						if (((Joueur) JoueursActifs.get(0)).n != j) {
-							J = (Joueur) JoueursActifs.get(0);
-						} else {
-							J = (Joueur) JoueursActifs.get(1);
-						}
-
-						if (J.tank.x >= Joueurs[j].tank.x) {
-							Joueurs[j].moveDroite();
-						} else {
-							Joueurs[j].moveGauche();
-						}
-
-					} else {
-						// on gere aussi la difficulte
-						while (angleIA <= 0 | angleIA > 180) {
-							int p = (int) (nombreJoueurs * Math.random());
-
-							if (p != Joueurs[j].n) {
-								angleIA = angleTanks[p];
-							}
-						}
-
-						angleIA += (1 / (double) difficulte)
-								* Math.log(100 * Math.random() + 1);
-
-						if (angleIA > 180) {
-							angleIA = 180;
-						} else if (angleIA < 0) {
-							angleIA = 0;
-						}
-
-						Joueurs[j].fixe();
-						angleChoisi = true;
-					}
-
-				} else {
-					if ((int) angleIA != ((int) (Joueurs[j].angle))) {
-						if (angleIA > Joueurs[j].angle) {
-							Joueurs[j].anglePlus();
-						} else if (angleIA < Joueurs[j].angle) {
-							Joueurs[j].angleMoins();
-						}
-					} else if (angleIA != Joueurs[j].angle) {
-						Joueurs[j].angle = angleIA;
-					} else {
-						bombeActive = Joueurs[j].tire(VENT, bombes[bombeArmee],
-								bombeArmee);
-						Objets.add(0, bombeActive);
-						finTourParTir = true;
-					}
-
-					if (Joueurs[j].getYCanon() > map.getY(Joueurs[j]
-							.getXCanon())) {
-						angleChoisi = false;
-					}
-				}
+				boucleIA(j);
 			} else {
 				// on gere le passage de tour dans une methode separee afin
 				// d'alleger la boucle principale
@@ -556,7 +433,157 @@ public class Jeu extends JFrame implements ActionListener {
 		repaint();
 	}
 
-	public void passageTour() {
+	private void boucleHumain(int j) {
+		if (ToucheGauche) {
+			Joueurs[j].moveGauche();
+		} else if (ToucheDroite) {
+			Joueurs[j].moveDroite();
+		} else {
+			Joueurs[j].fixe();
+		}
+
+		if (ToucheHaut) {
+			Joueurs[j].anglePlus();
+		} else if (ToucheBas) {
+			Joueurs[j].angleMoins();
+		}
+
+		if (ToucheEspace) {
+			bombeActive = Joueurs[j].tire(vent, bombes[bombeArmee], bombeArmee);
+			Objets.add(0, bombeActive);
+			finTourParTir = true;
+		}
+
+		// si jamais le tank est detruit pendant son tour, on accelere
+		// le temps du tour afin que le tour se termine
+		if (!Joueurs[j].actif) {
+			tempsTour = 300;
+		}
+	}
+
+	private void boucleIA(int j) {
+
+		// si jamais le tank est detruit pendant son tour, on accelere
+		// le temps du tour afin que le tour se termine
+		if (!Joueurs[j].actif) {
+			tempsTour = 300;
+		}
+
+		if (!angleChoisi) {
+			double[] angleTanks = new double[nombreJoueurs];
+			bombeArmee = bombes.length - 1;
+
+			while (Joueurs[j].arsenal[bombeArmee] == 0) {
+				bombeArmee--;
+			}
+
+			angleIA = -1;
+
+			Iterator<Joueur> k = JoueursActifs.iterator();
+			while (k.hasNext()) {
+				Joueur J = (Joueur) k.next();
+
+				if (J.n != j) {
+					double petitAngle = Joueurs[j].prevision(J.tank, 80)[0];
+					double grandAngle = Joueurs[j].prevision(J.tank, 80)[1];
+
+					if (petitAngle >= 0 && petitAngle <= 180
+							&& Joueurs[j].testTir(80, petitAngle, null) == J.n) {
+						angleTanks[J.n] = petitAngle;
+
+					} else if (grandAngle >= 0 && grandAngle <= 180
+							&& Joueurs[j].testTir(80, grandAngle, null) == J.n) {
+						angleTanks[J.n] = grandAngle;
+
+					} else {
+						angleTanks[J.n] = 0;
+					}
+				}
+			}
+
+			double sum = 0;
+
+			// on verifie que le tank a au moins un tank atteignable
+			for (int m = 0; m < nombreJoueurs; m++) {
+				sum += angleTanks[m];
+			}
+
+			// on traite le cas ou le tank ne pourrait toucher personne
+			if (sum == 0) {
+				Joueur J;
+
+				if (((Joueur) JoueursActifs.get(0)).n != j) {
+					J = (Joueur) JoueursActifs.get(0);
+				} else {
+					J = (Joueur) JoueursActifs.get(1);
+				}
+
+				if (J.tank.x >= Joueurs[j].tank.x) {
+					Joueurs[j].moveDroite();
+				} else {
+					Joueurs[j].moveGauche();
+				}
+
+			} else {
+				// on gere aussi la difficulte
+				int joueurVise = 0;
+
+				while (angleIA <= 0 | angleIA > 180) {
+					joueurVise = (int) (nombreJoueurs * Math.random());
+
+					if (joueurVise != Joueurs[j].n) {
+						angleIA = angleTanks[joueurVise];
+					}
+				}
+
+				double d = Joueurs[j].testTir(80
+						+ (Joueurs[j].dico[0] + Joueurs[j].dico[1]) / 2
+						+ Joueurs[j].defaut, angleIA, Joueurs[joueurVise].tank) / 10;
+
+				if (Joueurs[joueurVise].tank.getCenterX() < Joueurs[j].tank
+						.getCenterX()) {
+					if (d >= 0) {
+						Joueurs[j].dico[0] = (Joueurs[j].dico[0] + Joueurs[j].dico[1]) / 2;
+					} else {
+						Joueurs[j].dico[1] = (Joueurs[j].dico[0] + Joueurs[j].dico[1]) / 2;
+					}
+				} else {
+					if (d >= 0) {
+						Joueurs[j].dico[1] = (Joueurs[j].dico[0] + Joueurs[j].dico[1]) / 2;
+					} else {
+						Joueurs[j].dico[0] = (Joueurs[j].dico[0] + Joueurs[j].dico[1]) / 2;
+					}
+				}
+
+				Joueurs[j].force = 80 + (Joueurs[j].dico[0] + Joueurs[j].dico[1]) / 2;
+
+				Joueurs[j].fixe();
+				angleChoisi = true;
+			}
+
+		} else {
+			if ((int) angleIA != ((int) (Joueurs[j].angle))) {
+				if (angleIA > Joueurs[j].angle) {
+					Joueurs[j].anglePlus();
+				} else if (angleIA < Joueurs[j].angle) {
+					Joueurs[j].angleMoins();
+				}
+			} else if (angleIA != Joueurs[j].angle) {
+				Joueurs[j].angle = angleIA;
+			} else {
+				bombeActive = Joueurs[j].tire(vent, bombes[bombeArmee],
+						bombeArmee);
+				Objets.add(0, bombeActive);
+				finTourParTir = true;
+			}
+
+			if (Joueurs[j].getYCanon() > map.getY(Joueurs[j].getXCanon())) {
+				angleChoisi = false;
+			}
+		}
+	}
+
+	private void passageTour() {
 		if (finTourParTir && !passageJoueur && !attenteJoueur && !attenteIA) {
 			// la premiere condition arrete le joueur et verifie que la
 			// bombe
@@ -572,8 +599,7 @@ public class Jeu extends JFrame implements ActionListener {
 
 		} else if (tempsTour / 10 >= 30) {
 			// la deuxieme condition arrete le joueur dans le cas ou le tour
-			// ce
-			// serait termine a cause du temps
+			// ce serait termine a cause du temps
 			Joueurs[joueurQuiJoue].fixe();
 
 			finTourParTir = true;
@@ -600,10 +626,13 @@ public class Jeu extends JFrame implements ActionListener {
 				finJeu = true;
 			}
 
-			bandeau.setAngle(Joueurs[joueurQuiJoue].angle);
-			bandeau.setForce(Joueurs[joueurQuiJoue].force);
+			vent = (1 / (double) difficulte) * 0.02 * Math.random() - 0.01;
+
 			bandeau.setNom(Joueurs[joueurQuiJoue].nom,
 					Joueurs[joueurQuiJoue].couleur);
+			bandeau.setVent(vent);
+			bandeau.setAngle(Joueurs[joueurQuiJoue].angle);
+			bandeau.setForce(Joueurs[joueurQuiJoue].force);
 
 			passageJoueur = false;
 
@@ -611,7 +640,8 @@ public class Jeu extends JFrame implements ActionListener {
 				attenteJoueur = true;
 			} else {
 				attenteIA = true;
-				tempsMessage = (int) temps;
+				message.setMessage(temps, bleu, 2, Joueurs[joueurQuiJoue].nom
+						+ " va prendre son tour", null);
 			}
 
 		} else if (attenteJoueur) {
@@ -626,7 +656,11 @@ public class Jeu extends JFrame implements ActionListener {
 			}
 		} else if (attenteIA) {
 
-			if (temps - 200 > tempsMessage | ToucheEntre) {
+			if (!message.isDrawn | ToucheEntre) {
+				if (ToucheEntre) {
+					message.isDrawn = false;
+				}
+
 				finTourParTir = false;
 				attenteIA = false;
 				angleChoisi = false;
@@ -636,7 +670,7 @@ public class Jeu extends JFrame implements ActionListener {
 		}
 	}
 
-	public void miseAJourBandeau(int j) {
+	private void miseAJourBandeau(int j) {
 		if (Joueurs[j].estHumain && !attenteJoueur) {
 			Joueurs[j].force = bandeau.getForce();
 		}
@@ -664,7 +698,7 @@ public class Jeu extends JFrame implements ActionListener {
 		bandeau.setAngleLabel();
 	}
 
-	public Font creerFont(int taille, String font) {
+	private Font creerFont(int taille, String font) {
 		try {
 			// la police creer est de taille 1
 			Font police = Font.createFont(Font.TRUETYPE_FONT, new File(font
@@ -688,7 +722,7 @@ public class Jeu extends JFrame implements ActionListener {
 		buffer.drawString(s, xPos - stringLength / 2, yPos);
 	}
 
-	public void this_keyPressed(KeyEvent e) {
+	private void this_keyPressed(KeyEvent e) {
 		// code correspond a la touche appuyee, stock un nombre pour une touche
 		int code = e.getKeyCode();
 		// Suivant la touche appuyee, on previent jeu que celle-ci est appuyee
@@ -722,7 +756,7 @@ public class Jeu extends JFrame implements ActionListener {
 		}
 	}
 
-	public void this_keyReleased(KeyEvent e) {
+	private void this_keyReleased(KeyEvent e) {
 		// code correspond a la touche relachee, stock un nombre pour une touche
 		int code = e.getKeyCode();
 		if (code == 37) {
@@ -799,22 +833,24 @@ public class Jeu extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
 
-		if (source == bandeau.bombePrev) {
-			bombeArmee--;
+		if (Joueurs[joueurQuiJoue].estHumain) {
+			if (source == bandeau.bombePrev) {
+				bombeArmee--;
 
-			if (bombeArmee == -1) {
-				bombeArmee = bombes.length - 1;
-			}
-		} else if (source == bandeau.bombeNext) {
-			do {
-				bombeArmee++;
-
-				if (bombeArmee == bombes.length) {
-					bombeArmee = 0;
+				if (bombeArmee == -1) {
+					bombeArmee = bombes.length - 1;
 				}
-			} while (Joueurs[joueurQuiJoue].arsenal[bombeArmee] <= 0);
-		} else if (source == quitter) {
-			System.exit(0);
+			} else if (source == bandeau.bombeNext) {
+				do {
+					bombeArmee++;
+
+					if (bombeArmee == bombes.length) {
+						bombeArmee = 0;
+					}
+				} while (Joueurs[joueurQuiJoue].arsenal[bombeArmee] <= 0);
+			} else if (source == quitter) {
+				System.exit(0);
+			}
 		}
 	}
 }

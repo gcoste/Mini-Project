@@ -3,6 +3,10 @@ import java.awt.*;
 import javax.swing.*;
 
 public class Bandeau extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public Font Calibri = new Font("Calibri", Font.BOLD, 25);
 	public Font Captain;
 
@@ -33,7 +37,7 @@ public class Bandeau extends JPanel {
 	// largeur est la largeur de l'ecran
 	public Bandeau(int largeur, Color bleu, Font cap, Font capBig) {
 		Captain = cap.deriveFont((float) 50);
-		
+
 		this.setLayout(new FlowLayout());
 		this.setPreferredSize(new Dimension(0, 150));
 		this.setBackground(bleu);
@@ -80,8 +84,10 @@ public class Bandeau extends JPanel {
 	}
 
 	public void createCentral(int largeur, Color bleu) {
-		ImageIcon Moins = new ImageIcon(Toolkit.getDefaultToolkit().getImage("moins.png"));
-		ImageIcon Plus = new ImageIcon(Toolkit.getDefaultToolkit().getImage("plus.png"));
+		ImageIcon Moins = new ImageIcon(Toolkit.getDefaultToolkit().getImage(
+				"moins.png"));
+		ImageIcon Plus = new ImageIcon(Toolkit.getDefaultToolkit().getImage(
+				"plus.png"));
 
 		bombe = new JPanel(new FlowLayout());
 		bombe.setBackground(bleu);
@@ -110,7 +116,8 @@ public class Bandeau extends JPanel {
 		infos.setBackground(bleu);
 
 		tempsLabel = new JLabel();
-		tempsLabel.setPreferredSize(new Dimension((int) ((0.05) * largeur), 60));
+		tempsLabel
+				.setPreferredSize(new Dimension((int) ((0.05) * largeur), 60));
 		tempsLabel.setHorizontalAlignment(0);
 		tempsLabel.setFont(Captain);
 		tempsLabel.setForeground(Color.white);
@@ -143,7 +150,6 @@ public class Bandeau extends JPanel {
 		forceSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 1);
 		forceSlider.setBackground(bleu);
 		forceSlider.setFocusable(false);
-		forceSlider.setValue(50);
 		forceSlider.setForeground(Color.white);
 
 		angleLabel = new JLabel();
@@ -171,14 +177,14 @@ public class Bandeau extends JPanel {
 	public void setFuel(double fuel) {
 		fuelBar.setValue((int) fuel);
 	}
-	
+
 	public void setBombe(String bombe, int n) {
 		if (bombe.equals("gun")) {
 			bombe += "  -  INFINI";
 		} else {
 			bombe += "  -  " + n;
 		}
-		
+
 		bombeLabel.setText(bombe);
 	}
 
@@ -201,9 +207,9 @@ public class Bandeau extends JPanel {
 		String vent = new String("");
 
 		for (int i = 0; i < (int) 300 * (Math.abs(v)); i++) {
-			if (v > 0) {
+			if (v > 0.001) {
 				vent = vent + ">";
-			} else if (v < 0) {
+			} else if (v < -0.001) {
 				vent = vent + "<";
 			} else {
 				vent = "-";

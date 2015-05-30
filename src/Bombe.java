@@ -18,9 +18,9 @@ public class Bombe extends Objet {
 
 	LinkedList<Joueur> JoueursActifs;
 
-	public Bombe(Tank atank, double avent, double angle, String nom,
-			LinkedList<Joueur> ListJoueurs, double grav) {
-		super(0, 0, 0, 0, atank.joueur.force * 0.15, "Bombe.png", atank.limitesframe,
+	public Bombe(Tank atank, double avent, double aforce, double angle,
+			String nom, LinkedList<Joueur> ListJoueurs, double grav) {
+		super(0, 0, 0, 0, aforce * 0.15, "Bombe.png", atank.limitesFrame,
 				atank.map, nom, atank.joueur);
 
 		tank = atank;
@@ -73,7 +73,7 @@ public class Bombe extends Objet {
 
 		// on test si la bombe touche la carte ou les bords du jeu
 		// on la desactive et la bombe sera supprimee apres
-		if (x < 0 | x >= limitesframe.width) {
+		if (x < 0 | x >= limitesFrame.width) {
 			double xTest = x;
 			double yTest = y;
 			double dxTest = dx;
@@ -85,10 +85,10 @@ public class Bombe extends Objet {
 				dyTest = dyTest - gravite;
 				dxTest = dxTest + vent;
 
-				if ((xTest >= 0 && xTest < limitesframe.width)
+				if ((xTest >= 0 && xTest < limitesFrame.width)
 						&& yTest < map.getY(xTest)) {
 					test = false;
-				} else if (yTest > limitesframe.height) {
+				} else if (yTest > limitesFrame.height) {
 					this.actif = false;
 					test = false;
 				}

@@ -19,7 +19,7 @@ public abstract class Objet {
 	// limites de l'objet lui-meme
 	Rectangle limites;
 	// limites de l'ecran
-	Rectangle limitesframe;
+	Rectangle limitesFrame;
 	String nom;
 	// l'objet est-il actif
 	boolean actif;
@@ -56,7 +56,7 @@ public abstract class Objet {
 		h = image.getHeight(null);
 		l = image.getWidth(null);
 		limites = new Rectangle((int) ax, (int) ay, l, h);
-		limitesframe = aframe;
+		limitesFrame = aframe;
 		nom = anom;
 		actif = true;
 		joueur = ajoueur;
@@ -73,6 +73,14 @@ public abstract class Objet {
 	// Methode qui test si deux objets sont en collision
 	public boolean Collision(Objet O) {
 		return limites.intersects(O.limites);
+	}
+
+	public double getCenterX() {
+		return x + limites.width / 2;
+	}
+
+	public double getCenterY() {
+		return y + limites.height / 2;
 	}
 
 	// Methode qui gere le mouvement des objets
