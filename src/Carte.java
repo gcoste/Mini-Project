@@ -13,9 +13,7 @@ public class Carte extends Objet {
 
 		// on redimmensionne l'image de fond afin qu'elle s'adapte a la
 		// resolution de l'ecran
-		image = scaleImage(image,
-				image.getWidth(null) * aframe.height / image.getHeight(null),
-				aframe.height);
+		image = scaleImage(image, aframe.width, aframe.height);
 
 		int h = aframe.height;
 		int l = aframe.width + 1;
@@ -131,7 +129,7 @@ public class Carte extends Objet {
 	public void drawHorizon(Rectangle aframe, Graphics buffer, Color bleu) {
 		// on dessine d'abord le fond
 		draw(buffer);
-		
+
 		/*
 		 * On remplit la carte en bleu avec la definition (toujours definir la
 		 * couleur avant de dessiner). Le fond est dessine directement dans la

@@ -11,80 +11,92 @@ public class Bandeau extends JPanel {
 	public Font Captain;
 
 	public JPanel bars;
-
 	public JProgressBar vieBar;
 	public JProgressBar fuelBar;
-
-	public JPanel central;
-
-	public JPanel bombe;
-	public JButton bombeNext;
-	public JLabel bombeLabel;
-	public JButton bombePrev;
 
 	public JPanel infos;
 	public JLabel tempsLabel;
 	public JLabel nomLabel;
 	public JLabel ventLabel;
 
-	public JPanel sliders;
-
-	public JLabel angleLabel;
-	public JSlider angleSlider;
+	public JPanel bombe;
+	public JButton bombeNext;
+	public JLabel bombeLabel;
+	public JButton bombePrev;
 
 	// largeur est la largeur de l'ecran
 	public Bandeau(int largeur, Color bleu, Font cap, Font capBig) {
 		Captain = cap.deriveFont((float) 50);
 
 		this.setLayout(new FlowLayout());
-		this.setPreferredSize(new Dimension(0, 150));
+		this.setPreferredSize(new Dimension(0, 100));
 		this.setBackground(bleu);
 
-		bars = new JPanel(new BorderLayout());
-		bars.setPreferredSize(new Dimension((int) ((0.25) * largeur), 100));
+		bars = new JPanel(new FlowLayout());
+		bars.setPreferredSize(new Dimension((int) ((0.25) * largeur), 90));
 		bars.setBackground(bleu);
 
-		central = new JPanel(new GridLayout(2, 1));
-		central.setPreferredSize(new Dimension((int) ((0.45) * largeur), 150));
-		central.setBackground(bleu);
+		infos = new JPanel(new FlowLayout());
+		infos.setPreferredSize(new Dimension((int) ((0.45) * largeur), 100));
+		infos.setBackground(bleu);
 
-		sliders = new JPanel(new GridLayout(4, 1));
-		sliders.setPreferredSize(new Dimension((int) ((0.25) * largeur), 150));
-		sliders.setAlignmentY(0);
-		sliders.setBackground(bleu);
+		bombe = new JPanel(new FlowLayout());
+		bombe.setPreferredSize(new Dimension((int) ((0.25) * largeur), 100));
+		bombe.setBackground(bleu);
 
 		this.add(bars);
-		this.add(central);
-		this.add(sliders);
+		this.add(infos);
+		this.add(bombe);
 
 		createBars(largeur, bleu);
-		createCentral(largeur, bleu);
-		createSliders(largeur, bleu);
+		createInfos(largeur, bleu);
+		createBombe(largeur, bleu);
 	}
 
 	public void createBars(int largeur, Color bleu) {
 		vieBar = new JProgressBar(SwingConstants.HORIZONTAL, 0, 100);
 		vieBar.setPreferredSize(new Dimension((int) ((0.25) * largeur), 30));
 		vieBar.setBackground(bleu);
-		vieBar.setForeground(new Color(200, 0, 0));
+		vieBar.setForeground(new Color(28, 142, 62));
 
 		fuelBar = new JProgressBar(SwingConstants.HORIZONTAL, 0, 100);
 		fuelBar.setPreferredSize(new Dimension((int) ((0.25) * largeur), 30));
 		fuelBar.setBackground(bleu);
-		fuelBar.setForeground(new Color(28, 142, 62));
+		fuelBar.setForeground(new Color(128, 0, 128));
 
 		bars.add(vieBar, BorderLayout.NORTH);
 		bars.add(fuelBar, BorderLayout.SOUTH);
 	}
 
-	public void createCentral(int largeur, Color bleu) {
+	public void createInfos(int largeur, Color bleu) {
+		tempsLabel = new JLabel();
+		tempsLabel
+				.setPreferredSize(new Dimension((int) ((0.05) * largeur), 80));
+		tempsLabel.setHorizontalAlignment(0);
+		tempsLabel.setFont(Captain);
+		tempsLabel.setForeground(Color.white);
+
+		nomLabel = new JLabel();
+		nomLabel.setPreferredSize(new Dimension((int) ((0.25) * largeur), 80));
+		nomLabel.setHorizontalAlignment(0);
+		nomLabel.setFont(Captain);
+
+		ventLabel = new JLabel();
+		ventLabel.setPreferredSize(new Dimension((int) ((0.05) * largeur), 80));
+		ventLabel.setHorizontalAlignment(0);
+		ventLabel.setFont(Captain);
+		ventLabel.setForeground(new Color(153, 217, 234));
+
+		infos.add(tempsLabel);
+		infos.add(nomLabel);
+		infos.add(ventLabel);
+	}
+
+	public void createBombe(int largeur, Color bleu) {
 		ImageIcon Moins = new ImageIcon(Toolkit.getDefaultToolkit().getImage(
 				"moins.png"));
 		ImageIcon Plus = new ImageIcon(Toolkit.getDefaultToolkit().getImage(
 				"plus.png"));
-
-		bombe = new JPanel(new FlowLayout());
-		bombe.setBackground(bleu);
 
 		bombePrev = new JButton(Moins);
 		bombePrev.setBorder(null);
@@ -105,52 +117,6 @@ public class Bandeau extends JPanel {
 		bombe.add(bombePrev);
 		bombe.add(bombeLabel);
 		bombe.add(bombeNext);
-
-		infos = new JPanel(new FlowLayout());
-		infos.setBackground(bleu);
-
-		tempsLabel = new JLabel();
-		tempsLabel
-				.setPreferredSize(new Dimension((int) ((0.05) * largeur), 60));
-		tempsLabel.setHorizontalAlignment(0);
-		tempsLabel.setFont(Captain);
-		tempsLabel.setForeground(Color.white);
-
-		nomLabel = new JLabel();
-		nomLabel.setPreferredSize(new Dimension((int) ((0.25) * largeur), 60));
-		nomLabel.setHorizontalAlignment(0);
-		nomLabel.setFont(Captain);
-
-		ventLabel = new JLabel();
-		ventLabel.setPreferredSize(new Dimension((int) ((0.05) * largeur), 60));
-		ventLabel.setHorizontalAlignment(0);
-		ventLabel.setFont(Captain);
-		ventLabel.setForeground(new Color(153, 217, 234));
-
-		infos.add(tempsLabel);
-		infos.add(nomLabel);
-		infos.add(ventLabel);
-
-		central.add(bombe);
-		central.add(infos);
-	}
-
-	public void createSliders(int largeur, Color bleu) {
-		angleLabel = new JLabel();
-		angleLabel.setHorizontalAlignment(0);
-		angleLabel.setFont(Calibri);
-		angleLabel.setForeground(Color.white);
-
-		angleSlider = new JSlider(JSlider.HORIZONTAL, 0, 180, 1);
-		angleSlider.setBackground(bleu);
-		angleSlider.setFocusable(false);
-		angleSlider.setForeground(Color.white);
-		angleSlider.setPaintTicks(true);
-		angleSlider.setInverted(true);
-
-
-		sliders.add(angleLabel);
-		sliders.add(angleSlider);
 	}
 
 	public void setVie(double vie) {
@@ -200,19 +166,6 @@ public class Bandeau extends JPanel {
 		}
 
 		ventLabel.setText(vent);
-	}
-
-	public int getAngle() {
-		return angleSlider.getValue();
-	}
-
-	public void setAngle(double a) {
-		angleSlider.setValue((int) a);
-		angleLabel.setText("Angle : " + (int) a);
-	}
-
-	public void setAngleLabel() {
-		angleLabel.setText("Angle : " + getAngle());
 	}
 
 	protected ImageIcon creerIcone(String NomImage) {

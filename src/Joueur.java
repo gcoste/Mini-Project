@@ -33,20 +33,21 @@ public class Joueur {
 
 	final double GRAVITE = 0.1;
 
+	LinkedList<Objet> Objets;
 	LinkedList<Joueur> JoueursActifs;
 	Tank tank;
 	Canon canon;
 
 	public Joueur(int num, int placement, int nombreJoueurs, String anom,
 			String acouleur, boolean Humain, int nombreBombes, Carte amap,
-			Rectangle aframe, Bandeau abandeau, LinkedList<Joueur> JoueursEnVie) {
+			Rectangle aframe, Bandeau abandeau,
+			LinkedList<Joueur> JoueursEnVie, LinkedList<Objet> Obj) {
 		limitesframe = aframe;
 		map = amap;
 		bandeau = abandeau;
 
 		arsenal = new int[nombreBombes];
 		arsenal[0] = 100000;
-
 
 		n = num;
 		nom = anom;
@@ -63,12 +64,12 @@ public class Joueur {
 			arsenal[1] = 25;
 			arsenal[2] = 5;
 			arsenal[3] = 1;
-			
+
 			defaut = 0;
 			dico = new double[] { 0, 0 };
 		} else {
 			arsenal[1] = 10;
-			
+
 			defaut = 40 * Math.random() - 20;
 			dico = new double[] { -20, 20 };
 		}
@@ -113,19 +114,20 @@ public class Joueur {
 			break;
 		}
 
-		tank = new Tank(this, placement, nombreJoueurs, 0.3, "Tank_" + acouleur
+		tank = new Tank(this, placement, nombreJoueurs, "Tank_" + acouleur
 				+ ".png");
 
 		canon = tank.canon;
 
 		JoueursActifs = JoueursEnVie;
+		Objets = Obj;
 	}
 
 	public Bombe tire(double vent, String bombe, int n) {
 		arsenal[n]--;
 
 		Bombe obus = new Bombe(tank, vent, force + defaut, angle, bombe,
-				JoueursActifs, GRAVITE);
+				JoueursActifs, Objets, GRAVITE);
 
 		Thread tir = new Son("Tir.wav");
 		tir.start();
@@ -223,7 +225,7 @@ public class Joueur {
 
 	public double testTir(double forceTest, double angleTest, Tank tankVise) {
 		Bombe obus = new Bombe(tank, 0, forceTest, angleTest, "obus",
-				JoueursActifs, GRAVITE);
+				JoueursActifs, Objets, GRAVITE);
 
 		boolean dichot;
 		boolean cestBon = false;

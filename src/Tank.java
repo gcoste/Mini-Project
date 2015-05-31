@@ -6,9 +6,8 @@ public class Tank extends Objet {
 		System.out.println("je suis nul");
 	}
 
-	public Tank(Joueur joueur, int placement, int nombreJoueurs,
-			double avitesse, String NomImage) {
-		super(0, 0, 0, 0, avitesse, NomImage, joueur.limitesframe, joueur.map,
+	public Tank(Joueur joueur, int placement, int nombreJoueurs, String NomImage) {
+		super(0, 0, 0, 0, 0.35, NomImage, joueur.limitesframe, joueur.map,
 				("Tank_" + joueur.n), joueur);
 
 		// on divise la taile du terrain par le nombre de joueur afin de placer
@@ -28,7 +27,7 @@ public class Tank extends Objet {
 			x = x + vitesse * dx;
 			y = map.getY(getCenterX()) - limites.height;
 
-			joueur.fuel -= 0.1 * Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))
+			joueur.fuel -= 0.06 * Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))
 					* vitesse;
 
 			// On test si on a pas atteint les bords de l'ecran, si c'est le cas

@@ -18,8 +18,8 @@ public class Canon extends Objet {
 		tank = atank;
 
 		double a = Math.toRadians(joueur.angle);
-		xCanon = x + Math.cos(a) * 40;
-		yCanon = y - Math.sin(a) * 40;
+		xCanon = x + Math.cos(a) * 28;
+		yCanon = y - Math.sin(a) * 28;
 	}
 
 	public void move() {

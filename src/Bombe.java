@@ -16,10 +16,12 @@ public class Bombe extends Objet {
 	// d'etre sur de ne pas entrainer une collision au debut du tir
 	boolean bombePartie;
 
+	LinkedList<Objet> Objets;
 	LinkedList<Joueur> JoueursActifs;
 
 	public Bombe(Tank atank, double avent, double aforce, double angle,
-			String nom, LinkedList<Joueur> ListJoueurs, double grav) {
+			String nom, LinkedList<Joueur> ListJoueurs,
+			LinkedList<Objet> Obj, double grav) {
 		super(0, 0, 0, 0, aforce * 0.15, "Bombe.png", atank.limitesFrame,
 				atank.map, nom, atank.joueur);
 
@@ -34,7 +36,7 @@ public class Bombe extends Objet {
 		// on regle les dommages en fonction du type de bombe
 		if (nom.equals("gun")) {
 			dommage = 10;
-		} else if (nom.equals("rpg")) {
+		} else if (nom.equals("roquettes")) {
 			dommage = 25;
 		} else if (nom.equals("obus")) {
 			dommage = 50;
@@ -51,6 +53,7 @@ public class Bombe extends Objet {
 		// on stocke la liste des joueurs encore presents afin de verifier si la
 		// bombe tombe sur l'un d'eux
 		JoueursActifs = ListJoueurs;
+		Objets = Obj;
 
 		// on regle dx et dy en fonction de l'angle
 		// le 0 est a droite, le 180 est a gauche
@@ -93,18 +96,32 @@ public class Bombe extends Objet {
 					test = false;
 				}
 			}
-		} else if (y >= map.getY(x)) {
+		} else if (y >= map.getY(x) && actif) {
+			
 			this.actif = false;
 			rayonDegats(x);
 			map.destructionMap(this.dommage, (int) x);
 
 			Thread explosion = new Son("Explosion_" + nom + ".wav");
 			explosion.start();
+			
+			// on balaye la liste et on fait bouger tout les objets avec
+			// la classe move qui leur est propre, 3x pour placer les tanks
+			// au sol après explosion
+			for (int u = 0; u < 3; u++) {
+
+				Iterator<Objet> k = Objets.iterator();
+
+				while (k.hasNext()) {
+					Objet O = (Objet) k.next();
+					O.move();
+				}
+			}
 		}
 
 		Iterator<Joueur> k = JoueursActifs.iterator();
 
-		while (k.hasNext() && bombePartie) {
+		while (k.hasNext() && bombePartie && actif) {
 			Joueur J = (Joueur) k.next();
 
 			if (this.Collision(J.tank)) {
@@ -114,6 +131,19 @@ public class Bombe extends Objet {
 				explosion.start();
 
 				J.touche(this, k);
+				
+				// on balaye la liste et on fait bouger tout les objets avec
+				// la classe move qui leur est propre, 3x pour placer les tanks
+				// au sol après explosion
+				for (int u = 0; u < 3; u++) {
+
+					Iterator<Objet> k1 = Objets.iterator();
+
+					while (k1.hasNext()) {
+						Objet O = (Objet) k1.next();
+						O.move();
+					}
+				}
 			}
 		}
 
