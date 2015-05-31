@@ -75,41 +75,32 @@ public class Joueur {
 		}
 
 		// on tranforme la couleur en texte en une couleur Java
-		switch (n) {
-		case (0):
-			acouleur = "vert";
+		switch (acouleur) {
+		case ("vert"):
 			couleur = new Color(77, 153, 5);
 			break;
-		case (1):
-			acouleur = "rouge";
+		case ("rouge"):
 			couleur = new Color(153, 22, 5);
 			break;
-		case (2):
-			acouleur = "bleu";
+		case ("bleu"):
 			couleur = new Color(125, 241, 244);
 			break;
-		case (3):
-			acouleur = "jaune";
+		case ("jaune"):
 			couleur = new Color(222, 176, 0);
 			break;
-		case (4):
-			acouleur = "violet";
+		case ("violet"):
 			couleur = new Color(140, 40, 139);
 			break;
-		case (5):
-			acouleur = "gris";
+		case ("gris"):
 			couleur = new Color(144, 143, 144);
 			break;
-		case (6):
-			acouleur = "marron";
+		case ("marron"):
 			couleur = new Color(96, 78, 34);
 			break;
-		case (7):
-			acouleur = "rose";
+		case ("rose"):
 			couleur = new Color(234, 64, 209);
 			break;
 		default:
-			acouleur = "vert";
 			couleur = new Color(77, 153, 5);
 			break;
 		}

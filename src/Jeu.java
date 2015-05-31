@@ -10,31 +10,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 public class Jeu extends JFrame implements ActionListener {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	int nombreJoueurs = 2;
-	boolean IA = !false;
+	int nombreJoueurs;
 
-	final String[] nomsIA = new String[] { "Cewen", "Kekin", "Mib", "Loll",
-			"Dreney", "Ann", "Hager", "Gurwan", "Mik", "Nudar", "Grinik",
-			"Thanb", "Rudam", "Lanba", "Deggs", "Deedge", "Sak", "Yolik",
-			"Dundatt", "Rulek", "Dub", "Cecan", "Manran", "Orek", "Paul",
-			"Hell", "Diney", "Haty", "Leggs", "Tank", "Kunty", "Ruger",
-			"Bondam", "Rono", "Nury", "Gunrell", "Thanl", "Ceggs", "Thanvan",
-			"Gurke", "Bonran", "Minik", "Vanl", "Deke", "Lowan", "Sak", "Sano",
-			"Kodar", "Gurcan", "Tanran", "Olo", "Thanr", "Nelo", "Tek",
-			"Deeran", "Rogan", "Thando", "Bagan", "Maba", "Haba", "Dawan",
-			"Ok", "Neney", "Rento", "Hary", "Danlek", "Thanl", "Anato", "Kunl",
-			"Obirek", "Drenik", "Kovan", "Ranke", "Blainar", "Lel", "Gunry",
-			"Brirek", "Anaty", "Direll", "Dedge", "Rangan", "Kundar", "Bonlik",
-			"Lob", "Nudatt", "Tegan", "Hadar", "Bridatt", "Kelo", "Lodatt",
-			"Yodo", "Thancus", "Bocan", "Oke", "Iaty", "Nun", "Dunvan", "Roty",
-			"Thanno", "Dar" };
-
-	final Font Captain = creerFont(60, "Captain");
-	final Font CaptainSmall = creerFont(30, "Captain");
+	Font Captain;
+	Font CaptainSmall;
 
 	// Liste de tous les objets du jeu (tanks, bombes, canon)
 	LinkedList<Objet> Objets;
@@ -93,7 +72,7 @@ public class Jeu extends JFrame implements ActionListener {
 	Caisse caisseActive;
 
 	// parametres de selection des bombes
-	final String[] bombes = new String[] { "gun", "roquette", "obus", "v2",
+	final String[] BOMBES = new String[] { "gun", "roquette", "obus", "v2",
 			"ogive", "tsar bomba" };
 	int bombeArmee;
 
@@ -103,7 +82,7 @@ public class Jeu extends JFrame implements ActionListener {
 	double forceIA;
 
 	// difficulte de 1 a 5
-	int difficulte = 1;
+	int difficulte;
 
 	double vent;
 
@@ -114,9 +93,13 @@ public class Jeu extends JFrame implements ActionListener {
 
 	boolean rainbows;
 
-	public Jeu() {
-		// on regle le layout pour le bandeau
-		this.setLayout(new BorderLayout());
+	public Jeu(int nbJoueurs, int diffic, String[] nomsHerites,
+			String[] couleursHerites, boolean[] isHumainHerites, Font Cap, Font CapSmall) {
+		nombreJoueurs = nbJoueurs;
+		difficulte = diffic;
+		
+		Captain = Cap;
+		CaptainSmall = CapSmall;
 
 		// initialisation des parametres de tours
 		joueurFiring = false;
@@ -134,14 +117,27 @@ public class Jeu extends JFrame implements ActionListener {
 
 		bombeArmee = 0;
 
+		angleChoisi = false;
+
 		temps = 0;
+
+		// Aucune touche n'est appuyee, donc tout est false
+		ToucheHaut = false;
+		ToucheBas = false;
+		ToucheGauche = false;
+		ToucheDroite = false;
+		ToucheEspace = false;
+		ToucheEntre = false;
+		ToucheEchap = false;
 
 		// le vent varie entre 0.01 et -0.01
 		vent = (1 / (double) difficulte) * 0.02 * Math.random() - 0.01;
 
-		angleChoisi = false;
-
+		// on cree la fenetre
 		setTitle("Tanks");
+		// on regle le layout pour le bandeau
+		this.setLayout(new BorderLayout());
+
 		setIconImage(Toolkit.getDefaultToolkit().getImage("Icone.png"));
 
 		// on recupere la taille exploitable de l'ecran
@@ -155,19 +151,9 @@ public class Jeu extends JFrame implements ActionListener {
 		// On interdit de changer la taille de la fenetre
 		setResizable(false);
 		setUndecorated(true);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		// On ajoute l'ecouteur de clavier qui se refere a cette classe meme
 		this.addKeyListener(new Jeu_this_keyAdapter(this));
-
-		// Aucune touche n'est appuyee, donc tout est false
-		ToucheHaut = false;
-		ToucheBas = false;
-		ToucheGauche = false;
-		ToucheDroite = false;
-		ToucheEspace = false;
-		ToucheEntre = false;
-		ToucheEchap = false;
 
 		// l'ecran est notre fenetre de je, on enleve 100 pour laisser la place
 		// au bandeauu
@@ -195,6 +181,54 @@ public class Jeu extends JFrame implements ActionListener {
 		// On initialise la map
 		map = new Carte(limitesFrame);
 
+		creationJoueurs(nomsHerites, couleursHerites, isHumainHerites);
+
+		creationBouttons();
+
+		// On initialise le timer du jeu afin d'avoir un jeu fluide (il bat
+		// idealement toute les 100*TEMPS millisecondes)
+		timer = new Timer((int) (10), new TimerAction());
+
+		/*
+		 * On initialise le timer des tours (qui bat tout les 100ms). On est
+		 * oblige d'utilise un timer separe puisque que le timer principal ne
+		 * bat plus exactement a l'interval demande une fois qu'on reduit cet
+		 * interval pour obtenir un jeu fluide : en effet, le timer demande trop
+		 * d'effort a l'ordinateur, et commence a battre a un temps un peu plus
+		 * long que prevu. On cree donc un autre timer avec une unite de temps
+		 * plus grosse (100ms) afin que l'ordinateur n'ai pas de mal a le garder
+		 * au rythme demande meme quand celui-ci est tres sollicite.
+		 */
+		timerTour = new Timer(100, new TimerTourAction());
+
+		// timer qui relance la musique toute les 5 minutes et 5 secondes
+		timerMusique = new Timer(1000 * (5 * 60 + 5), new TimerMusiqueAction());
+
+		// on lance la musique une fois, les fois suivante seront lancees par le
+		// timer
+		Thread musique = new Son("Musique.wav");
+		musique.start();
+
+		// On lance les timers
+		timer.start();
+		timerTour.start();
+		timerMusique.start();
+
+		// on fait bouger tout les objets une fois pour les plcaer tous sur la
+		// map
+		Iterator<Objet> k = Objets.iterator();
+
+		while (k.hasNext()) {
+			Objet O = (Objet) k.next();
+			O.move();
+		}
+
+		// on affiche la fenetre enfin prete
+		setVisible(true);
+	}
+
+	public void creationJoueurs(String[] noms, String[] couleurs,
+			boolean[] isHumain) {
 		// on cree deux tableau de nombres aléatoires pour le placement des
 		// tanks
 		int[] placement = new int[nombreJoueurs];
@@ -217,23 +251,11 @@ public class Jeu extends JFrame implements ActionListener {
 			temp[placement[i]] = -1;
 		}
 
-		Joueurs[0] = new Joueur(0, placement[0], nombreJoueurs, "Eloi", null,
-				true, bombes.length, map, limitesFrame, bandeau, JoueursActifs,
-				Objets);
-
-		// on ajoute le tank et son canon a la liste d'objets
-		Objets.add(Joueurs[0].canon);
-		Objets.add(Joueurs[0].tank);
-
-		// on ajoute le joueur a liste des joueurs en vie
-		JoueursActifs.add(Joueurs[0]);
-
 		// on cree les joueurs (et ainsi leurs tanks et leurs canons)
 		for (int i = 1; i < nombreJoueurs; i++) {
-			Joueurs[i] = new Joueur(i, placement[i], nombreJoueurs,
-					nomsIA[(int) (100 * Math.random())], null, IA,
-					bombes.length, map, limitesFrame, bandeau, JoueursActifs,
-					Objets);
+			Joueurs[i] = new Joueur(i, placement[i], nombreJoueurs, noms[i],
+					couleurs[i], isHumain[i], BOMBES.length, map, limitesFrame,
+					bandeau, JoueursActifs, Objets);
 
 			// on ajoute le tank et son canon a la liste d'objets
 			Objets.add(Joueurs[i].canon);
@@ -242,7 +264,9 @@ public class Jeu extends JFrame implements ActionListener {
 			// on ajoute le joueur a liste des joueurs en vie
 			JoueursActifs.add(Joueurs[i]);
 		}
+	}
 
+	public void creationBouttons() {
 		// on cree le bandeau
 		bandeau = new Bandeau(limitesFrame.width, bleu, CaptainSmall, Captain);
 		bandeau.setVent(vent);
@@ -282,47 +306,6 @@ public class Jeu extends JFrame implements ActionListener {
 		// et on les ajoute au panel
 		centralPanel.add(forceBar);
 		centralPanel.add(quitter);
-
-		// On initialise le timer du jeu afin d'avoir un jeu fluide (il bat
-		// idealement toute les 100*TEMPS millisecondes)
-		timer = new Timer((int) (10), new TimerAction());
-
-		/*
-		 * On initialise le timer des tours (qui bat tout les 100ms). On est
-		 * oblige d'utilise un timer separe puisque que le timer principal ne
-		 * bat plus exactement a l'interval demande une fois qu'on reduit cet
-		 * interval pour obtenir un jeu fluide : en effet, le timer demande trop
-		 * d'effort a l'ordinateur, et commence a battre a un temps un peu plus
-		 * long que prevu. On cree donc un autre timer avec une unite de temps
-		 * plus grosse (100ms) afin que l'ordinateur n'ai pas de mal a le garder
-		 * au rythme demande meme quand celui-ci est tres sollicite.
-		 */
-		timerTour = new Timer(100, new TimerTourAction());
-
-		// timer qui relance la musique toute les 5 minutes et 5 secondes
-		timerMusique = new Timer(1000 * (5 * 60 + 5), new TimerMusiqueAction());
-
-		// on lance la musique une fois, les fois suivante seront lancees par le
-		// timer
-		Thread musique = new Son("Musique.wav");
-		musique.start();
-
-		// On lance les timers
-		timer.start();
-		timerTour.start();
-		timerMusique.start();
-
-		// on balaye la liste et on fait bouger tout les objets avec la
-		// classe move qui leur est propre
-		Iterator<Objet> k = Objets.iterator();
-
-		while (k.hasNext()) {
-			Objet O = (Objet) k.next();
-			O.move();
-		}
-
-		// on affiche la fenetre enfin prete
-		setVisible(true);
 	}
 
 	public void paint(Graphics g) {
@@ -492,7 +475,7 @@ public class Jeu extends JFrame implements ActionListener {
 			if (joueurATire) {
 				forceBar.setVisible(false);
 
-				bombeActive = Joueurs[j].tire(vent, bombes[bombeArmee],
+				bombeActive = Joueurs[j].tire(vent, BOMBES[bombeArmee],
 						bombeArmee);
 				Objets.add(0, bombeActive);
 
@@ -528,7 +511,7 @@ public class Jeu extends JFrame implements ActionListener {
 
 		if (!angleChoisi) {
 			double[] angleTanks = new double[nombreJoueurs];
-			bombeArmee = bombes.length - 1;
+			bombeArmee = BOMBES.length - 1;
 
 			while (Joueurs[j].arsenal[bombeArmee] == 0) {
 				bombeArmee--;
@@ -642,7 +625,7 @@ public class Jeu extends JFrame implements ActionListener {
 				if (joueurATire) {
 					forceBar.setVisible(false);
 
-					bombeActive = Joueurs[j].tire(vent, bombes[bombeArmee],
+					bombeActive = Joueurs[j].tire(vent, BOMBES[bombeArmee],
 							bombeArmee);
 					Objets.add(0, bombeActive);
 
@@ -792,7 +775,7 @@ public class Jeu extends JFrame implements ActionListener {
 			bombeArmee--;
 		}
 
-		bandeau.setBombe(bombes[bombeArmee], Joueurs[j].arsenal[bombeArmee]);
+		bandeau.setBombe(BOMBES[bombeArmee], Joueurs[j].arsenal[bombeArmee]);
 
 		bandeau.setTemps(30 - (int) (tempsTour / 10));
 	}
@@ -839,23 +822,6 @@ public class Jeu extends JFrame implements ActionListener {
 		int yV = (int) (Joueurs[joueurQuiJoue].tank.canon.y - Math.sin(a) * 120);
 
 		buffer.drawOval(xV - 10, yV - 10, 20, 20);
-	}
-
-	private Font creerFont(int taille, String font) {
-		try {
-			// la police creer est de taille 1
-			Font police = Font.createFont(Font.TRUETYPE_FONT, new File(font
-					+ ".ttf"));
-
-			// on change alors la taille de la police
-			return police.deriveFont((float) taille);
-
-		} catch (IOException | FontFormatException e) {
-			System.out.println(font + " introuvable !");
-			System.out.println("Mettre la police dans le repertoire source");
-			System.exit(0);
-			return null;
-		}
 	}
 
 	private void drawStringCentre(String s, int xPos, int yPos) {
@@ -987,13 +953,13 @@ public class Jeu extends JFrame implements ActionListener {
 				bombeArmee--;
 
 				if (bombeArmee == -1) {
-					bombeArmee = bombes.length - 1;
+					bombeArmee = BOMBES.length - 1;
 				}
 			} else if (source == bandeau.bombeNext) {
 				do {
 					bombeArmee++;
 
-					if (bombeArmee == bombes.length) {
+					if (bombeArmee == BOMBES.length) {
 						bombeArmee = 0;
 					}
 				} while (Joueurs[joueurQuiJoue].arsenal[bombeArmee] <= 0);
