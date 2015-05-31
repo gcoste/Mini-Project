@@ -117,6 +117,7 @@ public class Carte extends Objet {
 			horizon[i] = (horizon[i] / max) * (h - 500) + 300;
 		}
 
+		// lissage de la map
 		for (int i = 1; i < horizon.length - 1; i++) {
 			for (int k = 0; k < 50; k++) {
 				double d = (horizon[i - 1] + horizon[i + 1]) / 2;
@@ -124,6 +125,9 @@ public class Carte extends Objet {
 				horizon[i + 1] = (horizon[i + 1] + d) / 2;
 			}
 		}
+
+		// petite correction après le lissage
+		horizon[l - 3] = horizon[l - 4];
 	}
 
 	public void drawHorizon(Rectangle aframe, Graphics buffer, Color bleu) {

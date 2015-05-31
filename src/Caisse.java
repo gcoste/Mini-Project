@@ -17,9 +17,6 @@ public class Caisse extends Objet {
 		message = mes;
 		estPose = false;
 
-		Iterator<Joueur> k1 = JoueursActifs.iterator();
-		Iterator<Caisse> k2 = Caisses.iterator();
-
 		boolean verif = true;
 
 		// on verifie que la caisse n'apparait pas directement au-dessus d'un
@@ -27,21 +24,22 @@ public class Caisse extends Objet {
 		while (verif) {
 			x = (int) (aframe.width - limites.width) * Math.random();
 
-			while (k1.hasNext()) {
+			Iterator<Joueur> k1 = JoueursActifs.iterator();
+			Iterator<Caisse> k2 = Caisses.iterator();
+
+			while (k1.hasNext() && verif) {
 				Joueur J = (Joueur) k1.next();
 
 				if (Math.abs(this.getCenterX() - J.tank.getCenterX()) < 50) {
 					verif = false;
-					break;
 				}
 			}
 
-			while (k2.hasNext()) {
+			while (k2.hasNext() && verif) {
 				Caisse C = (Caisse) k2.next();
 
 				if (Math.abs(this.getCenterX() - C.getCenterX()) < 50) {
 					verif = false;
-					break;
 				}
 			}
 

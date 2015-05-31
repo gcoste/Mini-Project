@@ -36,7 +36,7 @@ public class Bombe extends Objet {
 		// on regle les dommages en fonction du type de bombe
 		if (nom.equals("gun")) {
 			dommage = 10;
-		} else if (nom.equals("roquettes")) {
+		} else if (nom.equals("roquette")) {
 			dommage = 25;
 		} else if (nom.equals("obus")) {
 			dommage = 50;

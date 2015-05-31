@@ -32,13 +32,13 @@ public class Message {
 		duree = dur * 100;
 		ligne1 = l1;
 		ligne2 = l2;
-		
+
 		isDrawn = true;
 	}
 
 	public void drawMessage(long atemps) {
 		buffer.setColor(couleur);
-		
+
 		if (atemps - duree < temps && ligne1 != null && isDrawn) {
 			if (ligne2 == null) {
 				buffer.drawString(ligne1,

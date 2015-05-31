@@ -38,9 +38,9 @@ public class Joueur {
 	Tank tank;
 	Canon canon;
 
-	public Joueur(int num, int placement, int nombreJoueurs, String anom,
-			String acouleur, boolean Humain, int nombreBombes, Carte amap,
-			Rectangle aframe, Bandeau abandeau,
+	public Joueur(int num, int placement, int nombreJoueurs, int difficulte,
+			String anom, String acouleur, boolean Humain, int nombreBombes,
+			Carte amap, Rectangle aframe, Bandeau abandeau,
 			LinkedList<Joueur> JoueursEnVie, LinkedList<Objet> Obj) {
 		limitesframe = aframe;
 		map = amap;
@@ -63,12 +63,33 @@ public class Joueur {
 		if (estHumain) {
 			arsenal[1] = 25;
 			arsenal[2] = 5;
-			arsenal[3] = 1;
 
 			defaut = 0;
 			dico = new double[] { 0, 0 };
 		} else {
-			arsenal[1] = 10;
+			switch (difficulte) {
+			case (1):
+				break;
+			case (2):
+				arsenal[1] = 5;
+
+				break;
+			case (3):
+				arsenal[1] = 10;
+				arsenal[2] = 1;
+				break;
+			case (4):
+				arsenal[1] = 10;
+				arsenal[2] = 5;
+				break;
+			case (5):
+				arsenal[1] = 25;
+				arsenal[2] = 5;
+				break;
+			default:
+				System.out.println("Erreur sur la difficulte");
+				System.exit(0);
+			}
 
 			defaut = 40 * Math.random() - 20;
 			dico = new double[] { -20, 20 };
@@ -101,8 +122,8 @@ public class Joueur {
 			couleur = new Color(234, 64, 209);
 			break;
 		default:
-			couleur = new Color(77, 153, 5);
-			break;
+			System.out.println("Erreur sur la couleur");
+			System.exit(0);
 		}
 
 		tank = new Tank(this, placement, nombreJoueurs, "Tank_" + acouleur
