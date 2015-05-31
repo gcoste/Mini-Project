@@ -4,15 +4,18 @@ import java.util.LinkedList;
 
 public class Caisse extends Objet {
 	LinkedList<Joueur> JoueursActifs;
+	Message message;
 
 	double gravite;
+	boolean estPose;
 
-	public Caisse(Carte amap, Rectangle aframe,
-			LinkedList<Joueur> JoueursEnVie, double grav) {
+	public Caisse(double grav, Carte amap, Rectangle aframe,
+			LinkedList<Joueur> JoueursEnVie, Message mes) {
 		super(0, -50, 0, 0, 1, "Caisse.png", aframe, amap, null, null);
 
 		JoueursActifs = JoueursEnVie;
 		gravite = grav;
+		message = mes;
 
 		Iterator<Joueur> k = JoueursActifs.iterator();
 
@@ -39,5 +42,25 @@ public class Caisse extends Objet {
 	public void move() {
 		y += vitesse;
 		vitesse += gravite;
+
+		if (y + limites.height > map.getY(getCenterX())) {
+			y = map.getY(getCenterX()) - limites.height;
+
+			Iterator<Joueur> k = JoueursActifs.iterator();
+
+			while (k.hasNext()) {
+				Joueur J = (Joueur) k.next();
+
+				if (this.Collision(J.tank)) {
+					this.actif = false;
+
+					giveTank();
+				}
+			}
+		}
+	}
+
+	public void giveTank() {
+
 	}
 }

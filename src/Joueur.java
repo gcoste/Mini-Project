@@ -27,8 +27,6 @@ public class Joueur {
 	// force du tir
 	double force;
 
-	boolean isMoving;
-
 	// parametre IA pour la dichotomie
 	double dico[];
 	double defaut;
@@ -48,26 +46,29 @@ public class Joueur {
 
 		arsenal = new int[nombreBombes];
 		arsenal[0] = 100000;
-		arsenal[1] = 10;
-		arsenal[2] = 0;
+
 
 		n = num;
 		nom = anom;
 		estHumain = Humain;
 		actif = true;
 
-		isMoving = false;
-
 		angle = 0;
-		force = 80;
+		force = 0;
 
 		vie = 100;
 		fuel = 100;
 
 		if (estHumain) {
+			arsenal[1] = 25;
+			arsenal[2] = 5;
+			arsenal[3] = 1;
+			
 			defaut = 0;
 			dico = new double[] { 0, 0 };
 		} else {
+			arsenal[1] = 10;
+			
 			defaut = 40 * Math.random() - 20;
 			dico = new double[] { -20, 20 };
 		}
@@ -134,17 +135,14 @@ public class Joueur {
 
 	public void moveGauche() {
 		tank.dx = -1;
-		isMoving = true;
 	}
 
 	public void moveDroite() {
 		tank.dx = 1;
-		isMoving = true;
 	}
 
 	public void fixe() {
 		tank.dx = 0;
-		isMoving = false;
 	}
 
 	public void anglePlus() {

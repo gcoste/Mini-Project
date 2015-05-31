@@ -40,6 +40,8 @@ public class Jeu extends JFrame implements ActionListener {
 	LinkedList<Objet> Objets;
 	LinkedList<Joueur> JoueursActifs;
 	Joueur[] Joueurs = new Joueur[nombreJoueurs];
+	
+	LinkedList<Caisse> Caisses;
 
 	// timer qui regit le jeu
 	Timer timer;
@@ -60,7 +62,6 @@ public class Jeu extends JFrame implements ActionListener {
 	Message message;
 
 	JPanel centralPanel;
-	JPanel milieuPanel;
 	JButton quitter;
 	JProgressBar forceBar;
 
@@ -77,7 +78,10 @@ public class Jeu extends JFrame implements ActionListener {
 
 	// ces differents boolean servent au passage de tours
 	boolean finJeu;
+	boolean finTour;
 	boolean finTourParTir;
+	boolean joueurFiring;
+	boolean joueurATire;
 	boolean attenteJoueur;
 	boolean attenteIA;
 	boolean passageJoueur;
@@ -94,6 +98,8 @@ public class Jeu extends JFrame implements ActionListener {
 	// parametres IA
 	boolean angleChoisi;
 	double angleIA;
+	double forceIA;
+
 	// difficulte de 1 a 5
 	int difficulte = 1;
 
@@ -112,7 +118,10 @@ public class Jeu extends JFrame implements ActionListener {
 
 		// initialisation des parametres de tours
 		finJeu = false;
+		finTour = false;
 		finTourParTir = false;
+		joueurFiring = false;
+		joueurATire = false;
 		attenteJoueur = false;
 		attenteIA = false;
 		passageJoueur = false;
@@ -235,19 +244,11 @@ public class Jeu extends JFrame implements ActionListener {
 		this.getContentPane().add(bandeau, BorderLayout.NORTH);
 
 		centralPanel = new JPanel();
-		centralPanel
-				.setLayout(new BoxLayout(centralPanel, BoxLayout.PAGE_AXIS));
+		centralPanel.setLayout(null);
 		centralPanel.setOpaque(false);
-		centralPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		centralPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
 		this.getContentPane().add(centralPanel, BorderLayout.CENTER);
 
-		milieuPanel = new JPanel(
-				new BoxLayout(milieuPanel, BoxLayout.LINE_AXIS));
-		milieuPanel.setOpaque(false);
-
 		quitter = new JButton("Quitter");
-		quitter.setPreferredSize(new Dimension(250, 100));
 		quitter.setFont(Captain);
 		quitter.setForeground(bleu);
 		quitter.setFocusable(false);
@@ -256,8 +257,13 @@ public class Jeu extends JFrame implements ActionListener {
 
 		forceBar = new JProgressBar(SwingConstants.HORIZONTAL, 0, 100);
 		forceBar.setPreferredSize(new Dimension(400, 30));
-		forceBar.setBackground(new Color(0, 255, 0));
+		forceBar.setOpaque(false);
+		forceBar.setBorder(null);
 		forceBar.setVisible(false);
+
+		quitter.setBounds(Ecran.width / 2 - 120, Ecran.height / 2 - 230, 240,
+				100);
+		forceBar.setBounds(Ecran.width / 2 - 300, 80, 600, 50);
 
 		centralPanel.add(forceBar);
 		centralPanel.add(quitter);
@@ -299,7 +305,6 @@ public class Jeu extends JFrame implements ActionListener {
 			O.move();
 		}
 
-		bandeau.setForce(Joueurs[0].force);
 		bandeau.setAngle(Joueurs[0].angle);
 
 		// on affiche la fenetre enfin prete
@@ -343,12 +348,21 @@ public class Jeu extends JFrame implements ActionListener {
 		// on dessine tout les messages
 		drawInfos();
 
-		if (!Joueurs[joueurQuiJoue].isMoving) {
-			drawViseur();
-		}
+		drawViseur();
 
 		// On dessine finalement l'image associee au buffer dans le JFrame
-		g.drawImage(ArrierePlan, 0, 150, this);
+		if (!joueurFiring) {
+			g.drawImage(ArrierePlan, 0, 150, this);
+		} else {
+			forceBar.setVisible(true);
+			forceBar.setValue((int) Joueurs[joueurQuiJoue].force);
+			
+			int red = Math.min(255, (int) (Joueurs[joueurQuiJoue].force * 510 / 100));
+			int green = Math.min(255, (int) (-Joueurs[joueurQuiJoue].force * 510 / 100) + 510);
+			forceBar.setForeground(new Color(red, green, 0));
+
+			forceBar.repaint();
+		}
 	}
 
 	private void boucle_principale_jeu() {
@@ -423,26 +437,37 @@ public class Jeu extends JFrame implements ActionListener {
 	}
 
 	private void boucleHumain(int j) {
-		if (ToucheGauche) {
-			Joueurs[j].moveGauche();
-		} else if (ToucheDroite) {
-			Joueurs[j].moveDroite();
-		} else {
-			Joueurs[j].fixe();
+		if (!joueurFiring) {
+			if (ToucheGauche) {
+				Joueurs[j].moveGauche();
+			} else if (ToucheDroite) {
+				Joueurs[j].moveDroite();
+			} else {
+				Joueurs[j].fixe();
+			}
+
+			if (ToucheHaut) {
+				Joueurs[j].anglePlus();
+			} else if (ToucheBas) {
+				Joueurs[j].angleMoins();
+			}
 		}
 
-		if (ToucheHaut) {
-			Joueurs[j].anglePlus();
-		} else if (ToucheBas) {
-			Joueurs[j].angleMoins();
-		}
-
-		while (ToucheEspace) {
-
+		if (ToucheEspace && Joueurs[joueurQuiJoue].force < 100) {
 			Joueurs[j].force++;
+			joueurFiring = true;
 
+		} else if (Joueurs[j].force >= 100) {
+			joueurATire = true;
+		}
+
+		if (joueurATire) {
+			forceBar.setVisible(false);
+			
 			bombeActive = Joueurs[j].tire(vent, bombes[bombeArmee], bombeArmee);
 			Objets.add(0, bombeActive);
+
+			joueurFiring = false;
 			finTourParTir = true;
 		}
 
@@ -547,7 +572,7 @@ public class Jeu extends JFrame implements ActionListener {
 					}
 				}
 
-				Joueurs[j].force = 80 + (Joueurs[j].dico[0] + Joueurs[j].dico[1]) / 2;
+				forceIA = 80 + (Joueurs[j].dico[0] + Joueurs[j].dico[1]) / 2;
 
 				Joueurs[j].fixe();
 				angleChoisi = true;
@@ -563,10 +588,26 @@ public class Jeu extends JFrame implements ActionListener {
 			} else if (angleIA != Joueurs[j].angle) {
 				Joueurs[j].angle = angleIA;
 			} else {
-				bombeActive = Joueurs[j].tire(vent, bombes[bombeArmee],
-						bombeArmee);
-				Objets.add(0, bombeActive);
-				finTourParTir = true;
+				if (Joueurs[j].force < forceIA) {
+					Joueurs[j].force++;
+					joueurFiring = true;
+
+				} else {
+					Joueurs[j].force = forceIA;
+
+					joueurATire = true;
+				}
+
+				if (joueurATire) {
+					forceBar.setVisible(false);
+					
+					bombeActive = Joueurs[j].tire(vent, bombes[bombeArmee],
+							bombeArmee);
+					Objets.add(0, bombeActive);
+
+					joueurFiring = false;
+					finTourParTir = true;
+				}
 			}
 
 			if (Joueurs[j].getYCanon() > map.getY(Joueurs[j].getXCanon())) {
@@ -576,6 +617,8 @@ public class Jeu extends JFrame implements ActionListener {
 	}
 
 	private void passageTour() {
+		finTour = true;
+
 		if (finTourParTir && !passageJoueur && !attenteJoueur && !attenteIA) {
 			// la premiere condition arrete le joueur et verifie que la
 			// bombe
@@ -619,13 +662,14 @@ public class Jeu extends JFrame implements ActionListener {
 				finJeu = true;
 			}
 
+			Joueurs[joueurQuiJoue].force = 0;
+
 			vent = (1 / (double) difficulte) * 0.02 * Math.random() - 0.01;
 
 			bandeau.setNom(Joueurs[joueurQuiJoue].nom,
 					Joueurs[joueurQuiJoue].couleur);
 			bandeau.setVent(vent);
 			bandeau.setAngle(Joueurs[joueurQuiJoue].angle);
-			bandeau.setForce(Joueurs[joueurQuiJoue].force);
 
 			passageJoueur = false;
 
@@ -661,7 +705,9 @@ public class Jeu extends JFrame implements ActionListener {
 			// on attend enfin que le joueur ait appuye sur entre pour
 			// continuer
 			if (ToucheEntre) {
+				finTour = false;
 				finTourParTir = false;
+				joueurATire = false;
 				attenteJoueur = false;
 				angleChoisi = false;
 
@@ -674,7 +720,9 @@ public class Jeu extends JFrame implements ActionListener {
 					message.isDrawn = false;
 				}
 
+				finTour = false;
 				finTourParTir = false;
+				joueurATire = false;
 				attenteIA = false;
 				angleChoisi = false;
 
@@ -684,10 +732,6 @@ public class Jeu extends JFrame implements ActionListener {
 	}
 
 	private void miseAJourBandeau(int j) {
-		if (Joueurs[j].estHumain && !attenteJoueur) {
-			Joueurs[j].force = bandeau.getForce();
-		}
-
 		bandeau.setFuel(Joueurs[j].fuel);
 		bandeau.setVie(Joueurs[j].vie);
 
@@ -698,9 +742,6 @@ public class Jeu extends JFrame implements ActionListener {
 		bandeau.setBombe(bombes[bombeArmee], Joueurs[j].arsenal[bombeArmee]);
 
 		bandeau.setTemps(30 - (int) (tempsTour / 10));
-
-		bandeau.setForce((int) Joueurs[j].force);
-		bandeau.setForceLabel();
 
 		if (Math.abs(Joueurs[j].angle - bandeau.getAngle()) >= 1.1
 				&& Joueurs[j].estHumain && !attenteJoueur) {
@@ -748,8 +789,8 @@ public class Jeu extends JFrame implements ActionListener {
 
 		double a = Math.toRadians(Joueurs[joueurQuiJoue].angle);
 
-		int xV = (int) (Joueurs[joueurQuiJoue].tank.canon.x + Math.cos(a) * 100);
-		int yV = (int) (Joueurs[joueurQuiJoue].tank.canon.y - Math.sin(a) * 100);
+		int xV = (int) (Joueurs[joueurQuiJoue].tank.canon.x + Math.cos(a) * 120);
+		int yV = (int) (Joueurs[joueurQuiJoue].tank.canon.y - Math.sin(a) * 120);
 
 		buffer.drawOval(xV - 10, yV - 10, 20, 20);
 	}
@@ -790,7 +831,7 @@ public class Jeu extends JFrame implements ActionListener {
 			ToucheHaut = true;
 		} else if (code == 40) {
 			ToucheBas = true;
-		} else if (code == 32) {
+		} else if (code == 32 && !finTour && Joueurs[joueurQuiJoue].force < 100) {
 			ToucheEspace = true;
 		} else if (code == 10) {
 			ToucheEntre = true;
@@ -809,6 +850,7 @@ public class Jeu extends JFrame implements ActionListener {
 
 				quitter.setVisible(false);
 			}
+
 		}
 	}
 
@@ -825,6 +867,9 @@ public class Jeu extends JFrame implements ActionListener {
 			ToucheBas = false;
 		} else if (code == 32) {
 			ToucheEspace = false;
+
+			joueurATire = true;
+
 		} else if (code == 10) {
 			ToucheEntre = false;
 		} else if (code == 27) {
@@ -889,7 +934,7 @@ public class Jeu extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
 
-		if (Joueurs[joueurQuiJoue].estHumain) {
+		if (Joueurs[joueurQuiJoue].estHumain && !finTour) {
 			if (source == bandeau.bombePrev) {
 				bombeArmee--;
 

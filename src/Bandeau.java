@@ -29,8 +29,6 @@ public class Bandeau extends JPanel {
 
 	public JPanel sliders;
 
-	public JLabel forceLabel;
-	public JSlider forceSlider;
 	public JLabel angleLabel;
 	public JSlider angleSlider;
 
@@ -138,16 +136,6 @@ public class Bandeau extends JPanel {
 	}
 
 	public void createSliders(int largeur, Color bleu) {
-		forceLabel = new JLabel();
-		forceLabel.setHorizontalAlignment(0);
-		forceLabel.setFont(Calibri);
-		forceLabel.setForeground(Color.white);
-
-		forceSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 1);
-		forceSlider.setBackground(bleu);
-		forceSlider.setFocusable(false);
-		forceSlider.setForeground(Color.white);
-
 		angleLabel = new JLabel();
 		angleLabel.setHorizontalAlignment(0);
 		angleLabel.setFont(Calibri);
@@ -160,8 +148,7 @@ public class Bandeau extends JPanel {
 		angleSlider.setPaintTicks(true);
 		angleSlider.setInverted(true);
 
-		sliders.add(forceLabel);
-		sliders.add(forceSlider);
+
 		sliders.add(angleLabel);
 		sliders.add(angleSlider);
 	}
@@ -213,19 +200,6 @@ public class Bandeau extends JPanel {
 		}
 
 		ventLabel.setText(vent);
-	}
-
-	public int getForce() {
-		return forceSlider.getValue();
-	}
-
-	public void setForce(double f) {
-		forceSlider.setValue((int) f);
-		forceLabel.setText("Force : " + (int) f);
-	}
-
-	public void setForceLabel() {
-		forceLabel.setText("Force : " + getForce());
 	}
 
 	public int getAngle() {
