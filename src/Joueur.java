@@ -71,7 +71,6 @@ public class Joueur {
 		if (estHumain) {
 			arsenal[1] = 25;
 			arsenal[2] = 5;
-			arsenal[6] = 1;
 
 			defaut = 0;
 			dico = new double[] { 0, 0 };

@@ -494,14 +494,13 @@ public class Jeu extends JFrame implements ActionListener {
 		}
 
 		if (!finTourParTir) {
-			if (ToucheEspace) {
-				if (Joueurs[joueurQuiJoue].bombeArmee >= 6) {
-					joueurATire = true;
-				} else if (Joueurs[joueurQuiJoue].force < 100) {
-					Joueurs[j].force++;
-					joueurFiring = true;
-					timerTour.stop();
-				}
+			if (ToucheEspace && Joueurs[joueurQuiJoue].bombeArmee >= 6) {
+				joueurATire = true;
+			} else if (ToucheEspace && Joueurs[joueurQuiJoue].force < 100) {			
+				Joueurs[j].force++;
+				joueurFiring = true;
+				timerTour.stop();
+
 			} else if (Joueurs[j].force >= 100) {
 				joueurATire = true;
 			}
@@ -744,7 +743,7 @@ public class Jeu extends JFrame implements ActionListener {
 			} else if ((nCycle % 5 == 0 | nCycle % 10 == 0) && !message.isDrawn) {
 				int ars = 0;
 
-				if (nCycle % 3 == 0) {
+				if (nCycle % 10 == 0) {
 					message.setMessage(temps, new Color(200, 0, 0), 2,
 							"Vous recevez tous un missile v2", null);
 

@@ -81,6 +81,48 @@ public class Bombe extends Objet {
 		Objets = Obj;
 	}
 
+	// constructeur pour la caisse piegee
+	public Bombe(Tank atank, LinkedList<Joueur> ListJoueurs,
+			LinkedList<Objet> Obj) {
+		super(atank.getCenterX(), 0, 0, 0, 0, "Bombe.png", atank.limitesFrame,
+				atank.map, "roquette", atank.joueur);
+		tank = atank;
+		dommage = 20;
+
+		gravite = 0;
+
+		bombePartie = true;
+		test = true;
+
+		vent = 0;
+
+		// on stocke la liste des joueurs encore presents afin de verifier si la
+		// bombe tombe sur l'un d'eux
+		JoueursActifs = ListJoueurs;
+		Objets = Obj;
+
+		this.actif = false;
+		rayonDegats(x);
+		map.destructionMap(25, (int) x);
+
+		Thread explosion = new Son("Explosion_roquette.wav");
+		explosion.start();
+
+		// on balaye la liste et on fait bouger tout les objets avec
+		// la classe move qui leur est propre, 3x pour placer les tanks
+		// au sol après explosion
+		for (int u = 0; u < 3; u++) {
+
+			Iterator<Objet> k = Objets.iterator();
+
+			while (k.hasNext()) {
+				Objet O = (Objet) k.next();
+				O.move();
+			}
+		}
+
+	}
+
 	public void move() {
 		x += dx;
 		y -= dy;
