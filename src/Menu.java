@@ -179,6 +179,8 @@ public class Menu extends JFrame implements ActionListener {
 		hardcore = new JRadioButton("hardcore");
 		hardcore.setFont(CaptainSuperSmall);
 
+		moyen.setSelected(true);
+
 		difficulteGroupe = new ButtonGroup();
 		difficulteGroupe.add(debutant);
 		difficulteGroupe.add(facile);
@@ -327,9 +329,8 @@ public class Menu extends JFrame implements ActionListener {
 				} else if (hardcore.isSelected()) {
 					d = 5;
 				} else {
-					JOptionPane.showMessageDialog(this,
-							"Choisissez une difficulté !", "You had one job !",
-							JOptionPane.WARNING_MESSAGE);
+					System.out.println("Erreur sur la difficulte (selection)");
+					System.exit(0);
 				}
 
 				if (d != 0) {

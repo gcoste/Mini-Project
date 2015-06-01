@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.*;
 import java.awt.event.*;
 import java.io.File;
@@ -10,90 +11,88 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 public class Jeu extends JFrame implements ActionListener {
-	int nombreJoueurs;
+	private int nombreJoueurs;
 
-	Font Captain;
-	Font CaptainSmall;
+	private Font Captain;
+	private Font CaptainSmall;
 
 	// Liste de tous les objets du jeu (tanks, bombes, canon)
-	LinkedList<Objet> Objets;
-	LinkedList<Joueur> JoueursActifs;
-	Joueur[] Joueurs;
+	private LinkedList<Objet> Objets;
+	private LinkedList<Joueur> JoueursActifs;
+	private Joueur[] Joueurs;
 
-	LinkedList<Caisse> Caisses;
+	private LinkedList<Caisse> Caisses;
 
 	// timer qui regit le jeu
-	Timer timer;
+	private Timer timer;
 	// timer qui regit le passage des tours
-	Timer timerTour;
+	private Timer timerTour;
 	// timer qui lance la musique en boucle
-	Timer timerMusique;
+	private Timer timerMusique;
 
 	// compteurs de temps associés aux timers
-	long temps;
-	long tempsTour;
+	private long temps;
+	private long tempsTour;
 
-	int nTour;
-	double nCycle;
+	private int nTour;
+	private double nCycle;
 
-	BufferedImage ArrierePlan;
-	Graphics buffer;
+	private BufferedImage ArrierePlan;
+	private Graphics buffer;
 	// on cree un objet du type message afin de pouvoir donner des
 	// informations a l'utilisateur de maniere simple a n'importe quelle
 	// moment du jeu
-	Message message;
+	private Message message;
 
-	JPanel centralPanel;
-	JButton quitter;
-	JProgressBar forceBar;
+	private JPanel centralPanel;
+	private JButton quitter;
+	private JProgressBar forceBar;
 
-	boolean ToucheHaut;
-	boolean ToucheBas;
-	boolean ToucheGauche;
-	boolean ToucheDroite;
-	boolean ToucheEspace;
-	boolean ToucheEntre;
-	boolean ToucheEchap;
+	private boolean ToucheHaut;
+	private boolean ToucheBas;
+	private boolean ToucheGauche;
+	private boolean ToucheDroite;
+	private boolean ToucheEspace;
+	private boolean ToucheEntre;
 
-	Rectangle limitesFrame;
-	Carte map;
+	private Rectangle limitesFrame;
+	private Carte map;
 
 	// ces differents boolean servent au passage de tours
-	boolean joueurFiring;
-	boolean joueurATire;
-	boolean finJeu;
-	boolean finTour;
-	boolean finTourParTir;
-	boolean caisseEnVol;
-	boolean passageJoueur;
-	boolean attenteJoueur;
+	private boolean joueurFiring;
+	private boolean joueurATire;
+	private boolean finJeu;
+	private boolean finTour;
+	private boolean finTourParTir;
+	private boolean caisseEnVol;
+	private boolean passageJoueur;
+	private boolean attenteJoueur;
 
 	// parametres pour gerer les tours
-	int joueurQuiJoue;
-	Bombe bombeActive;
-	Caisse caisseActive;
+	private int joueurQuiJoue;
+	private Bombe[] bombesActives;
+	private Caisse caisseActive;
 
 	// parametres de selection des bombes
-	final String[] BOMBES = new String[] { "gun", "roquette", "obus", "v2",
-			"ogive", "tsar bomba" };
-	int bombeArmee;
+	private final String[] BOMBES = new String[] { "gun", "roquette", "obus",
+			"v2", "ogive", "patate", "Attaque aerienne" };
 
 	// parametres IA
-	boolean angleChoisi;
-	double angleIA;
-	double forceIA;
+	private boolean angleChoisi;
+	private double angleIA;
+	private double forceIA;
 
 	// difficulte de 1 a 5
-	int difficulte;
+	private int difficulte;
 
-	double vent;
+	private double vent;
 
 	// le JPanel d'affichage des informations du joueur
-	Bandeau bandeau;
+	private Bandeau bandeau;
 	// couleur du bandeau et de la carte
-	Color bleu = new Color(2, 13, 23);
+	private Color bleu = new Color(2, 13, 23);
 
-	boolean rainbows;
+	private boolean rainbows;
 
 	public Jeu(int nbJoueurs, int diffic, String[] nomsHerites,
 			String[] couleursHerites, int nombreJoueursHumains, Font Cap,
@@ -117,8 +116,6 @@ public class Jeu extends JFrame implements ActionListener {
 		tempsTour = 0;
 		joueurQuiJoue = 0;
 
-		bombeArmee = 0;
-
 		angleChoisi = false;
 
 		temps = 0;
@@ -133,7 +130,6 @@ public class Jeu extends JFrame implements ActionListener {
 		ToucheDroite = false;
 		ToucheEspace = false;
 		ToucheEntre = false;
-		ToucheEchap = false;
 
 		// le vent varie entre 0.01 et -0.01
 		vent = (1 / (double) difficulte) * (0.02 * Math.random() - 0.01);
@@ -240,7 +236,7 @@ public class Jeu extends JFrame implements ActionListener {
 		this.setVisible(true);
 	}
 
-	public void creationJoueurs(String[] noms, String[] couleurs,
+	private void creationJoueurs(String[] noms, String[] couleurs,
 			int nombreJoueursHumains) {
 		// on cree deux tableau de nombres aléatoires pour le placement des
 		// tanks
@@ -288,7 +284,7 @@ public class Jeu extends JFrame implements ActionListener {
 		}
 	}
 
-	public void creationBouttons() {
+	private void creationBouttons() {
 		// on cree le bandeau
 		bandeau = new Bandeau(limitesFrame.width, bleu, CaptainSmall, Captain);
 		bandeau.setVent(vent);
@@ -363,7 +359,12 @@ public class Jeu extends JFrame implements ActionListener {
 		// on dessine tout les messages
 		drawInfos();
 
-		drawViseur();
+		if (Joueurs[joueurQuiJoue].bombeArmee < 6) {
+			drawViseur();
+		} else if (!joueurFiring) {
+			drawViseur((int) Joueurs[joueurQuiJoue].xVisee,
+					Joueurs[joueurQuiJoue].viseeDroite);
+		}
 
 		// On dessine finalement l'image associee au buffer dans le JFrame
 		if (!timer.isRunning()) {
@@ -493,11 +494,14 @@ public class Jeu extends JFrame implements ActionListener {
 		}
 
 		if (!finTourParTir) {
-			if (ToucheEspace && Joueurs[joueurQuiJoue].force < 100) {
-				Joueurs[j].force++;
-				joueurFiring = true;
-				timerTour.stop();
-
+			if (ToucheEspace) {
+				if (Joueurs[joueurQuiJoue].bombeArmee >= 6) {
+					joueurATire = true;
+				} else if (Joueurs[joueurQuiJoue].force < 100) {
+					Joueurs[j].force++;
+					joueurFiring = true;
+					timerTour.stop();
+				}
 			} else if (Joueurs[j].force >= 100) {
 				joueurATire = true;
 			}
@@ -505,9 +509,11 @@ public class Jeu extends JFrame implements ActionListener {
 			if (joueurATire) {
 				forceBar.setVisible(false);
 
-				bombeActive = Joueurs[j].tire(vent, BOMBES[bombeArmee],
-						bombeArmee);
-				Objets.add(0, bombeActive);
+				bombesActives = Joueurs[j].tire(vent);
+
+				for (int u = 0; u < bombesActives.length; u++) {
+					Objets.add(0, bombesActives[u]);
+				}
 
 				joueurFiring = false;
 				finTourParTir = true;
@@ -516,7 +522,9 @@ public class Jeu extends JFrame implements ActionListener {
 				timerTour.start();
 			}
 		} else {
-			bombeActive.move();
+			for (int u = 0; u < bombesActives.length; u++) {
+				bombesActives[u].move();
+			}
 		}
 
 		if (tempsTour >= 299) {
@@ -529,10 +537,10 @@ public class Jeu extends JFrame implements ActionListener {
 
 		if (!angleChoisi) {
 			double[] angleTanks = new double[nombreJoueurs];
-			bombeArmee = BOMBES.length - 1;
+			Joueurs[j].bombeArmee = BOMBES.length - 1;
 
-			while (Joueurs[j].arsenal[bombeArmee] == 0) {
-				bombeArmee--;
+			while (Joueurs[j].arsenal[Joueurs[j].bombeArmee] == 0) {
+				Joueurs[j].bombeArmee--;
 			}
 
 			angleIA = -1;
@@ -643,9 +651,8 @@ public class Jeu extends JFrame implements ActionListener {
 				if (joueurATire) {
 					forceBar.setVisible(false);
 
-					bombeActive = Joueurs[j].tire(vent, BOMBES[bombeArmee],
-							bombeArmee);
-					Objets.add(0, bombeActive);
+					bombesActives = Joueurs[j].tire(vent);
+					Objets.add(0, bombesActives[0]);
 
 					joueurFiring = false;
 					finTourParTir = true;
@@ -667,14 +674,20 @@ public class Jeu extends JFrame implements ActionListener {
 			// la premiere condition arrete le joueur et verifie que la
 			// bombe tire a bien explose avant de changer de joueur
 			Joueurs[joueurQuiJoue].fixe();
-			bombeActive.move();
+			int sum = 0;
 
-			if (!bombeActive.actif) {
-				if (4 * Math.random() < 1) {
+			for (int u = 0; u < bombesActives.length; u++) {
+				bombesActives[u].move();
+
+				if (!bombesActives[u].actif) {
+					sum++;
+				}
+			}
+
+			if (sum == bombesActives.length) {
+				if (3 * Math.random() < 1) {
 					caisseActive = new Caisse(map, limitesFrame, JoueursActifs,
-							Caisses, message);
-					Caisses.add(caisseActive);
-					Objets.add(caisseActive);
+							Objets, Caisses, message);
 					caisseEnVol = true;
 				}
 
@@ -738,9 +751,9 @@ public class Jeu extends JFrame implements ActionListener {
 					ars = 3;
 				} else if (nCycle % 5 == 0) {
 					message.setMessage(temps, new Color(200, 0, 0), 2,
-							"Vous recevez tous une ogive nucleaire", null);
+							"Vous recevez tous une attaque aerienne", null);
 
-					ars = 4;
+					ars = 6;
 				}
 
 				Iterator<Joueur> k = JoueursActifs.iterator();
@@ -748,8 +761,7 @@ public class Jeu extends JFrame implements ActionListener {
 				while (k.hasNext()) {
 					Joueur J = (Joueur) k.next();
 
-					if ((J.estHumain | difficulte > 4)
-							| (ars == 3 && difficulte == 3)) {
+					if (J.estHumain | (ars == 3 && difficulte > 4)) {
 						J.arsenal[ars]++;
 					}
 				}
@@ -809,16 +821,17 @@ public class Jeu extends JFrame implements ActionListener {
 		bandeau.setFuel(Joueurs[j].fuel);
 		bandeau.setVie(Joueurs[j].vie);
 
-		while (Joueurs[j].arsenal[bombeArmee] <= 0) {
-			bombeArmee--;
+		while (Joueurs[j].arsenal[Joueurs[j].bombeArmee] <= 0) {
+			Joueurs[j].bombeArmee--;
 		}
 
-		bandeau.setBombe(BOMBES[bombeArmee], Joueurs[j].arsenal[bombeArmee]);
+		bandeau.setBombe(BOMBES[Joueurs[j].bombeArmee],
+				Joueurs[j].arsenal[Joueurs[j].bombeArmee]);
 
 		bandeau.setTemps(30 - (int) (tempsTour / 10));
 	}
 
-	public void drawInfos() {
+	private void drawInfos() {
 		buffer.setFont(Captain);
 		buffer.setColor(bleu);
 
@@ -846,7 +859,7 @@ public class Jeu extends JFrame implements ActionListener {
 		}
 	}
 
-	public void drawViseur() {
+	private void drawViseur() {
 		buffer.setColor(Joueurs[joueurQuiJoue].couleur);
 
 		double a = Math.toRadians(Joueurs[joueurQuiJoue].angle);
@@ -855,6 +868,35 @@ public class Jeu extends JFrame implements ActionListener {
 		int yV = (int) (Joueurs[joueurQuiJoue].tank.canon.y - Math.sin(a) * 120);
 
 		buffer.drawOval(xV - 10, yV - 10, 20, 20);
+
+	}
+
+	private void drawViseur(int x1, boolean droite) {
+		buffer.setColor(Joueurs[joueurQuiJoue].couleur);
+
+		Graphics2D g = (Graphics2D) buffer.create();
+
+		double deltaX;
+		double deltaY = 50;
+
+		if (droite) {
+			deltaX = 20;
+		} else {
+			deltaX = -20;
+		}
+
+		double angle = Math.atan2(deltaY, deltaX);
+		int longueur = (int) Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+		AffineTransform at = AffineTransform.getTranslateInstance(x1, 20);
+		at.concatenate(AffineTransform.getRotateInstance(angle));
+		g.transform(at);
+
+		g.setStroke(new BasicStroke(15));
+
+		g.drawLine(0, 0, longueur, 0);
+		g.fillPolygon(new int[] { longueur, longueur, longueur + 50 },
+				new int[] { -20, 20, 0 }, 3);
 	}
 
 	private void drawStringCentre(String s, int xPos, int yPos) {
@@ -882,8 +924,6 @@ public class Jeu extends JFrame implements ActionListener {
 		} else if (code == 10) {
 			ToucheEntre = true;
 		} else if (code == 27) {
-			ToucheEchap = true;
-
 			// Si c'est la touche echape on fait pause
 			if (timer.isRunning()) {
 				timer.stop();
@@ -921,8 +961,6 @@ public class Jeu extends JFrame implements ActionListener {
 
 		} else if (code == 10) {
 			ToucheEntre = false;
-		} else if (code == 27) {
-			ToucheEchap = false;
 		}
 	}
 
@@ -985,19 +1023,19 @@ public class Jeu extends JFrame implements ActionListener {
 
 		if (Joueurs[joueurQuiJoue].estHumain && !finTour) {
 			if (source == bandeau.bombePrev) {
-				bombeArmee--;
+				Joueurs[joueurQuiJoue].bombeArmee--;
 
-				if (bombeArmee == -1) {
-					bombeArmee = BOMBES.length - 1;
+				if (Joueurs[joueurQuiJoue].bombeArmee == -1) {
+					Joueurs[joueurQuiJoue].bombeArmee = BOMBES.length - 1;
 				}
 			} else if (source == bandeau.bombeNext) {
 				do {
-					bombeArmee++;
+					Joueurs[joueurQuiJoue].bombeArmee++;
 
-					if (bombeArmee == BOMBES.length) {
-						bombeArmee = 0;
+					if (Joueurs[joueurQuiJoue].bombeArmee == BOMBES.length) {
+						Joueurs[joueurQuiJoue].bombeArmee = 0;
 					}
-				} while (Joueurs[joueurQuiJoue].arsenal[bombeArmee] <= 0);
+				} while (Joueurs[joueurQuiJoue].arsenal[Joueurs[joueurQuiJoue].bombeArmee] <= 0);
 			}
 		}
 

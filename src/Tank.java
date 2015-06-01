@@ -7,7 +7,7 @@ public class Tank extends Objet {
 	}
 
 	public Tank(Joueur joueur, int placement, int nombreJoueurs, String NomImage) {
-		super(0, 0, 0, 0, 0.35, NomImage, joueur.limitesframe, joueur.map,
+		super(0, 0, 0, 0, 0.35, NomImage, joueur.limitesFrame, joueur.map,
 				("Tank_" + joueur.n), joueur);
 
 		// on divise la taile du terrain par le nombre de joueur afin de placer
@@ -23,11 +23,13 @@ public class Tank extends Objet {
 	}
 
 	public void move() {
+		y = map.getY(getCenterX()) - limites.height;
+		
 		if (joueur.fuel > 0) {
 			x = x + vitesse * dx;
 			y = map.getY(getCenterX()) - limites.height;
 
-			joueur.fuel -= 0.06 * Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))
+			joueur.fuel -= 0.05 * Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))
 					* vitesse;
 
 			// On test si on a pas atteint les bords de l'ecran, si c'est le cas
@@ -46,7 +48,7 @@ public class Tank extends Objet {
 				joueur.degats(-1);
 			}
 		}
-
+		
 		// On place le rectangle de limites sur l'image
 		limites.setLocation((int) x, (int) y);
 	}

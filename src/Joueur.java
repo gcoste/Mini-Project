@@ -4,7 +4,7 @@ import java.util.LinkedList;
 
 public class Joueur {
 	// limites de l'ecran
-	Rectangle limitesframe;
+	Rectangle limitesFrame;
 	// carte sur lequel evolue l'objet
 	Carte map;
 	// bandeau du jeu pour acceder à la force
@@ -19,6 +19,7 @@ public class Joueur {
 	boolean actif;
 
 	int[] arsenal;
+	int bombeArmee;
 
 	double vie;
 	double fuel;
@@ -26,6 +27,10 @@ public class Joueur {
 	double angle;
 	// force du tir
 	double force;
+
+	// parametres de visee pour l'attaque aerienne
+	double xVisee;
+	boolean viseeDroite;
 
 	// parametre IA pour la dichotomie
 	double dico[];
@@ -42,12 +47,13 @@ public class Joueur {
 			String anom, String acouleur, boolean Humain, int nombreBombes,
 			Carte amap, Rectangle aframe, Bandeau abandeau,
 			LinkedList<Joueur> JoueursEnVie, LinkedList<Objet> Obj) {
-		limitesframe = aframe;
+		limitesFrame = aframe;
 		map = amap;
 		bandeau = abandeau;
 
 		arsenal = new int[nombreBombes];
 		arsenal[0] = 100000;
+		bombeArmee = 0;
 
 		n = num;
 		nom = anom;
@@ -55,6 +61,8 @@ public class Joueur {
 		actif = true;
 
 		angle = 0;
+		xVisee = limitesFrame.width / 2;
+		viseeDroite = true;
 		force = 0;
 
 		vie = 100;
@@ -63,6 +71,7 @@ public class Joueur {
 		if (estHumain) {
 			arsenal[1] = 25;
 			arsenal[2] = 5;
+			arsenal[6] = 1;
 
 			defaut = 0;
 			dico = new double[] { 0, 0 };
@@ -135,16 +144,87 @@ public class Joueur {
 		Objets = Obj;
 	}
 
-	public Bombe tire(double vent, String bombe, int n) {
-		arsenal[n]--;
+	public Bombe[] tire(double vent) {
+		// si l'attaque est declenchee par une caisse
+		if (vent == 10) {
+			int e = (int) (limitesFrame.width / 100);
 
-		Bombe obus = new Bombe(tank, vent, force + defaut, angle, bombe,
-				JoueursActifs, Objets, GRAVITE);
+			Bombe[] piege = new Bombe[e];
 
-		Thread tir = new Son("Tir.wav");
-		tir.start();
+			for (int u = 0; u < e; u++) {
+				piege[u] = new Bombe(tank, u * 100, true, JoueursActifs,
+						Objets, GRAVITE);
+			}
 
-		return obus;
+			return piege;
+		} else if (bombeArmee < 6) {
+			arsenal[bombeArmee]--;
+			String nomBombe = new String();
+			String nomImage = "Bombe.png";
+			int dommage = 0;
+
+			// on regle les dommages en fonction du type de bombe
+			switch (bombeArmee) {
+			case 0:
+				nomBombe = "gun";
+				dommage = 10;
+				break;
+			case 1:
+				nomBombe = "roquette";
+				dommage = 25;
+				break;
+			case 2:
+				nomBombe = "obus";
+				dommage = 50;
+				break;
+			case 3:
+				nomBombe = "v2";
+				dommage = 80;
+				break;
+			case 4:
+				nomBombe = "ogive";
+				nomImage = "Ogive.png";
+				dommage = 100;
+				break;
+			case 5:
+				nomBombe = "patate";
+				nomImage = "Patate.png";
+				dommage = 200;
+				break;
+			default:
+				System.out.println("Erreur sur le choix de la bombe");
+				System.exit(0);
+			}
+
+			Bombe obus = new Bombe(tank, vent, force + defaut, angle, dommage,
+					nomBombe, nomImage, JoueursActifs, Objets, GRAVITE);
+
+			if (bombeArmee < 4) {
+				Thread tir = new Son("Tir.wav");
+				tir.start();
+			} else {
+				Thread tir = new Son("Tir_ogive.wav");
+				tir.start();
+			}
+
+			return new Bombe[] { obus };
+		}
+
+		else {
+			arsenal[bombeArmee]--;
+			Bombe[] attaqueAerienne = new Bombe[5];
+
+			for (int u = 0; u < 5; u++) {
+				attaqueAerienne[u] = new Bombe(tank, xVisee + (u - 2) * 40,
+						viseeDroite, JoueursActifs, Objets, GRAVITE);
+			}
+
+			Thread tir = new Son("Chute.wav");
+			tir.start();
+
+			return attaqueAerienne;
+		}
+
 	}
 
 	public void moveGauche() {
@@ -160,13 +240,25 @@ public class Joueur {
 	}
 
 	public void anglePlus() {
-		if (angle < 180) {
+		if (bombeArmee > 5) {
+			viseeDroite = false;
+
+			if (xVisee > 50) {
+				xVisee -= 3;
+			}
+		} else if (angle < 180) {
 			angle += 0.5;
 		}
 	}
 
 	public void angleMoins() {
-		if (angle > 0) {
+		if (bombeArmee > 5) {
+			viseeDroite = true;
+
+			if (xVisee < limitesFrame.width - 50) {
+				xVisee += 3;
+			}
+		} else if (angle > 0) {
 			angle -= 0.5;
 		}
 	}
@@ -236,8 +328,8 @@ public class Joueur {
 	}
 
 	public double testTir(double forceTest, double angleTest, Tank tankVise) {
-		Bombe obus = new Bombe(tank, 0, forceTest, angleTest, "obus",
-				JoueursActifs, Objets, GRAVITE);
+		Bombe obus = new Bombe(tank, 0, forceTest, angleTest, 0, "obus",
+				"Bombe.png", JoueursActifs, Objets, GRAVITE);
 
 		boolean dichot;
 		boolean cestBon = false;
@@ -274,7 +366,7 @@ public class Joueur {
 			obus.limites.setLocation((int) obus.x, (int) obus.y);
 
 			// on test si la bombe touche la carte ou les bords du jeu
-			if ((obus.x < 0 | obus.x >= limitesframe.width) && !dichot) {
+			if ((obus.x < 0 | obus.x >= limitesFrame.width) && !dichot) {
 				double xTest = obus.x;
 				double yTest = obus.y;
 				double dxTest = obus.dx;
@@ -285,10 +377,10 @@ public class Joueur {
 					yTest = yTest - dyTest;
 					dyTest = dyTest - GRAVITE;
 
-					if ((xTest >= 0 && xTest < limitesframe.width)
+					if ((xTest >= 0 && xTest < limitesFrame.width)
 							&& yTest < map.getY(xTest)) {
 						test = false;
-					} else if (yTest > limitesframe.height) {
+					} else if (yTest > limitesFrame.height) {
 						obus.actif = false;
 						return -1;
 					}

@@ -8,14 +8,32 @@ public class Caisse extends Objet {
 
 	final double GRAVITE = 0.1;
 	boolean estPose;
+	boolean bombesLancees;
+
+	double proba;
+	boolean piegeAerien;
+
+	LinkedList<Objet> Objets;
+	Bombe[] bombesActives;
 
 	public Caisse(Carte amap, Rectangle aframe,
-			LinkedList<Joueur> JoueursActifs, LinkedList<Caisse> Caisses,
-			Message mes) {
+			LinkedList<Joueur> JoueursActifs, LinkedList<Objet> Obj,
+			LinkedList<Caisse> Caisses, Message mes) {
 		super(0, -50, 0, 0, 1, "Caisse.png", aframe, amap, null, null);
 
 		message = mes;
 		estPose = false;
+
+		proba = 100 * Math.random();
+
+		if (proba >= 93) {
+			piegeAerien = true;
+		} else {
+			piegeAerien = false;
+		}
+
+		bombesLancees = false;
+		bombesActives = null;
 
 		boolean verif = true;
 
@@ -45,6 +63,11 @@ public class Caisse extends Objet {
 
 			verif = !verif;
 		}
+		
+		Objets = Obj;
+		
+		Objets.add(this);
+		Caisses.add(this);
 	}
 
 	public void move() {
@@ -72,72 +95,107 @@ public class Caisse extends Objet {
 			Joueur J = (Joueur) k.next();
 
 			if (this.Collision(J.tank)) {
-				this.actif = false;
-
 				giveTank(J, temps);
 			}
 		}
 	}
 
 	public void giveTank(Joueur J, long temps) {
-		double proba = 100 * Math.random();
+		if (!piegeAerien) {
+			this.actif = false;
 
-		if (proba < 40) {
-			if (proba < 25) {
-				J.vie += 30;
+			if (proba < 40) {
+				if (proba < 25) {
+					J.vie += 30;
 
-				message.setMessage(temps, new Color(28, 142, 62), 2,
-						"30 points de vie", "supplementaires");
-			} else {
-				J.vie += 50;
+					message.setMessage(temps, new Color(28, 142, 62), 2,
+							"30 points de vie", "supplementaires");
+				} else {
+					J.vie += 50;
 
-				message.setMessage(temps, new Color(28, 142, 62), 2,
-						"50 points de vie", "supplementaires");
-			}
-		} else if (proba < 60) {
-			if (proba < 55) {
-				J.fuel += 30;
+					message.setMessage(temps, new Color(28, 142, 62), 2,
+							"50 points de vie", "supplementaires");
+				}
+			} else if (proba < 55) {
+				if (proba < 50) {
+					J.fuel += 30;
 
-				if (J.fuel > 100) {
+					if (J.fuel > 100) {
+						J.fuel = 100;
+					}
+
+					message.setMessage(temps, new Color(128, 0, 128), 2,
+							"50 litres de fioul", "supplementaires");
+				} else {
 					J.fuel = 100;
+
+					message.setMessage(temps, new Color(128, 0, 128), 2,
+							"Reservoir de fioul rempli", null);
+				}
+			} else if (proba < 87){
+				if (proba < 70) {
+					J.arsenal[2] += 5;
+
+					message.setMessage(temps, new Color(200, 0, 0), 2,
+							"5 obus", null);
+				} else if (proba < 75) {
+					J.arsenal[3]++;
+
+					message.setMessage(temps, new Color(200, 0, 0), 2,
+							"une attaque aerienne", null);
+				} else if (proba < 80) {
+					J.arsenal[3]++;
+
+					message.setMessage(temps, new Color(200, 0, 0), 2,
+							"un missile v2", null);
+				} else if (proba < 85) {
+					J.arsenal[4]++;
+
+					message.setMessage(temps, new Color(200, 0, 0), 2,
+							"une ogive nucleaire", "soyez prudent");
+				} else {
+					J.arsenal[5]++;
+
+					message.setMessage(temps, new Color(200, 0, 0), 2,
+							"le lance patate", "faites en bon usage");
+
+					Thread explosion = new Son("Lance_patate.wav");
+					explosion.start();
+				}
+			} else {
+
+			}
+			
+			
+		} else {
+			if (!bombesLancees) {
+				bombesLancees = true;
+				Objets.remove(this);
+				
+				message.setMessage(temps, new Color(200, 0, 0), 2,
+						"Pluie de l'apocalypse", "dommage !");
+				
+				bombesActives = J.tire(10);
+				
+				for (int u = 0; u < bombesActives.length; u++) {
+					Objets.add(0, bombesActives[u]);
+				}
+			} else {
+				int sum = 0;
+
+				for (int u = 0; u < bombesActives.length; u++) {
+					bombesActives[u].move();
+
+					if (!bombesActives[u].actif) {
+						sum++;
+
+					}
 				}
 
-				message.setMessage(temps, new Color(128, 0, 128), 2,
-						"50 litres de fioul", "supplementaires");
-			} else {
-				J.fuel = 100;
-
-				message.setMessage(temps, new Color(128, 0, 128), 2,
-						"Reservoir de fioul rempli", null);
-			}
-		} else {
-			if (proba < 68) {
-				J.arsenal[1] += 25;
-
-				message.setMessage(temps, new Color(200, 0, 0), 2,
-						"25 roquettes", null);
-			} else if (proba < 83) {
-				J.arsenal[2] += 5;
-
-				message.setMessage(temps, new Color(200, 0, 0), 2, "5 obus",
-						null);
-			} else if (proba < 93) {
-				J.arsenal[3]++;
-
-				message.setMessage(temps, new Color(200, 0, 0), 2,
-						"1 missile v2", null);
-			} else if (proba < 98) {
-				J.arsenal[4]++;
-
-				message.setMessage(temps, new Color(200, 0, 0), 2,
-						"1 ogive nucleaire", "soyez prudent");
-			} else {
-				J.arsenal[5]++;
-
-				message.setMessage(temps, new Color(200, 0, 0), 2,
-						"1 tsar bomba", "faites en bon usage");
+				if (sum == bombesActives.length) {
+					this.actif = false;
+				}
 			}
 		}
-
 	}
 }

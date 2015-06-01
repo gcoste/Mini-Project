@@ -15,17 +15,19 @@ public class Bombe extends Objet {
 	// on verifie que la bombe a quitte le rectangle du tank qui l'a tiree afin
 	// d'etre sur de ne pas entrainer une collision au debut du tir
 	boolean bombePartie;
+	boolean test;
 
 	LinkedList<Objet> Objets;
 	LinkedList<Joueur> JoueursActifs;
 
 	public Bombe(Tank atank, double avent, double aforce, double angle,
-			String nom, LinkedList<Joueur> ListJoueurs,
-			LinkedList<Objet> Obj, double grav) {
-		super(0, 0, 0, 0, aforce * 0.15, "Bombe.png", atank.limitesFrame,
+			int dom, String nom, String nomImage,
+			LinkedList<Joueur> ListJoueurs, LinkedList<Objet> Obj, double grav) {
+		super(0, 0, 0, 0, aforce * 0.15, nomImage, atank.limitesFrame,
 				atank.map, nom, atank.joueur);
 
 		tank = atank;
+		dommage = dom;
 
 		gravite = grav;
 
@@ -33,27 +35,8 @@ public class Bombe extends Objet {
 		x = joueur.canon.x - 1;
 		y = joueur.canon.y - 1;
 
-		// on regle les dommages en fonction du type de bombe
-		if (nom.equals("gun")) {
-			dommage = 10;
-		} else if (nom.equals("roquette")) {
-			dommage = 25;
-		} else if (nom.equals("obus")) {
-			dommage = 50;
-		} else if (nom.equals("v2")) {
-			dommage = 80;
-		} else if (nom.equals("ogive")) {
-			dommage = 100;
-		} else if (nom.equals("tsar bomba")) {
-			dommage = 200;
-		}
-
 		bombePartie = false;
-
-		// on stocke la liste des joueurs encore presents afin de verifier si la
-		// bombe tombe sur l'un d'eux
-		JoueursActifs = ListJoueurs;
-		Objets = Obj;
+		test = true;
 
 		// on regle dx et dy en fonction de l'angle
 		// le 0 est a droite, le 180 est a gauche
@@ -61,12 +44,42 @@ public class Bombe extends Objet {
 		dx = Math.cos(a) * vitesse;
 		dy = Math.sin(a) * vitesse;
 
-		// le vent ne change pas pendant la course d'une bombe, on peut donc le
+		// le vent ne change pas pendant la course d'une bombe, on peut donc
+		// le
 		// stocker comme un attribut
 		vent = avent;
+
+		// on stocke la liste des joueurs encore presents afin de verifier si la
+		// bombe tombe sur l'un d'eux
+		JoueursActifs = ListJoueurs;
+		Objets = Obj;
 	}
 
-	boolean test = true;
+	// constructeur pour l'attaque aerienne
+	public Bombe(Tank atank, double ax, boolean droite,
+			LinkedList<Joueur> ListJoueurs, LinkedList<Objet> Obj, double grav) {
+		super(ax, 0, 1.5, 0, 0, "Bombe.png", atank.limitesFrame, atank.map,
+				"roquette", atank.joueur);
+
+		if (!droite) {
+			dx = -1.5;
+		}
+
+		tank = atank;
+		dommage = 20;
+
+		gravite = grav;
+
+		bombePartie = true;
+		test = true;
+
+		vent = 0;
+
+		// on stocke la liste des joueurs encore presents afin de verifier si la
+		// bombe tombe sur l'un d'eux
+		JoueursActifs = ListJoueurs;
+		Objets = Obj;
+	}
 
 	public void move() {
 		x += dx;
@@ -97,14 +110,14 @@ public class Bombe extends Objet {
 				}
 			}
 		} else if (y >= map.getY(x) && actif) {
-			
+
 			this.actif = false;
 			rayonDegats(x);
 			map.destructionMap(this.dommage, (int) x);
 
 			Thread explosion = new Son("Explosion_" + nom + ".wav");
 			explosion.start();
-			
+
 			// on balaye la liste et on fait bouger tout les objets avec
 			// la classe move qui leur est propre, 3x pour placer les tanks
 			// au sol après explosion
@@ -131,7 +144,7 @@ public class Bombe extends Objet {
 				explosion.start();
 
 				J.touche(this, k);
-				
+
 				// on balaye la liste et on fait bouger tout les objets avec
 				// la classe move qui leur est propre, 3x pour placer les tanks
 				// au sol après explosion
@@ -150,8 +163,9 @@ public class Bombe extends Objet {
 		// on verifie que la bombe a quitte le rectangle du tank qui l'a
 		// tiree afin d'etre sur de ne pas entrainer une collision au debut
 		// du tir
-		if (!(new Rectangle((int) x, (int) y, l, h)).intersects(tank.limites)
-				&& !bombePartie) {
+		if (!bombePartie
+				&& !(new Rectangle((int) x, (int) y, l, h))
+						.intersects(tank.limites)) {
 			bombePartie = true;
 		}
 
