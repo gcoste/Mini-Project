@@ -4,17 +4,17 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 
 public class Message {
-	Graphics buffer;
-	Rectangle limitesFrame;
-	Font Captain;
+	private Graphics buffer;
+	private Rectangle limitesFrame;
+	private Font Captain;
 
-	Color couleur;
+	private Color couleur;
 	// duree du message en seconde
-	int duree;
-	long temps;
-	String ligne1, ligne2;
+	private int duree;
+	private long temps;
+	private String ligne1, ligne2;
 
-	boolean isDrawn;
+	public boolean isDrawn;
 
 	public Message(Graphics b, Rectangle aframe, Font Cap) {
 		buffer = b;

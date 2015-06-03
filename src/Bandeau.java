@@ -3,25 +3,22 @@ import java.awt.*;
 import javax.swing.*;
 
 public class Bandeau extends JPanel {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	public Font Calibri = new Font("Calibri", Font.BOLD, 25);
-	public Font Captain;
+	private Font Calibri = new Font("Calibri", Font.BOLD, 25);
+	private Font Captain;
 
-	public JPanel bars;
-	public JProgressBar vieBar;
-	public JProgressBar fuelBar;
+	private JPanel bars;
+	private JProgressBar vieBar;
+	private JProgressBar fuelBar;
 
-	public JPanel infos;
-	public JLabel tempsLabel;
-	public JLabel nomLabel;
-	public JLabel ventLabel;
+	private JPanel infos;
+	private JLabel tempsLabel;
+	private JLabel nomLabel;
+	private JLabel ventLabel;
 
-	public JPanel bombe;
+	private JPanel bombe;
+	private JLabel bombeLabel;
+
 	public JButton bombeNext;
-	public JLabel bombeLabel;
 	public JButton bombePrev;
 
 	// largeur est la largeur de l'ecran
@@ -53,7 +50,7 @@ public class Bandeau extends JPanel {
 		createBombe(largeur, bleu);
 	}
 
-	public void createBars(int largeur, Color bleu) {
+	private void createBars(int largeur, Color bleu) {
 		vieBar = new JProgressBar(SwingConstants.HORIZONTAL, 0, 100);
 		vieBar.setPreferredSize(new Dimension((int) ((0.25) * largeur), 30));
 		vieBar.setBackground(bleu);
@@ -68,7 +65,7 @@ public class Bandeau extends JPanel {
 		bars.add(fuelBar, BorderLayout.SOUTH);
 	}
 
-	public void createInfos(int largeur, Color bleu) {
+	private void createInfos(int largeur, Color bleu) {
 		tempsLabel = new JLabel();
 		tempsLabel
 				.setPreferredSize(new Dimension((int) ((0.05) * largeur), 80));
@@ -168,15 +165,7 @@ public class Bandeau extends JPanel {
 		ventLabel.setText(vent);
 	}
 
-	protected ImageIcon creerIcone(String NomImage) {
-		java.net.URL imgURL = getClass().getResource(NomImage);
-		if (imgURL != null) {
-			return new ImageIcon(imgURL, NomImage);
-		} else {
-			System.out.println(NomImage + " introuvable !");
-			System.out.println("Mettre les images dans le repertoire source");
-			System.exit(0);
-			return null;
-		}
+	public void draw() {
+		super.repaint();
 	}
 }

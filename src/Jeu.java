@@ -118,6 +118,8 @@ public class Jeu extends JFrame implements ActionListener {
 
 		angleChoisi = false;
 
+		bombesActives = new Bombe[0];
+
 		temps = 0;
 
 		nTour = 0;
@@ -275,7 +277,7 @@ public class Jeu extends JFrame implements ActionListener {
 
 			Joueurs[i] = new Joueur(i, placement[i], nombreJoueurs, difficulte,
 					noms[i], couleurs[i], estHumain, BOMBES.length, map,
-					limitesFrame, bandeau, JoueursActifs, Objets);
+					limitesFrame, JoueursActifs, Objets);
 
 			// on ajoute le tank et son canon a la liste d'objets
 			Objets.add(Joueurs[i].canon);
@@ -329,8 +331,7 @@ public class Jeu extends JFrame implements ActionListener {
 	}
 
 	public void paint(Graphics g) {
-		// on dessine le bandeau
-		bandeau.repaint();
+		bandeau.draw();
 
 		// la carte possede sa propre methode d'affichage
 		map.drawHorizon(limitesFrame, buffer, bleu);
@@ -361,34 +362,37 @@ public class Jeu extends JFrame implements ActionListener {
 		// on dessine tout les messages
 		drawInfos();
 
-		if (Joueurs[joueurQuiJoue].bombeArmee < 6) {
-			drawViseur();
-		} else if (!joueurFiring) {
-			drawViseur((int) Joueurs[joueurQuiJoue].xVisee,
-					Joueurs[joueurQuiJoue].viseeDroite);
+		if (!finJeu) {
+			if (Joueurs[joueurQuiJoue].bombeArmee < 6) {
+				drawViseur();
+			} else if (!joueurFiring) {
+				drawViseur((int) Joueurs[joueurQuiJoue].xVisee,
+						Joueurs[joueurQuiJoue].viseeDroite);
+			}
 		}
 
 		// On dessine finalement l'image associee au buffer dans le JFrame
-		if (!timer.isRunning()) {
-			quitter.repaint();
-		} else if (!joueurFiring) {
-			g.drawImage(ArrierePlan, 0, 100, this);
-		} else {
-			forceBar.setVisible(true);
-			forceBar.setValue((int) Joueurs[joueurQuiJoue].force);
+		if (timer.isRunning()) {
+			if (!joueurFiring) {
+				g.drawImage(ArrierePlan, 0, 100, this);
+			} else {
+				forceBar.setVisible(true);
+				forceBar.setValue((int) Joueurs[joueurQuiJoue].force);
 
-			int red = Math.min(255,
-					(int) (Joueurs[joueurQuiJoue].force * 510 / 100));
-			int green = Math.min(255,
-					(int) (-Joueurs[joueurQuiJoue].force * 510 / 100) + 510);
-			forceBar.setForeground(new Color(red, green, 0));
+				int red = Math.min(255,
+						(int) (Joueurs[joueurQuiJoue].force * 510 / 100));
+				int green = Math
+						.min(255,
+								(int) (-Joueurs[joueurQuiJoue].force * 510 / 100) + 510);
+				forceBar.setForeground(new Color(red, green, 0));
+			}
 		}
 	}
 
 	private void boucle_principale_jeu() {
+		int j = joueurQuiJoue;
 
 		if (!finJeu) {
-			int j = joueurQuiJoue;
 
 			// mise a jour des parametres du bandeau
 			miseAJourBandeau(j);
@@ -400,11 +404,9 @@ public class Jeu extends JFrame implements ActionListener {
 			 * passe a la trasition entre les tours.
 			 */
 			if (!finTour) {
-				if ((!finTourParTir | tempsTour / 10 < 30)
-						&& Joueurs[j].estHumain) {
+				if (Joueurs[j].estHumain) {
 					boucleHumain(j);
-				} else if (!finTourParTir && tempsTour / 10 < 30
-						&& !Joueurs[j].estHumain) {
+				} else if (!Joueurs[j].estHumain) {
 					boucleIA(j);
 				}
 			} else {
@@ -412,69 +414,74 @@ public class Jeu extends JFrame implements ActionListener {
 				// d'alleger la boucle principale
 				passageTour();
 			}
+		}
 
-			// si jamais le tank est detruit pendant son tour, on accelere
-			// le temps du tour afin que le tour se termine
-			if (!Joueurs[j].actif) {
-				tempsTour = 299;
-				timerTour.stop();
+		// si jamais le tank est detruit pendant son tour, on accelere
+		// le temps du tour afin que le tour se termine
+		if (!Joueurs[j].actif && !finTour) {
+			tempsTour = 299;
+		}
+
+		if (tempsTour >= 299 && !finTour) {
+			finTour = true;
+			finTourParTir = true;
+			
+			timerTour.stop();
+		}
+
+		Joueurs[joueurQuiJoue].move();
+
+		Iterator<Caisse> k = Caisses.iterator();
+
+		while (k.hasNext()) {
+			Caisse C = (Caisse) k.next();
+
+			C.actionCaisse(JoueursActifs, temps);
+
+			if (!C.actif) {
+				k.remove();
 			}
+		}
 
-			Joueurs[joueurQuiJoue].move();
+		// on balaye la liste et supprime tous les objets inactifs
+		// ainsi on ne paindra que les objets encore actifs
+		Iterator<Objet> k1 = Objets.iterator();
 
-			Iterator<Caisse> k = Caisses.iterator();
+		while (k1.hasNext()) {
+			Objet O = (Objet) k1.next();
 
-			while (k.hasNext()) {
-				Caisse C = (Caisse) k.next();
+			if (O.actif == false) {
+				k1.remove();
 
-				C.actionCaisse(JoueursActifs, temps);
+				if (O instanceof Bombe) {
+					// on balaye la liste et on fait bouger tout les objets
+					// avec
+					// la classe move qui leur est propre, 3x pour placer
+					// les tanks
+					// au sol après explosion
+					for (int u = 0; u < 3; u++) {
+						Iterator<Objet> k2 = Objets.iterator();
 
-				if (!C.actif) {
-					k.remove();
-				}
-			}
+						while (k2.hasNext()) {
+							Objet B = (Objet) k2.next();
 
-			// on balaye la liste et supprime tous les objets inactifs
-			// ainsi on ne paindra que les objets encore actifs
-			Iterator<Objet> k1 = Objets.iterator();
-
-			while (k1.hasNext()) {
-				Objet O = (Objet) k1.next();
-
-				if (O.actif == false) {
-					k1.remove();
-
-					if (O instanceof Bombe) {
-						// on balaye la liste et on fait bouger tout les objets
-						// avec
-						// la classe move qui leur est propre, 3x pour placer
-						// les tanks
-						// au sol après explosion
-						for (int u = 0; u < 3; u++) {
-							Iterator<Objet> k2 = Objets.iterator();
-
-							while (k2.hasNext()) {
-								Objet B = (Objet) k2.next();
-
-								if (!(B instanceof Bombe)) {
-									B.move();
-								}
+							if (!(B instanceof Bombe)) {
+								B.move();
 							}
 						}
 					}
 				}
 			}
+		}
 
-			// on balaye la liste et supprime tous les joueurs inactifs
-			// ainsi on ne paindra que les objets encore actifs
-			Iterator<Joueur> k2 = JoueursActifs.iterator();
+		// on balaye la liste et supprime tous les joueurs inactifs
+		Iterator<Joueur> k2 = JoueursActifs.iterator();
 
-			while (k2.hasNext()) {
-				Joueur O = (Joueur) k2.next();
+		while (k2.hasNext()) {
+			Joueur O = (Joueur) k2.next();
 
-				if (O.actif == false) {
-					k2.remove();
-				}
+			if (O.actif == false) {
+				k2.remove();
 			}
 		}
 
@@ -497,11 +504,6 @@ public class Jeu extends JFrame implements ActionListener {
 	}
 
 	private void boucleHumain(int j) {
-		if (tempsTour >= 299) {
-			finTour = true;
-			timerTour.stop();
-		}
-
 		if (!joueurFiring) {
 			if (ToucheGauche) {
 				Joueurs[j].moveGauche();
@@ -522,6 +524,8 @@ public class Jeu extends JFrame implements ActionListener {
 			if (ToucheEspace && Joueurs[joueurQuiJoue].bombeArmee >= 6) {
 				joueurATire = true;
 			} else if (ToucheEspace && Joueurs[joueurQuiJoue].force < 100) {
+				Joueurs[joueurQuiJoue].fixe();
+
 				Joueurs[j].force++;
 				joueurFiring = true;
 				timerTour.stop();
@@ -544,6 +548,7 @@ public class Jeu extends JFrame implements ActionListener {
 
 				tempsTour = 250;
 				timerTour.start();
+
 			}
 		} else {
 			for (int u = 0; u < bombesActives.length; u++) {
@@ -553,11 +558,6 @@ public class Jeu extends JFrame implements ActionListener {
 	}
 
 	private void boucleIA(int j) {
-		if (tempsTour >= 299) {
-			finTour = true;
-			timerTour.stop();
-		}
-
 		if (!angleChoisi) {
 			double[] angleTanks = new double[nombreJoueurs];
 			Joueurs[j].bombeArmee = BOMBES.length - 1;
@@ -573,15 +573,15 @@ public class Jeu extends JFrame implements ActionListener {
 				Joueur J = (Joueur) k.next();
 
 				if (J.n != j) {
-					double petitAngle = Joueurs[j].prevision(J.tank, 80)[0];
-					double grandAngle = Joueurs[j].prevision(J.tank, 80)[1];
+					double petitAngle = Joueurs[j].prevision(J.tank, 75)[0];
+					double grandAngle = Joueurs[j].prevision(J.tank, 75)[1];
 
 					if (petitAngle >= 0 && petitAngle <= 180
-							&& Joueurs[j].testTir(80, petitAngle, null) == J.n) {
+							&& Joueurs[j].testTir(75, petitAngle, null) == J.n) {
 						angleTanks[J.n] = petitAngle;
 
 					} else if (grandAngle >= 0 && grandAngle <= 180
-							&& Joueurs[j].testTir(80, grandAngle, null) == J.n) {
+							&& Joueurs[j].testTir(75, grandAngle, null) == J.n) {
 						angleTanks[J.n] = grandAngle;
 
 					} else {
@@ -625,7 +625,7 @@ public class Jeu extends JFrame implements ActionListener {
 					}
 				}
 
-				double d = Joueurs[j].testTir(80
+				double d = Joueurs[j].testTir(75
 						+ (Joueurs[j].dico[0] + Joueurs[j].dico[1]) / 2
 						+ Joueurs[j].defaut, angleIA, Joueurs[joueurVise].tank) / 10;
 
@@ -644,7 +644,7 @@ public class Jeu extends JFrame implements ActionListener {
 					}
 				}
 
-				forceIA = 80 + (Joueurs[j].dico[0] + Joueurs[j].dico[1]) / 2;
+				forceIA = 75 + (Joueurs[j].dico[0] + Joueurs[j].dico[1]) / 2;
 
 				Joueurs[j].fixe();
 				angleChoisi = true;
@@ -717,18 +717,8 @@ public class Jeu extends JFrame implements ActionListener {
 				passageJoueur = true;
 				finTourParTir = false;
 				tempsTour = 0;
+
 			}
-
-		} else if (tempsTour / 10 >= 29) {
-			// la deuxieme condition arrete le joueur dans le cas ou le tour
-			// ce serait termine a cause du temps
-			Joueurs[joueurQuiJoue].fixe();
-
-			finTourParTir = false;
-			passageJoueur = true;
-
-			tempsTour = 0;
-
 		} else if (!attenteJoueur) {
 			if (passageJoueur) {
 				// on parcourt ensuite la liste des joueurs encore vivants pour
@@ -741,10 +731,8 @@ public class Jeu extends JFrame implements ActionListener {
 							joueurQuiJoue++;
 						}
 					} while (!Joueurs[joueurQuiJoue].actif);
-				}
-
-				// si il ne reste plus qu'un seul joueur, le jeu est termine
-				if (JoueursActifs.size() <= 1) {
+				} else {
+					// si il ne reste plus qu'un seul joueur, le jeu est termine
 					finJeu = true;
 				}
 
@@ -764,6 +752,7 @@ public class Jeu extends JFrame implements ActionListener {
 				bandeau.setVent(vent);
 
 				passageJoueur = false;
+
 			} else if ((nCycle % 5 == 0 | nCycle % 10 == 0) && !message.isDrawn) {
 				int ars = 0;
 
@@ -949,11 +938,11 @@ public class Jeu extends JFrame implements ActionListener {
 		} else if (code == 27) {
 			// Si c'est la touche echape on fait pause
 			if (timer.isRunning()) {
-				timer.stop();
-				timerTour.stop();
-
 				quitter.setVisible(true);
 				quitter.repaint();
+
+				timer.stop();
+				timerTour.stop();
 			} else {
 				timer.start();
 				timerTour.start();

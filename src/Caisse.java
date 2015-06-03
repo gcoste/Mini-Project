@@ -4,17 +4,18 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 public class Caisse extends Objet {
-	Message message;
-
-	final double GRAVITE = 0.1;
-	boolean estPose;
-	boolean bombesLancees;
-
-	Joueur aPris;
+	private Message message;
 	
-	double proba;
-	boolean piegeAerien;
-	boolean piegeAuSol;
+	public boolean estPose;
+
+	private final double GRAVITE = 0.1;
+	private boolean bombesLancees;
+
+	private Joueur aPris;
+
+	private double proba;
+	private boolean piegeAerien;
+	private boolean piegeAuSol;
 
 	LinkedList<Objet> Objets;
 	Bombe[] bombesActives;
@@ -47,7 +48,7 @@ public class Caisse extends Objet {
 		// on verifie que la caisse n'apparait pas directement au-dessus d'un
 		// tank ou d'une autre caisse
 		while (verif) {
-			x = (int) (aframe.width - limites.width) * Math.random();
+			x = (int) (aframe.width - l) * Math.random();
 
 			Iterator<Joueur> k1 = JoueursActifs.iterator();
 			Iterator<Caisse> k2 = Caisses.iterator();
@@ -81,8 +82,8 @@ public class Caisse extends Objet {
 		y += vitesse;
 		vitesse += GRAVITE;
 
-		if (y + limites.height > map.getY(getCenterX())) {
-			y = map.getY(getCenterX()) - limites.height;
+		if (y + h > map.getY(getCenterX())) {
+			y = map.getY(getCenterX()) - h;
 
 			estPose = true;
 		}
@@ -91,7 +92,7 @@ public class Caisse extends Objet {
 	}
 
 	public void actionCaisse(LinkedList<Joueur> JoueursActifs, long temps) {
-		if ((y != map.getY(getCenterX()) - limites.height && estPose)
+		if ((y != map.getY(getCenterX()) - h && estPose)
 				&& aPris == null) {
 			this.actif = false;
 		}
@@ -124,7 +125,7 @@ public class Caisse extends Objet {
 		}
 	}
 
-	public void giveTank(Joueur J, long temps) {
+	private void giveTank(Joueur J, long temps) {
 		if (proba < 40) {
 			if (proba < 25) {
 				J.vie += 30;
@@ -160,7 +161,7 @@ public class Caisse extends Objet {
 				message.setMessage(temps, new Color(200, 0, 0), 2, "5 obus",
 						null);
 			} else if (proba < 75) {
-				J.arsenal[3]++;
+				J.arsenal[6]++;
 
 				message.setMessage(temps, new Color(200, 0, 0), 2,
 						"une attaque aerienne", null);
@@ -189,7 +190,7 @@ public class Caisse extends Objet {
 		}
 	}
 
-	public void piegeTank(Joueur J, long temps) {
+	private void piegeTank(Joueur J, long temps) {
 		if (!bombesLancees) {
 			bombesLancees = true;
 			Objets.remove(this);

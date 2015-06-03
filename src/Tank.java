@@ -1,3 +1,5 @@
+import java.awt.Rectangle;
+
 public class Tank extends Objet {
 	Canon canon;
 
@@ -6,28 +8,28 @@ public class Tank extends Objet {
 		System.out.println("je suis nul");
 	}
 
-	public Tank(Joueur joueur, int placement, int nombreJoueurs, String NomImage) {
-		super(0, 0, 0, 0, 0.35, NomImage, joueur.limitesFrame, joueur.map,
+	public Tank(Joueur joueur, int placement, int nombreJoueurs, String NomImage, Rectangle aframe, Carte amap) {
+		super(0, 0, 0, 0, 0.35, NomImage, aframe, amap,
 				("Tank_" + joueur.n), joueur);
 
 		// on divise la taile du terrain par le nombre de joueur afin de placer
 		// chaque tank dans un secteur
 		this.x = ((limitesFrame.width / nombreJoueurs - 100) * Math.random()
 				+ 50 + placement * (limitesFrame.width / nombreJoueurs))
-				- limites.width / 2;
+				- l / 2;
 		// le tank est place directement sur la map
-		this.y = map.getY(getCenterX()) - limites.height;
+		this.y = map.getY(getCenterX()) - h;
 
 		// on cree le canon du tank
 		canon = new Canon(this);
 	}
 
 	public void move() {
-		y = map.getY(getCenterX()) - limites.height;
+		y = map.getY(getCenterX()) - h;
 		
 		if (joueur.fuel > 0) {
 			x = x + vitesse * dx;
-			y = map.getY(getCenterX()) - limites.height;
+			y = map.getY(getCenterX()) - h;
 
 			joueur.fuel -= 0.05 * Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))
 					* vitesse;

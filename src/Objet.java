@@ -76,11 +76,11 @@ public abstract class Objet {
 	}
 
 	public double getCenterX() {
-		return x + limites.width / 2;
+		return x + l / 2;
 	}
 
 	public double getCenterY() {
-		return y + limites.height / 2;
+		return y + h / 2;
 	}
 
 	// Methode qui gere le mouvement des objets

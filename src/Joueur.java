@@ -4,39 +4,36 @@ import java.util.LinkedList;
 
 public class Joueur {
 	// limites de l'ecran
-	Rectangle limitesFrame;
+	private Rectangle limitesFrame;
 	// carte sur lequel evolue l'objet
-	Carte map;
-	// bandeau du jeu pour acceder à la force
-	Bandeau bandeau;
+	private Carte map;
 
 	// identifiant du joueur
-	int n;
-	String nom;
-	boolean estHumain;
-	int score;
-	Color couleur;
-	boolean actif;
+	public int n;
+	public String nom;
+	public boolean estHumain;
+	public Color couleur;
+	public boolean actif;
 
-	int[] arsenal;
-	int bombeArmee;
+	public int[] arsenal;
+	public int bombeArmee;
 
-	double vie;
-	double fuel;
+	public double vie;
+	public double fuel;
 	// angle du canon
-	double angle;
+	public double angle;
 	// force du tir
-	double force;
+	public double force;
 
 	// parametres de visee pour l'attaque aerienne
-	double xVisee;
-	boolean viseeDroite;
+	public double xVisee;
+	public boolean viseeDroite;
 
 	// parametre IA pour la dichotomie
-	double dico[];
-	double defaut;
+	public double dico[];
+	public double defaut;
 
-	final double GRAVITE = 0.1;
+	public final double GRAVITE = 0.1;
 
 	LinkedList<Objet> Objets;
 	LinkedList<Joueur> JoueursActifs;
@@ -45,11 +42,10 @@ public class Joueur {
 
 	public Joueur(int num, int placement, int nombreJoueurs, int difficulte,
 			String anom, String acouleur, boolean Humain, int nombreBombes,
-			Carte amap, Rectangle aframe, Bandeau abandeau,
-			LinkedList<Joueur> JoueursEnVie, LinkedList<Objet> Obj) {
+			Carte amap, Rectangle aframe, LinkedList<Joueur> JoueursEnVie,
+			LinkedList<Objet> Obj) {
 		limitesFrame = aframe;
 		map = amap;
-		bandeau = abandeau;
 
 		arsenal = new int[nombreBombes];
 		arsenal[0] = 100000;
@@ -88,7 +84,7 @@ public class Joueur {
 				break;
 			case (4):
 				arsenal[1] = 10;
-				arsenal[2] = 5;
+				arsenal[2] = 3;
 				break;
 			case (5):
 				arsenal[1] = 25;
@@ -99,8 +95,12 @@ public class Joueur {
 				System.exit(0);
 			}
 
-			defaut = 40 * Math.random() - 20;
-			dico = new double[] { -20, 20 };
+			double ran = 200 * Math.random() - 100;
+
+			// renvoit un nombre aleatoire entre 0 et 25, avec une probabilite
+			// forte d'etre proche de 25
+			defaut = 5 * (ran / Math.abs(ran)) * Math.pow(Math.abs(ran), 0.35);
+			dico = new double[] { -25, 25 };
 		}
 
 		// on tranforme la couleur en texte en une couleur Java
@@ -135,7 +135,7 @@ public class Joueur {
 		}
 
 		tank = new Tank(this, placement, nombreJoueurs, "Tank_" + acouleur
-				+ ".png");
+				+ ".png", limitesFrame, map);
 
 		canon = tank.canon;
 
@@ -265,12 +265,12 @@ public class Joueur {
 		}
 	}
 
-	public void touche(Bombe bombe, Iterator<Joueur> k) {
+	public void touche(Bombe bombe) {
 		double vieApresCoup = vie - bombe.dommage;
 		bombe.rayonDegats(tank.getCenterX());
 
 		// on corrige les degats afin que le tank ne se prenne pas deux fois le
-		// coup
+		// coup (du fait du rayon de degats)
 		vie = vieApresCoup;
 		actif = true;
 		tank.actif = true;
@@ -278,8 +278,7 @@ public class Joueur {
 
 		map.destructionMap(bombe.dommage, (int) (tank.getCenterX()));
 
-		if (vie <= 0) {
-			k.remove();
+		if (vie <= 0) {			
 			actif = false;
 			tank.actif = false;
 			canon.actif = false;

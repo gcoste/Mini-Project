@@ -5,17 +5,17 @@ import java.util.LinkedList;
 
 public class Bombe extends Objet {
 
-	double gravite;
-	double vent;
+	private double gravite;
+	private double vent;
 
-	Tank tank;
+	private Tank tank;
 
-	int dommage;
+	public int dommage;
 
 	// on verifie que la bombe a quitte le rectangle du tank qui l'a tiree afin
 	// d'etre sur de ne pas entrainer une collision au debut du tir
-	boolean bombePartie;
-	boolean test;
+	private boolean bombePartie;
+	private boolean test;
 
 	LinkedList<Joueur> JoueursActifs;
 
@@ -153,7 +153,7 @@ public class Bombe extends Objet {
 				Thread explosion = new Son("Explosion_" + nom + ".wav");
 				explosion.start();
 
-				J.touche(this, k);
+				J.touche(this);
 			}
 		}
 
@@ -187,8 +187,8 @@ public class Bombe extends Objet {
 			Joueur J = (Joueur) k1.next();
 
 			if (new Ellipse2D.Double(x1 - rayon, y1 - rayon, 2 * rayon,
-					2 * rayon).intersects(J.tank.x, J.tank.y,
-					J.tank.limites.width, J.tank.limites.height)) {
+					2 * rayon).intersects(J.tank.x, J.tank.y, J.tank.l,
+					J.tank.h)) {
 			} else {
 				k1.remove();
 			}
@@ -205,8 +205,7 @@ public class Bombe extends Objet {
 				Joueur J = (Joueur) k2.next();
 				// System.out.println(cercle.intersects(J.tank.limites));
 
-				if (cercle.intersects(J.tank.x, J.tank.y, J.tank.limites.width,
-						J.tank.limites.height)) {
+				if (cercle.intersects(J.tank.x, J.tank.y, J.tank.l, J.tank.h)) {
 					J.degats((int) ((1 - a) * dommage));
 					k2.remove();
 				}

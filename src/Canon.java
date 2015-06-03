@@ -11,7 +11,7 @@ public class Canon extends Objet {
 		// créer le canon
 		// (x,y) represente le point du bas du rectangle representant le
 		// canon (le point fixé au tank)
-		super(atank.x + atank.limites.width/2, atank.y + 9, 0, 0, 0, "Canon.png",
+		super(atank.x + atank.l/2, atank.y + 9, 0, 0, 0, "Canon.png",
 				atank.limitesFrame, atank.map, ("Canon_" + atank.nom),
 				atank.joueur);
 

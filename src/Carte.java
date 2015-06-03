@@ -4,7 +4,7 @@ import java.awt.image.BufferedImage;
 public class Carte extends Objet {
 
 	// horizon de la carte
-	double[] horizon;
+	private double[] horizon;
 
 	public Carte(Rectangle aframe) {
 		// on utilise le constructeur de Objet afin que le fond de la carte soit
@@ -182,7 +182,7 @@ public class Carte extends Objet {
 	}
 
 	// methode pour calculer un polynome
-	public double calculPolynome(double x, double[] polynome) {
+	private double calculPolynome(double x, double[] polynome) {
 		double sum = 1;
 		for (int p = 0; p < polynome.length; p++) {
 			sum += sum * (x - polynome[p]);
@@ -191,7 +191,7 @@ public class Carte extends Objet {
 	}
 
 	// methode pour le redimmensionnement de l'image
-	public static Image scaleImage(Image source, int width, int height) {
+	private static Image scaleImage(Image source, int width, int height) {
 		BufferedImage img = new BufferedImage(width, height,
 				BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = (Graphics2D) img.getGraphics();
@@ -205,6 +205,8 @@ public class Carte extends Objet {
 	// on est oblige de definir cette methode meme si la carte ne "bouge" pas
 	// puisqu'elle extends de Objet
 	public void move() {
+		System.out.println("La carte a bougée");
+		System.exit(0);
 	}
 
 }
