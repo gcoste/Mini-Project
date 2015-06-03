@@ -17,12 +17,11 @@ public class Bombe extends Objet {
 	boolean bombePartie;
 	boolean test;
 
-	LinkedList<Objet> Objets;
 	LinkedList<Joueur> JoueursActifs;
 
 	public Bombe(Tank atank, double avent, double aforce, double angle,
 			int dom, String nom, String nomImage,
-			LinkedList<Joueur> ListJoueurs, LinkedList<Objet> Obj, double grav) {
+			LinkedList<Joueur> ListJoueurs, double grav) {
 		super(0, 0, 0, 0, aforce * 0.15, nomImage, atank.limitesFrame,
 				atank.map, nom, atank.joueur);
 
@@ -52,12 +51,11 @@ public class Bombe extends Objet {
 		// on stocke la liste des joueurs encore presents afin de verifier si la
 		// bombe tombe sur l'un d'eux
 		JoueursActifs = ListJoueurs;
-		Objets = Obj;
 	}
 
 	// constructeur pour l'attaque aerienne
 	public Bombe(Tank atank, double ax, boolean droite,
-			LinkedList<Joueur> ListJoueurs, LinkedList<Objet> Obj, double grav) {
+			LinkedList<Joueur> ListJoueurs, double grav) {
 		super(ax, 0, 1.5, 0, 0, "Bombe.png", atank.limitesFrame, atank.map,
 				"roquette", atank.joueur);
 
@@ -78,12 +76,10 @@ public class Bombe extends Objet {
 		// on stocke la liste des joueurs encore presents afin de verifier si la
 		// bombe tombe sur l'un d'eux
 		JoueursActifs = ListJoueurs;
-		Objets = Obj;
 	}
 
 	// constructeur pour la caisse piegee
-	public Bombe(Tank atank, LinkedList<Joueur> ListJoueurs,
-			LinkedList<Objet> Obj) {
+	public Bombe(Tank atank, LinkedList<Joueur> ListJoueurs) {
 		super(atank.getCenterX(), 0, 0, 0, 0, "Bombe.png", atank.limitesFrame,
 				atank.map, "roquette", atank.joueur);
 		tank = atank;
@@ -99,7 +95,6 @@ public class Bombe extends Objet {
 		// on stocke la liste des joueurs encore presents afin de verifier si la
 		// bombe tombe sur l'un d'eux
 		JoueursActifs = ListJoueurs;
-		Objets = Obj;
 
 		this.actif = false;
 		rayonDegats(x);
@@ -107,20 +102,6 @@ public class Bombe extends Objet {
 
 		Thread explosion = new Son("Explosion_roquette.wav");
 		explosion.start();
-
-		// on balaye la liste et on fait bouger tout les objets avec
-		// la classe move qui leur est propre, 3x pour placer les tanks
-		// au sol après explosion
-		for (int u = 0; u < 3; u++) {
-
-			Iterator<Objet> k = Objets.iterator();
-
-			while (k.hasNext()) {
-				Objet O = (Objet) k.next();
-				O.move();
-			}
-		}
-
 	}
 
 	public void move() {
@@ -159,19 +140,6 @@ public class Bombe extends Objet {
 
 			Thread explosion = new Son("Explosion_" + nom + ".wav");
 			explosion.start();
-
-			// on balaye la liste et on fait bouger tout les objets avec
-			// la classe move qui leur est propre, 3x pour placer les tanks
-			// au sol après explosion
-			for (int u = 0; u < 3; u++) {
-
-				Iterator<Objet> k = Objets.iterator();
-
-				while (k.hasNext()) {
-					Objet O = (Objet) k.next();
-					O.move();
-				}
-			}
 		}
 
 		Iterator<Joueur> k = JoueursActifs.iterator();
@@ -186,19 +154,6 @@ public class Bombe extends Objet {
 				explosion.start();
 
 				J.touche(this, k);
-
-				// on balaye la liste et on fait bouger tout les objets avec
-				// la classe move qui leur est propre, 3x pour placer les tanks
-				// au sol après explosion
-				for (int u = 0; u < 3; u++) {
-
-					Iterator<Objet> k1 = Objets.iterator();
-
-					while (k1.hasNext()) {
-						Objet O = (Objet) k1.next();
-						O.move();
-					}
-				}
 			}
 		}
 

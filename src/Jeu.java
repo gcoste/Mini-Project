@@ -166,9 +166,11 @@ public class Jeu extends JFrame implements ActionListener {
 		// redessinera a chaque fois tout
 		ArrierePlan = new BufferedImage(getSize().width,
 				getSize().height - 100, BufferedImage.TYPE_INT_RGB);
+
 		// On indique que buffer contient les dessins de arriere plan, si on
 		// modifie buffer, on modifie arriere plan
 		buffer = ArrierePlan.getGraphics();
+
 		// on cree le message qui s'affichera lorqu'on aura besoin de donner un
 		// message au joueur
 		message = new Message(buffer, limitesFrame, Captain);
@@ -441,8 +443,26 @@ public class Jeu extends JFrame implements ActionListener {
 
 				if (O.actif == false) {
 					k1.remove();
-				}
 
+					if (O instanceof Bombe) {
+						// on balaye la liste et on fait bouger tout les objets
+						// avec
+						// la classe move qui leur est propre, 3x pour placer
+						// les tanks
+						// au sol après explosion
+						for (int u = 0; u < 3; u++) {
+							Iterator<Objet> k2 = Objets.iterator();
+
+							while (k2.hasNext()) {
+								Objet B = (Objet) k2.next();
+
+								if (!(B instanceof Bombe)) {
+									B.move();
+								}
+							}
+						}
+					}
+				}
 			}
 
 			// on balaye la liste et supprime tous les joueurs inactifs
@@ -477,6 +497,11 @@ public class Jeu extends JFrame implements ActionListener {
 	}
 
 	private void boucleHumain(int j) {
+		if (tempsTour >= 299) {
+			finTour = true;
+			timerTour.stop();
+		}
+
 		if (!joueurFiring) {
 			if (ToucheGauche) {
 				Joueurs[j].moveGauche();
@@ -496,7 +521,7 @@ public class Jeu extends JFrame implements ActionListener {
 		if (!finTourParTir) {
 			if (ToucheEspace && Joueurs[joueurQuiJoue].bombeArmee >= 6) {
 				joueurATire = true;
-			} else if (ToucheEspace && Joueurs[joueurQuiJoue].force < 100) {			
+			} else if (ToucheEspace && Joueurs[joueurQuiJoue].force < 100) {
 				Joueurs[j].force++;
 				joueurFiring = true;
 				timerTour.stop();
@@ -525,14 +550,13 @@ public class Jeu extends JFrame implements ActionListener {
 				bombesActives[u].move();
 			}
 		}
+	}
 
+	private void boucleIA(int j) {
 		if (tempsTour >= 299) {
 			finTour = true;
 			timerTour.stop();
 		}
-	}
-
-	private void boucleIA(int j) {
 
 		if (!angleChoisi) {
 			double[] angleTanks = new double[nombreJoueurs];

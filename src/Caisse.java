@@ -10,6 +10,8 @@ public class Caisse extends Objet {
 	boolean estPose;
 	boolean bombesLancees;
 
+	Joueur aPris;
+	
 	double proba;
 	boolean piegeAerien;
 	boolean piegeAuSol;
@@ -24,6 +26,7 @@ public class Caisse extends Objet {
 
 		message = mes;
 		estPose = false;
+		aPris = null;
 
 		proba = 100 * Math.random();
 
@@ -32,7 +35,7 @@ public class Caisse extends Objet {
 
 		if (proba >= 87 && proba < 92) {
 			piegeAuSol = true;
-		} else {
+		} else if (proba >= 92) {
 			piegeAerien = true;
 		}
 
@@ -88,36 +91,40 @@ public class Caisse extends Objet {
 	}
 
 	public void actionCaisse(LinkedList<Joueur> JoueursActifs, long temps) {
-		if (y != map.getY(getCenterX()) - limites.height && estPose) {
+		if ((y != map.getY(getCenterX()) - limites.height && estPose)
+				&& aPris == null) {
 			this.actif = false;
-
 		}
 
 		Iterator<Joueur> k = JoueursActifs.iterator();
 
-		while (k.hasNext() && actif) {
+		while (k.hasNext() && actif && aPris == null) {
 			Joueur J = (Joueur) k.next();
 
 			if (this.Collision(J.tank)) {
-				if (!piegeAerien && !piegeAuSol) {
-					giveTank(J, temps);
-				} else if (piegeAuSol) {
-					this.actif = false;
+				aPris = J;
+			}
+		}
 
-					message.setMessage(temps, new Color(200, 0, 0), 2,
-							"Vous etes tombes dans un piege", "dommage !");
+		if (aPris != null) {
+			if (!piegeAerien && !piegeAuSol) {
+				this.actif = false;
 
-					Bombe piege = new Bombe(J.tank, JoueursActifs, Objets);
-				} else {
-					piegeTank(J, temps);
-				}
+				giveTank(aPris, temps);
+			} else if (piegeAuSol) {
+				this.actif = false;
+
+				message.setMessage(temps, new Color(200, 0, 0), 2,
+						"Vous etes tombes dans un piege", "dommage !");
+
+				Bombe piege = new Bombe(aPris.tank, JoueursActifs);
+			} else {
+				piegeTank(aPris, temps);
 			}
 		}
 	}
 
 	public void giveTank(Joueur J, long temps) {
-		this.actif = false;
-
 		if (proba < 40) {
 			if (proba < 25) {
 				J.vie += 30;

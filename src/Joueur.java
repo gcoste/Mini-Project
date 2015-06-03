@@ -152,8 +152,11 @@ public class Joueur {
 
 			for (int u = 0; u < e; u++) {
 				piege[u] = new Bombe(tank, u * 100, true, JoueursActifs,
-						Objets, GRAVITE);
+						GRAVITE);
 			}
+
+			Thread tir = new Son("Chute.wav");
+			tir.start();
 
 			return piege;
 		} else if (bombeArmee < 6) {
@@ -196,7 +199,7 @@ public class Joueur {
 			}
 
 			Bombe obus = new Bombe(tank, vent, force + defaut, angle, dommage,
-					nomBombe, nomImage, JoueursActifs, Objets, GRAVITE);
+					nomBombe, nomImage, JoueursActifs, GRAVITE);
 
 			if (bombeArmee < 4) {
 				Thread tir = new Son("Tir.wav");
@@ -215,7 +218,7 @@ public class Joueur {
 
 			for (int u = 0; u < 5; u++) {
 				attaqueAerienne[u] = new Bombe(tank, xVisee + (u - 2) * 40,
-						viseeDroite, JoueursActifs, Objets, GRAVITE);
+						viseeDroite, JoueursActifs, GRAVITE);
 			}
 
 			Thread tir = new Son("Chute.wav");
@@ -328,7 +331,7 @@ public class Joueur {
 
 	public double testTir(double forceTest, double angleTest, Tank tankVise) {
 		Bombe obus = new Bombe(tank, 0, forceTest, angleTest, 0, "obus",
-				"Bombe.png", JoueursActifs, Objets, GRAVITE);
+				"Bombe.png", JoueursActifs, GRAVITE);
 
 		boolean dichot;
 		boolean cestBon = false;
