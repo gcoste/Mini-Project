@@ -6,7 +6,6 @@ import java.awt.Rectangle;
 public class Message {
 	private Graphics buffer;
 	private Rectangle limitesFrame;
-	private Font Captain;
 
 	private Color couleur;
 	// duree du message en seconde
@@ -19,7 +18,6 @@ public class Message {
 	public Message(Graphics b, Rectangle aframe, Font Cap) {
 		buffer = b;
 		limitesFrame = aframe;
-		Captain = Cap;
 
 		isDrawn = false;
 

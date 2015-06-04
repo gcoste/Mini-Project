@@ -34,11 +34,11 @@ public class Bandeau extends JPanel {
 		bars.setBackground(bleu);
 
 		infos = new JPanel(new FlowLayout());
-		infos.setPreferredSize(new Dimension((int) ((0.45) * largeur), 100));
+		infos.setPreferredSize(new Dimension((int) ((0.35) * largeur), 100));
 		infos.setBackground(bleu);
 
-		bombe = new JPanel(new FlowLayout());
-		bombe.setPreferredSize(new Dimension((int) ((0.25) * largeur), 100));
+		bombe = new JPanel(new BorderLayout());
+		bombe.setPreferredSize(new Dimension((int) ((0.35) * largeur), 80));
 		bombe.setBackground(bleu);
 
 		this.add(bars);
@@ -74,7 +74,7 @@ public class Bandeau extends JPanel {
 		tempsLabel.setForeground(Color.white);
 
 		nomLabel = new JLabel();
-		nomLabel.setPreferredSize(new Dimension((int) ((0.25) * largeur), 80));
+		nomLabel.setPreferredSize(new Dimension((int) ((0.20) * largeur), 80));
 		nomLabel.setHorizontalAlignment(0);
 		nomLabel.setFont(Captain);
 
@@ -101,7 +101,6 @@ public class Bandeau extends JPanel {
 		bombePrev.setFocusable(false);
 
 		bombeLabel = new JLabel();
-		bombeLabel.setPreferredSize(new Dimension((int) ((0.2) * largeur), 80));
 		bombeLabel.setHorizontalAlignment(0);
 		bombeLabel.setFont(Captain);
 		bombeLabel.setForeground(Color.white);
@@ -111,9 +110,9 @@ public class Bandeau extends JPanel {
 		bombeNext.setBackground(bleu);
 		bombeNext.setFocusable(false);
 
-		bombe.add(bombePrev);
-		bombe.add(bombeLabel);
-		bombe.add(bombeNext);
+		bombe.add(bombePrev, BorderLayout.WEST);
+		bombe.add(bombeLabel, BorderLayout.CENTER);
+		bombe.add(bombeNext, BorderLayout.EAST);
 	}
 
 	public void setVie(double vie) {

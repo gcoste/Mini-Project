@@ -276,9 +276,9 @@ public class Menu extends JFrame implements ActionListener {
 				}
 
 			} else if (creationJoueurs) {
-				if (nomField.getText().length() > 15) {
+				if (nomField.getText().length() > 8) {
 					JOptionPane.showMessageDialog(this,
-							"Choisissez un nom de 15 caractères maximum !",
+							"Choisissez un nom de 8 caractères maximum !",
 							"Nom trop long", JOptionPane.WARNING_MESSAGE);
 
 				} else if (nomField.getText().equals("")) {
